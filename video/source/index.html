@@ -1,0 +1,549 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:IT;font-weight:400;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-400-normal.woff2)}
+@font-face{font-family:IT;font-weight:500;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-500-normal.woff2)}
+@font-face{font-family:IT;font-weight:600;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-600-normal.woff2)}
+@font-face{font-family:IT;font-weight:700;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-700-normal.woff2)}
+@font-face{font-family:IT;font-weight:800;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-800-normal.woff2)}
+@font-face{font-family:IT;font-weight:900;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-900-normal.woff2)}
+@font-face{font-family:IS;font-style:italic;src:url(node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2)}
+@font-face{font-family:IS;font-style:normal;src:url(node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2)}
+:root{--bg:#060708;--ink:#F4F5F2;--dim:#8B8F96;--lime:#C8FF2E;--red:#FF3B3B;--line:rgba(255,255,255,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:IT,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden}
+#bg{position:absolute;inset:-200px}
+.orb{position:absolute;border-radius:50%}
+#orb1{width:1400px;height:1400px;left:-300px;top:200px;background:radial-gradient(closest-side,rgba(200,255,46,.16),rgba(200,255,46,0))}
+#orb2{width:1300px;height:1300px;left:300px;top:1000px;background:radial-gradient(closest-side,rgba(120,140,255,.13),rgba(120,140,255,0))}
+#orb3{width:1000px;height:1000px;left:200px;top:-200px;background:radial-gradient(closest-side,rgba(255,255,255,.07),rgba(255,255,255,0))}
+#grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:90px 90px;mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 20%,transparent 75%);opacity:.6}
+#cam{position:absolute;inset:0}
+.scene{position:absolute;inset:0;visibility:hidden;opacity:0}
+.drift{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center}
+.m{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .04em .1em;margin:0 -.04em -.1em}
+.w{display:inline-block;will-change:transform}
+em{font-family:IS;font-style:italic;font-weight:400;letter-spacing:0}
+.lime{color:var(--lime)}.red{color:var(--red)}.dim{color:var(--dim)}
+.h1{font-weight:900;letter-spacing:-.045em;line-height:.9}
+.h2{font-weight:800;letter-spacing:-.035em;line-height:1}
+.label{font-weight:600;font-size:30px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim)}
+.pill{display:inline-flex;align-items:center;gap:16px;padding:18px 34px;border-radius:999px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);font-weight:700;font-size:34px;letter-spacing:.14em;text-transform:uppercase}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--lime);box-shadow:0 0 20px var(--lime)}
+.glow{text-shadow:0 0 60px rgba(200,255,46,.45)}
+/* overlays */
+#flash{position:absolute;inset:0;background:#fff;opacity:0;mix-blend-mode:screen}
+#wipe{position:absolute;top:-200px;bottom:-200px;left:-300px;right:-300px;background:var(--lime)}
+#wipe2{position:absolute;top:-200px;bottom:-200px;left:-300px;right:-300px;background:#0d0f12}
+#gbars{position:absolute;inset:0;opacity:0}
+#gbars div{position:absolute;left:0;right:0;mix-blend-mode:difference;background:#fff}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.07;mix-blend-mode:overlay;image-rendering:pixelated}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 55%,rgba(0,0,0,.65))}
+/* site mockups */
+.browser{position:absolute;border-radius:22px;background:#0f1114;border:2px solid rgba(255,255,255,.12);overflow:hidden;box-shadow:0 60px 120px rgba(0,0,0,.6)}
+.browser .bar{height:52px;display:flex;align-items:center;gap:12px;padding:0 22px;background:#16191d;border-bottom:1px solid rgba(255,255,255,.06)}
+.browser .bar i{width:14px;height:14px;border-radius:50%;background:#3a3f46}
+.browser .bar b{flex:1;height:26px;margin-left:20px;border-radius:13px;background:#22262c;font:500 15px IT;color:#7d838b;display:flex;align-items:center;padding-left:16px;font-weight:500}
+.mini{position:absolute;width:300px;height:420px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 20px 40px rgba(0,0,0,.45)}
+.mini .nv{height:34px;display:flex;align-items:center;gap:8px;padding:0 14px}
+.mini .nv .lg{width:40px;height:10px;border-radius:5px}
+.mini .nv .ln{width:22px;height:6px;border-radius:3px;opacity:.35;margin-left:auto}
+.mini .nv .ln+.ln{margin-left:6px}
+.mini .hero{height:190px;padding:26px 18px;position:relative;overflow:hidden}
+.mini .hero .t1{width:80%;height:16px;border-radius:5px;background:#fff;margin-bottom:9px}
+.mini .hero .t2{width:55%;height:16px;border-radius:5px;background:#fff;margin-bottom:18px}
+.mini .hero .t3{width:70%;height:7px;border-radius:4px;background:rgba(255,255,255,.6);margin-bottom:6px}
+.mini .hero .bt{width:90px;height:26px;border-radius:13px;margin-top:16px}
+.mini .hero .sh{position:absolute;right:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;opacity:.35}
+.mini .row{display:flex;gap:10px;padding:16px 14px}
+.mini .row div{flex:1;height:80px;border-radius:10px}
+.mini .ft{margin:0 14px;height:8px;border-radius:4px;background:#e6e6e6}
+.tpl{position:absolute;width:280px;height:380px;border-radius:16px;background:#1a1d21;border:2px solid #2a2e34;overflow:hidden}
+.tpl .a{height:30px;background:#24282e}
+.tpl .b{margin:22px;height:120px;border-radius:10px;background:#2a2f36}
+.tpl .c1{margin:0 22px 12px;height:12px;border-radius:6px;background:#2a2f36}
+.tpl .c2{margin:0 22px;width:50%;height:12px;border-radius:6px;background:#2a2f36}
+.tpl .tag{position:absolute;bottom:20px;left:22px;font:700 16px IT;letter-spacing:.12em;color:#4d535b}
+.xmark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.xmark svg{width:70%;height:70%}
+/* steps */
+.step{position:absolute;left:150px;right:90px;height:150px;display:flex;align-items:center;gap:36px}
+.step .num{flex:none;width:96px;height:96px;border-radius:50%;border:3px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font:800 40px IT;background:#0b0d10;position:relative}
+.step .num .ck{position:absolute;inset:-3px;border-radius:50%;background:var(--lime);color:#000;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.4)}
+.step .tx{font:800 64px IT;letter-spacing:-.03em}
+.step .tx small{display:block;font:500 28px IT;letter-spacing:.02em;color:var(--dim);margin-top:6px}
+.svc{position:absolute;left:110px;right:110px;height:170px;border-radius:30px;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:2px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:36px;padding:0 44px}
+.svc .ic{width:96px;height:96px;border-radius:24px;background:var(--lime);display:flex;align-items:center;justify-content:center;flex:none}
+.svc .ic svg{width:54px;height:54px}
+.svc .tt{font:800 62px IT;letter-spacing:-.03em}
+.btn{display:inline-flex;align-items:center;gap:22px;padding:40px 64px;border-radius:999px;background:var(--lime);color:#000;font:800 46px IT;letter-spacing:-.01em;box-shadow:0 0 0 0 rgba(200,255,46,.5),0 30px 80px rgba(200,255,46,.25)}
+</style></head>
+<body>
+<div id="stage">
+ <div id="bg"><div id="grid"></div><div class="orb" id="orb1"></div><div class="orb" id="orb2"></div><div class="orb" id="orb3"></div></div>
+ <div id="cam">
+
+ <!-- S1 HOOK -->
+ <section class="scene" id="s1"><div class="drift">
+  <div class="c h2" id="s1a" style="top:470px;font-size:84px" data-split>What if you didn't pay</div>
+  <div class="c" id="s1b" style="top:560px;height:520px"><span class="h1 lime glow" id="s1zero" style="font-size:500px;display:inline-block">$0</span></div>
+  <div class="c h2" id="s1c" style="top:1100px;font-size:62px;color:#c9ccd1" data-split>for your website</div>
+  <div class="c h2" id="s1d" style="top:1190px;font-size:96px" data-split>until you <em class="lime" style="font-size:118px">saw it finished.</em></div>
+  <div id="s1bar" style="position:absolute;left:190px;right:190px;top:1390px;height:84px;border-radius:42px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);overflow:hidden">
+   <div id="s1fill" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--lime);border-radius:42px"></div>
+   <div id="s1pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 34px IT;letter-spacing:.14em;mix-blend-mode:difference">0%</div>
+  </div>
+ </div></section>
+
+ <!-- S2 AGENCIES -->
+ <section class="scene" id="s2"><div class="drift">
+  <div class="c label" id="s2l" style="top:330px">The old way</div>
+  <div class="c h2" id="s2a" style="top:400px;font-size:104px" data-split>Most agencies take</div>
+  <div class="c h2" id="s2b" style="top:510px;font-size:104px" data-split>your <span class="red">money first.</span></div>
+  <div id="inv" style="position:absolute;left:170px;width:740px;top:720px;height:560px;border-radius:30px;background:#f3f1ec;color:#15171a;padding:54px 60px;box-shadow:0 60px 120px rgba(0,0,0,.6)">
+    <div style="display:flex;justify-content:space-between;font:800 30px IT;letter-spacing:.2em"><span>INVOICE</span><span style="color:#8a8a8a">#0047</span></div>
+    <div style="height:2px;background:#ddd;margin:30px 0"></div>
+    <div style="display:flex;justify-content:space-between;font:500 32px IT;margin-bottom:20px"><span>Website project</span><span>$4,800</span></div>
+    <div style="display:flex;justify-content:space-between;font:500 32px IT;color:#777"><span>Design preview</span><span>Not ready</span></div>
+    <div style="height:2px;background:#ddd;margin:30px 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:end"><span style="font:700 28px IT;color:#777;letter-spacing:.1em">DUE UPFRONT</span><span style="font:900 84px IT;letter-spacing:-.04em">$4,800</span></div>
+    <div id="stamp" style="position:absolute;left:250px;top:250px;transform:rotate(-14deg);border:8px solid var(--red);color:var(--red);font:900 78px IT;letter-spacing:.08em;padding:4px 28px;border-radius:14px">PAID</div>
+  </div>
+  <div class="c h2" id="s2c" style="top:1360px;font-size:82px" data-split>…and <em style="font-size:104px">hope</em> you like</div>
+  <div class="c h2 dim" id="s2d" style="top:1455px;font-size:82px" data-split>what they deliver.</div>
+ </div></section>
+
+ <!-- S3 BRAND -->
+ <section class="scene" id="s3"><div class="drift">
+  <svg id="rays" style="position:absolute;left:-460px;top:-100px;width:2000px;height:2000px;opacity:0" viewBox="-100 -100 200 200"></svg>
+  <div class="c label" id="s3l" style="top:520px;color:#c9ccd1">At</div>
+  <div id="logo3" style="position:absolute;left:90px;width:900px;top:610px">
+    <svg id="sym3" viewBox="392 370 290 138" style="display:block;width:380px;margin:0 auto 40px;overflow:visible"></svg>
+    <svg id="wm3" viewBox="196 544 688 110" style="display:block;width:900px;overflow:visible"></svg>
+    <svg id="tg3" viewBox="258 676 558 34" style="display:block;width:730px;margin:34px auto 0;overflow:visible"></svg>
+  </div>
+  <div class="c h2" id="s3a" style="top:1250px;font-size:104px" data-split>We do it</div>
+  <div class="c" id="s3b" style="top:1350px;font-size:150px;line-height:1"><em class="lime glow" data-split>differently.</em></div>
+  <svg id="s3u" style="position:absolute;left:250px;top:1520px;width:580px;height:40px" viewBox="0 0 580 40"><path pathLength="1" d="M6 28 C150 6 330 4 574 20" fill="none" stroke="#C8FF2E" stroke-width="8" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+ </div></section>
+
+ <!-- S4 YEARS -->
+ <section class="scene" id="s4"><div class="drift">
+  <div class="c h2" id="s4a" style="top:440px;font-size:76px" data-split>Building websites for</div>
+  <svg id="ring" style="position:absolute;left:190px;top:600px;width:700px;height:700px" viewBox="0 0 700 700">
+    <circle cx="350" cy="350" r="320" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14"/>
+    <circle id="ringp" cx="350" cy="350" r="320" fill="none" stroke="#C8FF2E" stroke-width="14" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" transform="rotate(-90 350 350)"/>
+  </svg>
+  <div class="c" style="top:700px;height:500px;display:flex;align-items:center;justify-content:center"><span class="h1" id="s4n" style="font-size:420px">0</span><span class="h1 lime" id="s4plus" style="font-size:260px;margin-left:10px">+</span></div>
+  <div class="c" id="s4y" style="top:1380px"><span class="pill"><span class="dot"></span>Years of experience</span></div>
+ </div></section>
+
+ <!-- S5 100 WEBSITES -->
+ <section class="scene" id="s5"><div class="drift">
+  <div id="wall" style="position:absolute;left:-560px;top:-700px;width:2200px;height:3300px;transform:perspective(1800px) rotateX(28deg) rotateZ(-16deg);transform-origin:50% 50%"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 75% 45% at 50% 50%,rgba(6,7,8,.94) 30%,rgba(6,7,8,.55) 70%,rgba(6,7,8,.2))"></div>
+  <div class="c label" id="s5l" style="top:560px;color:#d5d8dc">We've delivered</div>
+  <div class="c" style="top:620px"><span class="h1" id="s5n" style="font-size:380px">0</span><span class="h1 lime" id="s5plus" style="font-size:240px">+</span></div>
+  <div class="c h2" id="s5a" style="top:1000px;font-size:100px" data-split>websites</div>
+  <div class="c" id="s5us" style="top:1160px"><span class="pill" style="border-color:rgba(200,255,46,.5)"><span class="lime">★</span>Across the United States<span class="lime">★</span></span></div>
+ </div></section>
+
+ <!-- S6 BETTER + PRO -->
+ <section class="scene" id="s6"><div class="drift">
+  <div id="s6A">
+   <div class="c h2" id="s6a" style="top:420px;font-size:96px" data-split>Every project made us</div>
+   <div class="c" id="s6b" style="top:520px;font-size:170px;line-height:1"><em class="lime glow" data-split>better.</em></div>
+   <svg id="chart" style="position:absolute;left:120px;top:820px;width:840px;height:560px" viewBox="0 0 840 560">
+     <g stroke="rgba(255,255,255,.08)" stroke-width="2"><line x1="0" y1="140" x2="840" y2="140"/><line x1="0" y1="280" x2="840" y2="280"/><line x1="0" y1="420" x2="840" y2="420"/><line x1="0" y1="558" x2="840" y2="558"/></g>
+     <defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C8FF2E" stop-opacity=".35"/><stop offset="1" stop-color="#C8FF2E" stop-opacity="0"/></linearGradient>
+     <clipPath id="cclip"><rect id="cclipr" x="0" y="0" width="0" height="560"/></clipPath></defs>
+     <path clip-path="url(#cclip)" d="M0 520 C90 505 130 470 210 455 S330 430 390 380 S500 330 560 260 S700 150 840 40 L840 560 L0 560Z" fill="url(#cg)"/>
+     <path id="cline" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M0 520 C90 505 130 470 210 455 S330 430 390 380 S500 330 560 260 S700 150 840 40" fill="none" stroke="#C8FF2E" stroke-width="9" stroke-linecap="round"/>
+     <circle id="cdot" cx="840" cy="40" r="20" fill="#C8FF2E" opacity="0"/>
+   </svg>
+   <div id="s6lab" style="position:absolute;left:120px;right:120px;top:1400px;display:flex;justify-content:space-between" class="label"><span>Project 1</span><span class="lime">Project 100+</span></div>
+  </div>
+  <div id="s6B" style="opacity:0">
+   <div class="c label" id="s6l" style="top:300px;color:#d5d8dc">And today</div>
+   <div class="c h2" id="s6c" style="top:360px;font-size:88px" data-split>Our websites are more</div>
+   <div class="c" id="s6d" style="top:455px;font-size:128px;line-height:1"><em class="lime glow" data-split>professional than ever.</em></div>
+   <div id="show" style="position:absolute;left:0;right:0;top:700px;height:900px;perspective:2200px">
+     <div class="browser" id="lap" style="left:90px;top:40px;width:900px;height:640px"><div class="bar"><i></i><i></i><i></i><b>summitroofing.com</b></div><div id="lapsite" style="position:absolute;top:52px;left:0;right:0"></div></div>
+     <div id="phone" style="position:absolute;left:700px;top:330px;width:290px;height:560px;border-radius:44px;background:#0f1114;border:10px solid #1d2126;overflow:hidden;box-shadow:0 50px 100px rgba(0,0,0,.7)"><div id="phsite" style="position:absolute;left:0;top:0;width:270px"></div></div>
+   </div>
+  </div>
+ </div></section>
+
+ <!-- S7 APART -->
+ <section class="scene" id="s7"><div class="drift">
+  <div class="c h2" id="s7a" style="top:700px;font-size:84px;color:#c9ccd1" data-split>Here's what really</div>
+  <div class="c h1" id="s7b" style="top:800px;font-size:200px;white-space:nowrap"><span id="s7sets">SETS</span> <span id="s7us">US</span></div>
+  <div class="c h1 lime glow" id="s7c" style="top:990px;font-size:230px;white-space:nowrap">APART</div>
+ </div></section>
+
+ <!-- S8 REAL UNIQUE PEOPLE -->
+ <section class="scene" id="s8"><div class="drift">
+  <svg id="wire" style="position:absolute;left:120px;top:250px;width:840px;height:1420px;opacity:.22" viewBox="0 0 840 1420" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round">
+    <rect pathLength="1" x="10" y="10" width="820" height="1400" rx="30"/><path pathLength="1" d="M40 90 H200 M560 90 H800"/><rect pathLength="1" x="40" y="150" width="760" height="420" rx="18"/><path pathLength="1" d="M80 260 H520 M80 320 H440 M80 420 H260"/><rect pathLength="1" x="40" y="620" width="360" height="300" rx="18"/><rect pathLength="1" x="440" y="620" width="360" height="300" rx="18"/><path pathLength="1" d="M60 1000 C200 960 300 1060 420 1010 S640 980 780 1020"/><rect pathLength="1" x="40" y="1100" width="760" height="260" rx="18"/>
+  </svg>
+  <svg id="cursor" style="position:absolute;left:700px;top:1200px;width:80px;height:80px" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#C8FF2E" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  <div class="c h2" id="s8a" style="top:420px;font-size:72px;color:#c9ccd1" data-split>Every website we create is</div>
+  <div class="c h1" id="s8r" style="top:560px;font-size:230px">REAL.</div>
+  <div class="c h1" id="s8u" style="top:800px;font-size:230px">UNIQUE.</div>
+  <div class="c" id="s8p" style="top:1060px;font-size:150px;line-height:1"><em class="lime glow">made by people.</em></div>
+ </div></section>
+
+ <!-- S9 NO AI TEMPLATES -> YOURS -->
+ <section class="scene" id="s9"><div class="drift">
+  <div id="tgrid" style="position:absolute;left:0;top:0;width:1080px;height:1920px"></div><div id="tshade" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,7,8,.96) 0,rgba(6,7,8,.85) 560px,rgba(6,7,8,.1) 760px,rgba(6,7,8,.1) 1350px,rgba(6,7,8,.9) 1480px,rgba(6,7,8,.96) 100%)"></div>
+  <div id="s9txt">
+   <div class="c" id="s9a" style="top:300px"><span class="h1" style="font-size:100px;position:relative;display:inline-block">NO AI TEMPLATES<span class="strike" style="position:absolute;left:-10px;right:-10px;top:50%;height:16px;margin-top:-8px;background:var(--red);transform:scaleX(0);transform-origin:left"></span></span></div>
+   <div class="c" id="s9b" style="top:420px"><span class="h1" style="font-size:100px;position:relative;display:inline-block">NO COPY-PASTE<span class="strike" style="position:absolute;left:-10px;right:-10px;top:50%;height:16px;margin-top:-8px;background:var(--red);transform:scaleX(0);transform-origin:left"></span></span></div>
+   <div class="c h2 dim" id="s9c" style="top:1520px;font-size:66px" data-split>that look like everyone else's.</div>
+  </div>
+  <div id="s10txt">
+   <div class="c h2" id="s10a" style="top:300px;font-size:92px" data-split>A website built</div>
+   <div class="c" id="s10b" style="top:395px;font-size:160px;line-height:1"><em class="lime glow" data-split>just for you.</em></div>
+  </div>
+  <div class="browser" id="yours" style="left:140px;top:700px;width:800px;height:900px;opacity:0"><div class="bar"><i></i><i></i><i></i><b>yourbusiness.com</b></div><div id="yoursite" style="position:absolute;top:52px;left:0;right:0;bottom:0"></div></div>
+ </div></section>
+
+ <!-- S11 PROCESS -->
+ <section class="scene" id="s11"><div class="drift">
+  <div class="c" id="s11l" style="top:280px"><span class="pill" style="background:var(--lime);color:#000;border-color:var(--lime)">The best part</span></div>
+  <div style="position:absolute;left:197px;top:560px;width:6px;height:760px;background:rgba(255,255,255,.1);border-radius:3px"><div id="s11line" style="width:100%;height:100%;background:var(--lime);transform-origin:top;transform:scaleY(0);border-radius:3px"></div></div>
+  <div class="step" id="st1" style="top:470px"><div class="num">1<div class="ck"><svg width="50" height="50" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="tx">We build it <span class="lime">first.</span><small>Before you pay anything</small></div></div>
+  <div class="step" id="st2" style="top:690px"><div class="num">2<div class="ck"><svg width="50" height="50" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="tx">You review it.<small>See the finished site</small></div></div>
+  <div class="step" id="st3" style="top:910px"><div class="num">3<div class="ck"><svg width="50" height="50" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="tx">Ask for changes.<small>We adjust until it's right</small></div></div>
+  <div class="step" id="st4" style="top:1130px"><div class="num" style="border-color:var(--lime)">4<div class="ck"><svg width="50" height="50" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.7c0 5.4-7.5 10-7.5 10z" fill="#000"/></svg></div></div><div class="tx">Pay only when<br>you <em class="lime" style="font-size:78px">love it.</em></div></div>
+  <div class="c" id="s11z" style="top:1420px"><span class="pill" style="border-color:rgba(200,255,46,.6)"><span class="dot"></span>$0 upfront</span></div>
+ </div></section>
+
+ <!-- S12 REMOTE TEAM / SERVICES -->
+ <section class="scene" id="s12"><div class="drift">
+  <svg id="globe" style="position:absolute;left:340px;top:250px;width:400px;height:400px" viewBox="-110 -110 220 220"></svg>
+  <div class="c h2" id="s12a" style="top:690px;font-size:80px" data-split>A fully <span class="lime">remote team</span></div>
+  <div class="c label" id="s12b" style="top:800px;color:#c9ccd1">Specialized in</div>
+  <div class="svc" id="sv1" style="top:880px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M8 21h8M12 18v3"/></svg></div><div class="tt">Websites</div></div>
+  <div class="svc" id="sv2" style="top:1080px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div><div class="tt">Paid ads</div></div>
+  <div class="svc" id="sv3" style="top:1280px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.7c0 5.4-7.5 10-7.5 10z"/></svg></div><div class="tt">Social media</div></div>
+  <div class="c" id="s12c" style="top:1500px;font-size:84px;line-height:1"><em data-split>for small businesses.</em></div>
+ </div></section>
+
+ <!-- S13 ZERO RISK -->
+ <section class="scene" id="s13"><div class="drift">
+  <div class="c h1" id="s13a" style="top:640px;font-size:250px">ZERO</div>
+  <div class="c h1" id="s13b" style="top:850px;font-size:250px">RISK.</div>
+  <div class="c h1 lime glow" id="s13c" style="top:1100px;font-size:170px">REAL RESULTS.</div>
+ </div></section>
+
+ <!-- S14 CTA -->
+ <section class="scene" id="s14"><div class="drift">
+  <div id="logo14" style="position:absolute;left:190px;width:700px;top:330px">
+    <svg id="sym14" viewBox="392 370 290 138" style="display:block;width:280px;margin:0 auto 30px;overflow:visible"></svg>
+    <svg id="wm14" viewBox="196 544 688 110" style="display:block;width:700px;overflow:visible"></svg>
+    <svg id="tg14" viewBox="258 676 558 34" style="display:block;width:560px;margin:26px auto 0;overflow:visible"></svg>
+  </div>
+  <div class="c h2" id="s14a" style="top:840px;font-size:96px" data-split>Let's build</div>
+  <div class="c" id="s14b" style="top:935px;font-size:190px;line-height:1"><em class="lime glow" data-split>yours.</em></div>
+  <div class="c" id="s14btn" style="top:1210px"><span class="btn" id="btn"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>Send us a message today</span></div>
+  <div class="c label" id="s14c" style="top:1400px;color:#c9ccd1">Zero risk · Pay when you love it</div>
+ </div></section>
+
+ </div>
+ <div id="gbars"></div>
+ <div id="wipe"></div><div id="wipe2"></div>
+ <div id="flash"></div>
+ <canvas id="grain" width="540" height="960"></canvas>
+ <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DUR=57.6, SFX=[]; const hooks=[];
+const sfx=(t,type,g=1)=>SFX.push({t:+t.toFixed(3),type,g});
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>1-Math.pow(1-x,4);
+
+// ---------- split words
+function split(el){
+  const walk=node=>{[...node.childNodes].forEach(n=>{
+    if(n.nodeType===3){const parts=n.textContent.split(/(\s+)/);const frag=document.createDocumentFragment();
+      parts.forEach(p=>{if(!p)return; if(/^\s+$/.test(p)){frag.appendChild(document.createTextNode(' '));return}
+        const m=document.createElement('span');m.className='m';const w=document.createElement('span');w.className='w';w.textContent=p;m.appendChild(w);frag.appendChild(m)});
+      n.replaceWith(frag)} else if(n.nodeType===1) walk(n)})};
+  walk(el)}
+$$('[data-split]').forEach(split);
+
+// ---------- logo
+function fillLogo(sym,wm,tg){
+  $(sym).innerHTML=LOGO.symbol.map(d=>`<path fill="#fff" d="${d}"/>`).join('');
+  $(wm).innerHTML=LOGO.wordmark.map(d=>`<path class="L" fill="#fff" fill-rule="evenodd" d="${d}"/>`).join('');
+  $(tg).innerHTML=`<path fill="#fff" fill-rule="evenodd" d="${LOGO.tagline.join('')}"/>`;
+}
+fillLogo('#sym3','#wm3','#tg3'); fillLogo('#sym14','#wm14','#tg14');
+
+// ---------- rays
+{let h='';for(let i=0;i<24;i++){const a=i*15;h+=`<path d="M0 0 L${(Math.cos((a-2.2)*Math.PI/180)*150).toFixed(1)} ${(Math.sin((a-2.2)*Math.PI/180)*150).toFixed(1)} L${(Math.cos((a+2.2)*Math.PI/180)*150).toFixed(1)} ${(Math.sin((a+2.2)*Math.PI/180)*150).toFixed(1)}Z" fill="url(#rg)"/>`}
+ $('#rays').innerHTML=`<defs><radialGradient id="rg"><stop offset="0" stop-color="#C8FF2E" stop-opacity=".35"/><stop offset="1" stop-color="#C8FF2E" stop-opacity="0"/></radialGradient></defs><g id="raysg">${h}</g>`}
+
+// ---------- globe
+{let h='<circle r="100" fill="none" stroke="rgba(200,255,46,.5)" stroke-width="1.5"/>';
+ for(let i=1;i<6;i++){const ry=100*Math.cos(i*Math.PI/12*2-Math.PI/2);}
+ h+='<g id="gl" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.2">';
+ for(let i=0;i<6;i++)h+=`<ellipse class="mer" rx="${(100*Math.abs(Math.cos(i*Math.PI/6))).toFixed(1)}" ry="100"/>`;
+ for(let i=-2;i<=2;i++){const y=i*35;const r=Math.sqrt(100*100-y*y);h+=`<ellipse cx="0" cy="${y}" rx="${r.toFixed(1)}" ry="${(r*.18).toFixed(1)}"/>`}
+ h+='</g>';
+ const pins=[[-40,-30],[30,-50],[55,20],[-60,35],[5,55],[-15,-70],[75,-25]];
+ pins.forEach((p,i)=>h+=`<g class="pin" transform="translate(${p[0]} ${p[1]})"><circle r="7" fill="#C8FF2E"/><circle class="pr" r="7" fill="none" stroke="#C8FF2E" stroke-width="2"/></g>`);
+ $('#globe').innerHTML=h}
+
+// ---------- mini sites for the wall
+const PAL=[['#0F3D3E','#E2B04A'],['#1B263B','#F25F5C'],['#FF6B35','#1A1A2E'],['#2D6A4F','#FFD166'],['#3A0CA3','#4CC9F0'],['#111111','#C8FF2E'],['#8E3B46','#F4E3B2'],['#0077B6','#FFB703'],['#264653','#E76F51'],['#5F0F40','#FB8B24'],['#14213D','#FCA311'],['#E63946','#1D3557'],['#006D77','#FFDDD2'],['#6A4C93','#FFCA3A'],['#283618','#DDA15E']];
+function mini(i){const p=PAL[i%PAL.length];
+ return `<div class="nv"><div class="lg" style="background:${p[0]}"></div><div class="ln" style="background:${p[0]}"></div><div class="ln" style="background:${p[0]}"></div><div class="ln" style="background:${p[0]}"></div></div>
+ <div class="hero" style="background:linear-gradient(135deg,${p[0]},${p[0]}dd)"><div class="sh" style="background:${p[1]}"></div><div class="t1" style="width:${60+(i*13)%30}%"></div><div class="t2"></div><div class="t3"></div><div class="t3" style="width:50%"></div><div class="bt" style="background:${p[1]}"></div></div>
+ <div class="row"><div style="background:${p[1]}33"></div><div style="background:${p[0]}22"></div><div style="background:${p[1]}33"></div></div><div class="ft"></div><div class="ft" style="width:60%;margin-top:8px"></div>`}
+{const wall=$('#wall');let h='';let k=0;
+ for(let c=0;c<7;c++){h+=`<div class="col" style="position:absolute;left:${c*320}px;top:${c%2?-220:0}px;width:300px">`;
+  for(let r=0;r<9;r++){h+=`<div class="mini" style="position:relative;margin-bottom:24px">${mini(k++)}</div>`}
+  h+='</div>'}
+ wall.innerHTML=h}
+
+// ---------- showcase site
+function site(name,tag,acc,dark,head1,head2){return `
+ <div style="background:${dark};color:#fff;font-family:IT">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:26px 40px"><div style="font:800 26px IT;letter-spacing:-.02em"><span style="color:${acc}">▲</span> ${name}</div><div style="display:flex;gap:28px;font:500 17px IT;color:#bbb"><span>Services</span><span>Projects</span><span>Reviews</span><span style="background:${acc};color:#000;padding:8px 18px;border-radius:20px;font-weight:700">Free quote</span></div></div>
+  <div style="position:relative;height:420px;padding:50px 40px;overflow:hidden;background:radial-gradient(ellipse at 80% 30%,${acc}44,transparent 60%),linear-gradient(160deg,${dark},#000)">
+    <div style="font:600 16px IT;letter-spacing:.2em;color:${acc}">${tag}</div>
+    <div style="font:900 64px/0.95 IT;letter-spacing:-.04em;margin-top:18px;max-width:560px">${head1}<br><span style="font-family:IS;font-style:italic;font-weight:400;color:${acc}">${head2}</span></div>
+    <div style="font:400 19px IT;color:#bbb;margin-top:20px;max-width:440px">Trusted by homeowners across the state. Licensed, insured and on time — every time.</div>
+    <div style="display:flex;gap:14px;margin-top:28px"><span style="background:${acc};color:#000;padding:16px 28px;border-radius:30px;font:700 18px IT">Get a free quote →</span><span style="border:1.5px solid #555;padding:16px 28px;border-radius:30px;font:600 18px IT">Our work</span></div>
+    <div style="position:absolute;right:40px;top:70px;width:260px;height:300px;border-radius:26px;background:linear-gradient(160deg,${acc},${acc}55);transform:rotate(6deg);box-shadow:0 30px 60px rgba(0,0,0,.5)"><div style="position:absolute;left:24px;bottom:24px;right:24px;background:rgba(0,0,0,.75);border-radius:16px;padding:16px;font:700 15px IT"><span style="color:${acc}">★★★★★</span><br>4.9 from 200+ reviews</div></div>
+  </div>
+  <div style="display:flex;gap:18px;padding:36px 40px;background:#0b0b0c">${['Fast turnaround','Custom design','Built to convert'].map(x=>`<div style="flex:1;border:1px solid #2a2a2a;border-radius:18px;padding:22px"><div style="width:38px;height:38px;border-radius:10px;background:${acc}"></div><div style="font:700 19px IT;margin-top:14px">${x}</div><div style="height:7px;width:80%;background:#2a2a2a;border-radius:4px;margin-top:12px"></div><div style="height:7px;width:55%;background:#2a2a2a;border-radius:4px;margin-top:8px"></div></div>`).join('')}</div>
+  <div style="padding:40px;background:#f4f2ed;color:#111"><div style="font:900 40px IT;letter-spacing:-.03em">Recent projects</div><div style="display:flex;gap:16px;margin-top:20px">${[0,1,2].map(i=>`<div style="flex:1;height:200px;border-radius:16px;background:linear-gradient(135deg,${['#c9b79c','#8aa1b1','#9cae8f'][i]},#333)"></div>`).join('')}</div></div>
+ </div>`}
+$('#lapsite').innerHTML=site('SUMMIT ROOFING','ROOFING · DENVER, CO','#FFB547','#101418','Roofs built to','last a lifetime.');
+$('#phsite').innerHTML=`<div style="transform:scale(.3);transform-origin:0 0;width:900px">${site('SUMMIT ROOFING','ROOFING · DENVER, CO','#FFB547','#101418','Roofs built to','last a lifetime.')}</div>`;
+$('#yoursite').innerHTML=`<div style="transform:scale(.8889);transform-origin:0 0;width:900px">${site('YOUR BUSINESS','MADE FOR YOU · USA','#C8FF2E','#0c1210','Your business,','beautifully online.')}</div>`;
+
+// ---------- template grid
+{let h='';const cols=3,rows=5,W=280,H=380,gx=40,gy=40;const ox=(1080-(cols*W+(cols-1)*gx))/2, oy=300;
+ for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const i=r*cols+c;
+  h+=`<div class="tpl" id="tp${i}" style="left:${ox+c*(W+gx)}px;top:${oy+r*(H+gy)-200}px"><div class="a"></div><div class="b"></div><div class="c1"></div><div class="c2"></div><div class="tag">TEMPLATE #${String(1000+i*0).slice(1)}</div><div class="xmark" style="opacity:0"><svg viewBox="0 0 100 100"><path d="M20 20L80 80M80 20L20 80" stroke="#FF3B3B" stroke-width="12" stroke-linecap="round"/></svg></div></div>`}
+ $('#tgrid').innerHTML=h}
+
+// ---------- glitch bars
+{let h='';for(let i=0;i<14;i++)h+=`<div style="top:${Math.round(rnd()*1880)}px;height:${Math.round(6+rnd()*60)}px;opacity:${(.2+rnd()*.6).toFixed(2)};transform:translateX(${Math.round((rnd()-.5)*300)}px)"></div>`;$('#gbars').innerHTML=h}
+
+// ================= TIMELINE =================
+gsap.defaults({ease:'power3.out'});
+const tl=gsap.timeline({paused:true});
+gsap.set(['#wipe','#wipe2'],{xPercent:-120,skewX:-12});
+const show=(s,t)=>tl.set(s,{autoAlpha:1},t), hide=(s,t)=>tl.set(s,{autoAlpha:0},t);
+const W=s=>$$(s+' .w');
+function rise(s,t,st=.055,d=.6){tl.fromTo(W(s),{yPercent:115,rotate:6},{yPercent:0,rotate:0,duration:d,stagger:st,ease:'expo.out'},t);sfx(t,'tick',.5)}
+function slam(s,t,from=2.2,shake=1){tl.fromTo(s,{scale:from,autoAlpha:0,filter:'blur(24px)'},{scale:1,autoAlpha:1,filter:'blur(0px)',duration:.38,ease:'expo.out'},t);if(shake)camShake(t+.12,shake);sfx(t+.05,'hit',shake)}
+function camShake(t,k=1){tl.to('#cam',{keyframes:[{x:14*k,y:-10*k,duration:.04},{x:-12*k,y:8*k,duration:.04},{x:8*k,y:-5*k,duration:.04},{x:-4*k,y:3*k,duration:.04},{x:0,y:0,duration:.05}],ease:'none'},t)}
+function flash(t,a=.85){tl.fromTo('#flash',{opacity:a},{opacity:0,duration:.45,ease:'power2.out',immediateRender:false},t)}
+function drift(s,a,b,from=1,to=1.06){tl.fromTo(s+' .drift',{scale:from},{scale:to,duration:b-a,ease:'none'},a)}
+function fadeUp(s,t,d=.6,y=60){tl.fromTo(s,{autoAlpha:0,y},{autoAlpha:1,y:0,duration:d,ease:'expo.out'},t)}
+
+// transitions
+function trWhip(a,b,t,dir=1){
+  tl.to(a,{x:-760*dir,filter:'blur(36px)',duration:.26,ease:'power3.in'},t-.26); hide(a,t);
+  show(b,t); tl.fromTo(b,{x:760*dir,filter:'blur(36px)'},{x:0,filter:'blur(0px)',duration:.4,ease:'power3.out'},t); sfx(t-.3,'whoosh')}
+function trWhipV(a,b,t){
+  tl.to(a,{y:-900,filter:'blur(36px)',duration:.26,ease:'power3.in'},t-.26); hide(a,t);
+  show(b,t); tl.fromTo(b,{y:900,filter:'blur(36px)'},{y:0,filter:'blur(0px)',duration:.4,ease:'power3.out'},t); sfx(t-.3,'whoosh')}
+function trZoom(a,b,t){
+  tl.to(a,{scale:2.4,autoAlpha:0,filter:'blur(30px)',duration:.3,ease:'power3.in'},t-.3);
+  tl.set(a,{visibility:'hidden'},t);
+  tl.fromTo(b,{scale:.55,autoAlpha:0,filter:'blur(30px)'},{scale:1,autoAlpha:1,filter:'blur(0px)',duration:.45,ease:'expo.out'},t); sfx(t-.32,'zoom')}
+function trWipe(a,b,t,el='#wipe'){
+  tl.fromTo(el,{xPercent:-120},{xPercent:0,duration:.28,ease:'power3.in',immediateRender:false},t-.28); hide(a,t); show(b,t);
+  tl.to(el,{xPercent:120,duration:.38,ease:'power3.out'},t+.02); sfx(t-.3,'whoosh')}
+function trGlitch(a,b,t){
+  const steps=[[-30,8,'hue-rotate(80deg) saturate(3)'],[24,-6,'invert(1)'],[-12,4,'hue-rotate(-60deg) saturate(4)'],[40,-10,'none'],[-20,6,'invert(1)']];
+  steps.forEach((s,i)=>tl.set(a,{x:s[0],skewX:s[1],filter:s[2]},t-.17+i*.034));
+  tl.set('#gbars',{opacity:1},t-.17); tl.set('#gbars',{opacity:0},t+.12);
+  tl.set('#gbars div',{x:()=>Math.round((rnd()-.5)*400)},t-.05);
+  hide(a,t); show(b,t);
+  [[18,-4,'hue-rotate(60deg) saturate(3)'],[-10,3,'none'],[0,0,'none']].forEach((s,i)=>tl.set(b,{x:s[0],skewX:s[1],filter:s[2]},t+i*.034));
+  sfx(t-.17,'glitch')}
+
+// background motion (whole piece)
+tl.fromTo('#orb1',{x:0,y:0},{x:500,y:-300,duration:DUR,ease:'sine.inOut'},0);
+tl.fromTo('#orb2',{x:0,y:0},{x:-600,y:-500,duration:DUR,ease:'sine.inOut'},0);
+tl.fromTo('#grid',{y:0},{y:-900,duration:DUR,ease:'none'},0);
+
+// ---------- S1 HOOK 0 - 4.45
+show('#s1',0); drift('#s1',0,4.45,1,1.05);
+rise('#s1a',0.02,.07,.55);
+slam('#s1zero',1.12,2.8,1.4);
+tl.fromTo('#s1zero',{textShadow:'0 0 0px rgba(200,255,46,0)'},{textShadow:'0 0 90px rgba(200,255,46,.7)',duration:.5,yoyo:true,repeat:1},1.2);
+rise('#s1c',1.9,.06);
+rise('#s1d',2.6,.07);
+fadeUp('#s1bar',2.75,.4,40);
+tl.fromTo('#s1fill',{width:'0%'},{width:'100%',duration:1.0,ease:'power2.inOut'},2.95);
+hooks.push(t=>{const p=clamp((t-2.95)/1.0);const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;$('#s1pct').textContent=p>=1?'FINISHED ✓':Math.round(e*100)+'%'});
+sfx(3.95,'ding',.7);
+
+// ---------- S2 AGENCIES 4.45 - 8.45 (negative)
+trGlitch('#s1','#s2',4.45); drift('#s2',4.45,8.45,1.02,1.08);
+tl.fromTo('#stage',{filter:'saturate(1)'},{filter:'saturate(.65)',duration:.3},4.45);
+fadeUp('#s2l',4.5,.5,20);
+rise('#s2a',4.55,.06); rise('#s2b',5.35,.07);
+tl.fromTo('#inv',{y:900,rotate:8},{y:0,rotate:-3,duration:.8,ease:'expo.out'},5.0);
+tl.fromTo('#stamp',{scale:3.2,autoAlpha:0},{scale:1,autoAlpha:1,duration:.25,ease:'power4.in'},6.05); camShake(6.3,1.1); sfx(6.25,'stamp');
+rise('#s2c',6.6,.07); rise('#s2d',7.35,.06);
+tl.to('#inv',{y:40,rotate:-5,duration:2,ease:'sine.inOut'},6.4);
+
+// ---------- S3 BRAND 8.45 - 11.5
+sfx(7.75,'riser');
+flash(8.45,1); hide('#s2',8.45); show('#s3',8.45); tl.set('#stage',{filter:'saturate(1)'},8.45); sfx(8.45,'boom',1.2);
+drift('#s3',8.45,11.5,1,1.05);
+tl.fromTo('#rays',{opacity:0,rotate:0},{opacity:1,rotate:40,duration:3,ease:'none'},8.45);
+fadeUp('#s3l',8.5,.5,20);
+tl.fromTo('#sym3',{scale:.4,autoAlpha:0,filter:'blur(20px)',y:40},{scale:1,autoAlpha:1,filter:'blur(0px)',y:0,duration:.8,ease:'expo.out'},8.55);
+tl.fromTo('#wm3 .L',{yPercent:120,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.6,stagger:.05,ease:'expo.out'},8.8);
+tl.fromTo('#tg3',{autoAlpha:0,scaleX:1.4},{autoAlpha:1,scaleX:1,duration:.9,ease:'expo.out'},9.2);
+tl.to('#s3l',{autoAlpha:0,duration:.3},9.9);
+tl.to('#logo3',{y:-120,scale:.92,duration:.7,ease:'power3.inOut'},9.95);
+rise('#s3a',10.15,.07); rise('#s3b',10.5,.07);
+tl.to('#s3u path',{strokeDashoffset:0,duration:.5,ease:'power2.inOut'},10.75);
+
+// ---------- S4 YEARS 11.5 - 14.25
+trZoom('#s3','#s4',11.55); drift('#s4',11.55,14.25,1,1.05);
+rise('#s4a',11.65,.06);
+tl.to('#ringp',{strokeDashoffset:0,duration:1.6,ease:'power2.inOut'},11.9);
+hooks.push(t=>{const p=clamp((t-12.2)/1.1);$('#s4n').textContent=Math.round(eo(p)*4)});
+tl.fromTo('#s4plus',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(3)'},13.3); sfx(13.3,'hit',.7); camShake(13.35,.6);
+fadeUp('#s4y',13.4,.5,40);
+
+// ---------- S5 100+ 14.25 - 19.6
+trWhipV('#s4','#s5',14.25); drift('#s5',14.25,19.6,1.04,1);
+$$('#wall .col').forEach((c,i)=>tl.fromTo(c,{y:i%2?-300:0},{y:i%2?200:-500,duration:5.6,ease:'none'},14.0));
+tl.fromTo('#wall .mini',{autoAlpha:0,scale:.6},{autoAlpha:1,scale:1,duration:.5,stagger:{each:.012,from:'center',grid:'auto'},ease:'back.out(1.6)'},14.25);
+fadeUp('#s5l',14.4,.5,20);
+hooks.push(t=>{const p=clamp((t-15.0)/2.0);$('#s5n').textContent=Math.round(eo(p)*100)});
+tl.fromTo('#s5plus',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(3)'},17.0); sfx(17.0,'hit',.9); camShake(17.05,.8);
+hooks.push(t=>{if(t>15&&t<17){const k=Math.floor((t-15)*20);if(k!==hooks._k){hooks._k=k}}});
+rise('#s5a',16.5,.06);
+fadeUp('#s5us',17.95,.6,40);
+
+// ---------- S6 BETTER / PRO 19.6 - 25.1
+trWipe('#s5','#s6',19.65,'#wipe2'); drift('#s6',19.65,25.1,1,1.04);
+rise('#s6a',19.75,.06); rise('#s6b',20.45,.08);
+tl.to('#cline',{strokeDashoffset:0,duration:1.4,ease:'power2.inOut'},19.9);
+tl.to('#cclipr',{attr:{width:840},duration:1.4,ease:'power2.inOut'},19.9);
+tl.fromTo('#cdot',{attr:{r:0},opacity:1},{attr:{r:20},duration:.4,ease:'back.out(3)'},21.25);
+fadeUp('#s6lab',20.1,.5,20);
+// switch to part B
+tl.to('#s6A',{autoAlpha:0,y:-200,filter:'blur(20px)',duration:.35,ease:'power3.in'},21.4);
+tl.set('#s6B',{opacity:1},21.6);
+fadeUp('#s6l',21.65,.4,20); rise('#s6c',22.25,.05); rise('#s6d',23.0,.07);
+tl.fromTo('#lap',{rotateY:-35,rotateX:18,y:500,autoAlpha:0},{rotateY:-8,rotateX:6,y:0,autoAlpha:1,duration:1.1,ease:'expo.out'},21.75); sfx(21.7,'whoosh',.7);
+tl.to('#lap',{rotateY:6,rotateX:2,duration:2.4,ease:'sine.inOut'},22.85);
+tl.fromTo('#phone',{x:400,rotate:12,autoAlpha:0},{x:0,rotate:-4,autoAlpha:1,duration:1,ease:'expo.out'},22.35); sfx(22.3,'whoosh',.5);
+tl.fromTo('#lapsite',{y:0},{y:-560,duration:2.5,ease:'power2.inOut'},22.6);
+tl.fromTo('#phsite',{y:0},{y:-180,duration:2.4,ease:'power2.inOut'},22.8);
+
+// ---------- S7 APART 25.1 - 27.15
+flash(25.1,.9); hide('#s6',25.1); show('#s7',25.1); drift('#s7',25.1,27.15,1.05,1); sfx(25.1,'boom',.8);
+rise('#s7a',25.15,.05);
+slam('#s7b',25.55,1.8,.7);
+slam('#s7c',26.05,2.4,1.1);
+tl.to('#s7sets',{x:-60,duration:.9,ease:'expo.out'},26.15); tl.to('#s7us',{x:60,duration:.9,ease:'expo.out'},26.15);
+tl.fromTo('#s7c',{letterSpacing:'-0.05em'},{letterSpacing:'0.12em',duration:1,ease:'expo.out'},26.15);
+
+// ---------- S8 REAL UNIQUE PEOPLE 27.15 - 31.45
+trWhip('#s7','#s8',27.15); drift('#s8',27.15,31.45,1,1.05);
+tl.fromTo('#wire [pathLength]',{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:2.8,stagger:.25,ease:'power1.inOut'},27.3);
+tl.fromTo('#cursor',{x:0,y:0},{keyframes:[{x:-420,y:-500,duration:1.2},{x:-150,y:-850,duration:1},{x:-520,y:-60,duration:1.1},{x:-80,y:-300,duration:.9}],ease:'sine.inOut'},27.3);
+rise('#s8a',27.3,.05);
+slam('#s8r',28.5,2,.8);
+tl.to('#s8r',{opacity:.35,duration:.3},29.3);
+slam('#s8u',29.35,2,.8);
+tl.to('#s8u',{opacity:.35,duration:.3},30.0);
+tl.fromTo('#s8p',{autoAlpha:0,y:80,filter:'blur(20px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.6,ease:'expo.out'},30.05); sfx(30.05,'shine',.8);
+
+// ---------- S9/S10 TEMPLATES -> YOURS 31.45 - 38.7
+trGlitch('#s8','#s9',31.48); drift('#s9',31.48,38.7,1,1.03);
+tl.set('#s10txt',{autoAlpha:0},0);
+tl.fromTo('.tpl',{autoAlpha:0,y:120},{autoAlpha:1,y:0,duration:.5,stagger:{each:.03,from:'start'},ease:'expo.out'},31.5);
+tl.fromTo('#s9a',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.4},31.55);
+tl.to('#s9a .strike',{scaleX:1,duration:.3,ease:'power2.inOut'},32.55); sfx(32.55,'swipe',.8);
+tl.fromTo('#s9b',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.4},33.0);
+tl.to('#s9b .strike',{scaleX:1,duration:.3,ease:'power2.inOut'},33.75); sfx(33.75,'swipe',.8);
+rise('#s9c',34.3,.06);
+tl.fromTo('.tpl .xmark',{autoAlpha:0,scale:1.8},{autoAlpha:1,scale:1,duration:.2,stagger:{each:.05,from:'random'},ease:'power4.in'},34.5);
+tl.to('.tpl',{filter:'grayscale(1) brightness(.6)',duration:.4},34.5);
+for(let i=0;i<6;i++)sfx(34.55+i*.12,'tick',.35);
+// transform: cards fall, yours rises
+tl.to('#s9txt',{autoAlpha:0,y:-60,duration:.35,ease:'power3.in'},35.7);
+tl.to('.tpl',{y:()=>1400+rnd()*400,rotate:()=>(rnd()-.5)*50,duration:.9,stagger:{each:.025,from:'random'},ease:'power3.in'},35.75); sfx(35.75,'whoosh',.8);
+tl.set('#s10txt',{autoAlpha:1},35.95);
+rise('#s10a',35.95,.06); rise('#s10b',36.6,.08);
+tl.fromTo('#yours',{autoAlpha:0,scale:.5,rotate:-8,y:300},{autoAlpha:1,scale:1,rotate:0,y:0,duration:1,ease:'expo.out'},36.1); sfx(36.1,'shine');
+tl.fromTo('#yoursite',{y:0},{y:-260,duration:2.2,ease:'power2.inOut'},36.9);
+tl.fromTo('#yours',{boxShadow:'0 0 0 0 rgba(200,255,46,0)'},{boxShadow:'0 0 0 6px rgba(200,255,46,.9), 0 40px 140px rgba(200,255,46,.35)',duration:.6},36.7);
+
+// ---------- S11 PROCESS 38.7 - 45.65
+trWipe('#s9','#s11',38.75); drift('#s11',38.75,45.65,1,1.04);
+tl.fromTo('#s11l',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.45,ease:'back.out(2.5)'},38.85); sfx(38.85,'pop');
+const stepT=[39.75,41.2,42.05,43.15];
+stepT.forEach((t,i)=>{const s='#st'+(i+1);
+  tl.fromTo(s,{autoAlpha:0,x:120},{autoAlpha:1,x:0,duration:.55,ease:'expo.out'},t-.08);
+  tl.fromTo(s+' .ck',{opacity:0,scale:.4},{opacity:1,scale:1,duration:.35,ease:'back.out(3)'},t+.45); sfx(t+.45,'pop',.7);
+  tl.to('#s11line',{scaleY:(i+1)/4,duration:.5,ease:'power2.inOut'},t);
+  if(i<3) tl.to(s+' .tx',{opacity:.55,duration:.4},stepT[i+1]-.05);
+});
+tl.fromTo('#st4 .tx',{scale:1},{scale:1.08,transformOrigin:'left center',duration:.5,ease:'back.out(2)'},43.6);
+camShake(43.65,.5); sfx(43.65,'hit',.7);
+tl.fromTo('#s11z',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.5,ease:'expo.out'},44.3);
+
+// ---------- S12 TEAM 45.65 - 51.45
+trZoom('#s11','#s12',45.75); drift('#s12',45.75,51.45,1,1.04);
+tl.fromTo('#globe',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.7,ease:'back.out(1.7)'},45.85);
+tl.fromTo('#globe .pin',{scale:0},{scale:1,duration:.35,stagger:.12,ease:'back.out(3)'},46.3);
+tl.fromTo('#globe .pr',{attr:{r:7},opacity:1},{attr:{r:26},opacity:0,duration:1,stagger:{each:.12,repeat:4},ease:'power1.out'},46.4);
+hooks.push(t=>{const a=(t-45)*0.9;$$('#globe .mer').forEach((e,i)=>e.setAttribute('rx',(100*Math.abs(Math.cos(i*Math.PI/6+a))).toFixed(1)))});
+rise('#s12a',46.0,.07);
+fadeUp('#s12b',47.45,.4,20);
+[['#sv1',48.25],['#sv2',48.95],['#sv3',49.55]].forEach(([s,t])=>{tl.fromTo(s,{autoAlpha:0,x:-200,scale:.9},{autoAlpha:1,x:0,scale:1,duration:.55,ease:'expo.out'},t-.05);tl.fromTo(s+' .ic',{rotate:-90,scale:0},{rotate:0,scale:1,duration:.5,ease:'back.out(2.5)'},t);sfx(t,'pop',.8)});
+rise('#s12c',50.2,.07);
+
+// ---------- S13 ZERO RISK 51.45 - 53.7
+flash(51.5,.9); hide('#s12',51.5); show('#s13',51.5); drift('#s13',51.5,53.75,1.06,1);
+slam('#s13a',51.55,2.4,1.2); slam('#s13b',51.85,2.4,1);
+slam('#s13c',52.6,2.6,1.3);
+tl.to(['#s13a','#s13b'],{opacity:.4,duration:.3},52.6);
+
+// ---------- S14 CTA 53.75 - end
+trZoom('#s13','#s14',53.8); drift('#s14',53.8,DUR,1,1.03);
+tl.fromTo('#sym14',{scale:.5,autoAlpha:0,filter:'blur(14px)'},{scale:1,autoAlpha:1,filter:'blur(0px)',duration:.7,ease:'expo.out'},53.85);
+tl.fromTo('#wm14 .L',{yPercent:120,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.5,stagger:.04,ease:'expo.out'},54.0);
+tl.fromTo('#tg14',{autoAlpha:0,scaleX:1.3},{autoAlpha:1,scaleX:1,duration:.7,ease:'expo.out'},54.3);
+tl.fromTo('#s14btn',{autoAlpha:0,y:80,scale:.8},{autoAlpha:1,y:0,scale:1,duration:.6,ease:'back.out(2)'},53.95); sfx(53.95,'pop');
+rise('#s14a',55.15,.06); rise('#s14b',55.55,.08); sfx(55.55,'shine',.9);
+tl.fromTo('#btn',{boxShadow:'0 0 0 0px rgba(200,255,46,.55), 0 30px 80px rgba(200,255,46,.25)'},{boxShadow:'0 0 0 34px rgba(200,255,46,0), 0 30px 80px rgba(200,255,46,.25)',duration:1,repeat:2,ease:'power1.out'},54.6);
+tl.fromTo('#btn',{scale:1},{scale:1.05,duration:.5,yoyo:true,repeat:5,ease:'sine.inOut'},54.6);
+fadeUp('#s14c',56.0,.6,30);
+tl.set({}, {}, DUR);
+
+// ---------- grain
+const g=$('#grain').getContext('2d'); const gi=g.createImageData(540,960);
+function grain(f){let s=(f*9301+49297)%233280||1;const d=gi.data;for(let i=0;i<d.length;i+=4){s=(s*16807)%2147483647;const v=s&255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(gi,0,0)}
+
+window.SFX=SFX; window.DUR=DUR;
+window.seek=(t,f)=>{tl.seek(t,false);hooks.forEach(h=>h(t));grain(f)};
+window.ready=document.fonts.ready.then(()=>true);
+</script>
+</body></html>
