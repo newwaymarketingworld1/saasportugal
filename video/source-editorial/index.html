@@ -1,0 +1,449 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:G;font-weight:400;src:url(node_modules/@fontsource/geist-sans/files/geist-sans-latin-400-normal.woff2)}
+@font-face{font-family:G;font-weight:500;src:url(node_modules/@fontsource/geist-sans/files/geist-sans-latin-500-normal.woff2)}
+@font-face{font-family:G;font-weight:600;src:url(node_modules/@fontsource/geist-sans/files/geist-sans-latin-600-normal.woff2)}
+@font-face{font-family:G;font-weight:700;src:url(node_modules/@fontsource/geist-sans/files/geist-sans-latin-700-normal.woff2)}
+@font-face{font-family:G;font-weight:800;src:url(node_modules/@fontsource/geist-sans/files/geist-sans-latin-800-normal.woff2)}
+@font-face{font-family:S;font-style:italic;src:url(node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2)}
+:root{--p:#F3F1EB;--k:#0B0B0B;--y:#FFC400;--mu:#6F6C65;--ln:rgba(11,11,11,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--p);color:var(--k);font-family:G,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--p)}
+#cam{position:absolute;inset:0}
+.scene{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.paper{background:radial-gradient(ellipse 90% 70% at 50% 40%,#F8F7F2,#ECE9E1)}
+.dark{background:radial-gradient(ellipse 90% 70% at 50% 40%,#151515,#060606);color:#F6F5F1}
+.yel{background:radial-gradient(ellipse 90% 70% at 50% 40%,#FFCF2E,#F5B900);color:#0B0B0B}
+.drift{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center}
+.m{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .05em .12em;margin:0 -.05em -.12em}
+.w{display:inline-block}
+.h{font-weight:600;letter-spacing:-.05em;line-height:.98}
+.hb{font-weight:800;letter-spacing:-.06em;line-height:.9}
+em{font-family:S;font-style:italic;font-weight:400;letter-spacing:-.01em}
+.lab{font-weight:600;font-size:24px;letter-spacing:.34em;text-transform:uppercase;color:var(--mu)}
+.dark .lab{color:#8f8f8a}
+.mk{position:relative;display:inline-block;z-index:0}
+.mk>.hl{position:absolute;left:-.08em;right:-.08em;top:.12em;bottom:.02em;background:var(--y);z-index:-1;transform:scaleX(0);transform-origin:left;border-radius:.08em}
+.rule{position:absolute;height:2px;background:var(--k);transform-origin:left}
+.card{position:absolute;border-radius:30px;background:#fff;box-shadow:0 2px 0 rgba(0,0,0,.03),0 40px 90px rgba(40,32,10,.16),0 10px 24px rgba(40,32,10,.08);overflow:hidden}
+.chip{display:inline-flex;align-items:center;gap:14px;padding:16px 28px;border-radius:999px;font-weight:600;font-size:28px;letter-spacing:-.01em}
+/* fear deck */
+.fear{position:absolute;left:110px;width:860px;top:620px;height:600px;padding:56px 60px;display:flex;flex-direction:column;justify-content:space-between}
+.fear .fn{font:600 24px G;letter-spacing:.3em;color:var(--mu)}
+.fear .ft{font:600 96px/0.95 G;letter-spacing:-.05em}
+.fear .vis{position:absolute;right:56px;top:56px}
+/* solution list */
+.sol{position:absolute;left:120px;right:100px;height:150px;display:flex;align-items:center;gap:40px;font:600 88px G;letter-spacing:-.05em}
+.sol i{flex:none;width:104px;height:104px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center}
+.sol i svg{width:56px;height:56px}
+/* video card */
+.vc{position:absolute;left:60px;width:960px;border-radius:30px;background:#fff;overflow:hidden;box-shadow:0 50px 120px rgba(40,32,10,.22),0 12px 30px rgba(40,32,10,.1)}
+.vc .bar{height:54px;display:flex;align-items:center;gap:11px;padding:0 22px;background:#F1EFEA;border-bottom:1px solid rgba(0,0,0,.06)}
+.vc .bar i{width:13px;height:13px;border-radius:50%;background:#D6D3CC}
+.vc .bar b{flex:1;height:28px;margin:0 70px;border-radius:14px;background:#E5E2DB}
+.vc .scr{position:relative;width:960px;height:542px;background:#000}
+.vc .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.dark .vc{box-shadow:0 50px 140px rgba(0,0,0,.6)}
+.tag{display:inline-flex;align-items:center;gap:12px;font:600 24px G;letter-spacing:.06em;color:var(--mu)}
+.tag b{width:12px;height:12px;border-radius:50%;background:var(--y)}
+.pin{position:absolute;display:flex;align-items:center;gap:12px;background:#0B0B0B;color:#fff;font:500 26px G;padding:14px 22px;border-radius:18px;box-shadow:0 20px 40px rgba(0,0,0,.25)}
+.pin .dt{width:30px;height:30px;border-radius:50%;background:var(--y);color:#000;font:700 18px G;display:flex;align-items:center;justify-content:center}
+.toast{position:absolute;left:150px;right:150px;height:120px;border-radius:28px;background:rgba(255,255,255,.96);box-shadow:0 30px 70px rgba(0,0,0,.22);display:flex;align-items:center;gap:22px;padding:0 28px}
+.toast .ic{width:72px;height:72px;border-radius:18px;background:var(--y);display:flex;align-items:center;justify-content:center;flex:none}
+.toast .tx{flex:1}.toast .tx b{display:block;font:600 30px G;letter-spacing:-.02em}.toast .tx span{font:400 24px G;color:var(--mu)}
+.toast .tm{font:500 22px G;color:var(--mu)}
+.steps{position:absolute;left:70px;right:70px;top:300px;height:70px;display:flex;gap:12px}
+.steps div{flex:1;border-radius:999px;background:rgba(11,11,11,.06);display:flex;align-items:center;justify-content:center;font:600 24px G;color:var(--mu);position:relative;overflow:hidden}
+.steps div i{position:absolute;inset:0;background:var(--k);transform:scaleX(0);transform-origin:left}
+.steps div span{position:relative}
+.pc{position:absolute;width:440px;height:600px;border-radius:30px;overflow:hidden;box-shadow:0 40px 100px rgba(40,32,10,.25)}
+.pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pc .pn{position:absolute;left:22px;right:22px;bottom:22px;background:rgba(255,255,255,.94);border-radius:20px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+.pc .pn b{font:600 40px G;letter-spacing:-.04em}.pc .pn span{font:600 18px G;letter-spacing:.24em;color:var(--mu)}
+.tp{position:absolute;width:290px;height:230px;border-radius:18px;background:#fff;border:1.5px solid rgba(0,0,0,.08);box-shadow:0 14px 30px rgba(0,0,0,.06);padding:18px}
+.tp .a{height:14px;width:55%;border-radius:6px;background:#E6E3DC}.tp .b{height:96px;border-radius:10px;background:#EEEBE5;margin-top:14px}.tp .cc{height:10px;width:80%;border-radius:5px;background:#E6E3DC;margin-top:14px}
+.tp .lb{position:absolute;right:14px;bottom:12px;font:600 13px G;letter-spacing:.2em;color:#B5B1A8}
+.btn{display:inline-flex;align-items:center;gap:24px;padding:40px 64px;border-radius:999px;background:#0B0B0B;color:#fff;font:600 46px G;letter-spacing:-.03em;box-shadow:0 30px 70px rgba(0,0,0,.25)}
+.btn .ar{width:62px;height:62px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center}
+.av{width:70px;height:70px;border-radius:50%;object-fit:cover;border:4px solid #F3F1EB}
+/* overlays */
+#wipe{position:absolute;inset:0;pointer-events:none}
+#wipe i{position:absolute;left:-10%;right:-10%;height:34%;transform:translateX(-120%)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.035;mix-blend-mode:multiply}
+</style></head>
+<body>
+<div id="stage"><div id="cam">
+
+<!-- S1 -->
+<section class="scene paper" id="s1"><div class="drift">
+ <div class="c lab" id="s1l" style="top:690px">The truth is</div>
+ <div class="c h" id="s1a" style="top:760px;font-size:90px;white-space:nowrap" data-split>What business owners</div>
+ <div class="c" id="s1b" style="top:870px;font-size:112px"><span class="h" data-split><span class="mk"><i class="hl"></i>fear</span> about</span></div>
+ <div class="c" id="s1c" style="top:985px;font-size:150px;line-height:1"><em data-split>websites.</em></div>
+ <div class="rule" id="s1r" style="left:340px;width:400px;top:1180px;transform:scaleX(0)"></div>
+</div></section>
+
+<!-- S2 FEARS -->
+<section class="scene paper" id="s2"><div class="drift">
+ <div class="c lab" id="s2l" style="top:420px">Their biggest fears</div>
+ <div class="c" id="s2n" style="top:460px"><span class="hb" style="font-size:110px"><span id="fearn">01</span><span style="color:#C9C5BC">/04</span></span></div>
+ <div class="card fear" id="f1"><div class="fn">FEAR 01</div><div class="ft">Getting<br><em>ghosted.</em></div>
+  <div class="vis"><div style="background:#F1EFEA;border-radius:26px;padding:20px 26px;font:500 26px G;width:330px">Is my site ready?<div style="font:500 19px G;color:#9a968d;margin-top:10px;text-align:right">Seen · 3 weeks ago</div></div></div></div>
+ <div class="card fear" id="f2"><div class="fn">FEAR 02</div><div class="ft">Paying<br><em>forever.</em></div>
+  <div class="vis" style="text-align:right"><div class="hb" style="font-size:96px">$299</div><div style="font:500 28px G;color:#9a968d">/month · forever ∞</div></div></div>
+ <div class="card fear" id="f3"><div class="fn">FEAR 03</div><div class="ft">Paying<br><em>too much.</em></div>
+  <div class="vis" style="text-align:right"><div style="font:500 24px G;color:#9a968d;letter-spacing:.2em">QUOTE</div><div class="hb" style="font-size:100px">$12,000</div></div></div>
+ <div class="card fear" id="f4"><div class="fn">FEAR 04</div><div class="ft">Getting an<br><em>AI template.</em></div>
+  <div class="vis"><div style="width:250px;height:190px;border-radius:18px;background:#F1EFEA;padding:16px"><div style="height:12px;width:50%;background:#DDD9D1;border-radius:6px"></div><div style="height:80px;background:#E6E2DA;border-radius:10px;margin-top:12px"></div><div style="font:600 15px G;letter-spacing:.14em;color:#AAA59B;margin-top:16px">TEMPLATE_V3.AI</div></div></div></div>
+</div></section>
+
+<!-- S3 WHAT WE DO -->
+<section class="scene dark" id="s3"><div class="drift">
+ <div class="c lab" id="s3l" style="top:420px">So here's</div>
+ <div class="c" id="s3a" style="top:470px;font-size:150px;line-height:1"><span class="h" data-split>What we</span> <em style="color:var(--y)" data-split>do.</em></div>
+ <div class="sol" id="o1" style="top:760px"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0B0B0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Build first.</div>
+ <div class="sol" id="o2" style="top:930px"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0B0B0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Charge once.</div>
+ <div class="sol" id="o3" style="top:1100px"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0B0B0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Keep it affordable.</div>
+ <div class="sol" id="o4" style="top:1270px"><i><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0B0B0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>100% <em style="color:var(--y);font-size:104px">human.</em></span></div>
+</div></section>
+
+<!-- S4 HI + FOUNDERS -->
+<section class="scene paper" id="s4"><div class="drift">
+ <div class="c" id="s4hi" style="top:760px;font-size:300px;line-height:1"><em>Hi.</em></div>
+ <div id="logo4" style="position:absolute;left:150px;width:780px;top:700px">
+  <svg id="sym4" viewBox="392 370 290 138" style="display:block;width:300px;margin:0 auto 34px;overflow:visible"></svg>
+  <svg id="wm4" viewBox="196 544 688 110" style="display:block;width:780px;overflow:visible"></svg>
+  <svg id="tg4" viewBox="258 676 558 34" style="display:block;width:625px;margin:28px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="c lab" id="s4l" style="top:560px">Founded by</div>
+ <div class="pc" id="pedro" style="left:80px;top:640px"><img src="pedro.jpg" style="object-position:52% 32%"><div class="pn"><b>Pedro</b><span>CO-FOUNDER</span></div></div>
+ <div class="pc" id="gus" style="left:560px;top:700px"><img src="gustavo.jpg" style="object-position:45% 30%"><div class="pn"><b>Gustavo</b><span>CO-FOUNDER</span></div></div>
+</div></section>
+
+<!-- S5 4 YEARS / SMALL BIZ / 100+ -->
+<section class="scene paper" id="s5"><div class="drift">
+ <div id="s5A">
+  <div class="c" id="s5y" style="top:330px"><span class="hb" style="font-size:300px" id="s5yn">4</span><span class="h" style="font-size:110px;margin-left:16px" data-split>years</span></div>
+  <div class="c h" id="s5a" style="top:640px;font-size:68px" data-split>building websites for</div>
+  <div class="c" id="s5b" style="top:720px;font-size:120px;line-height:1"><em data-split>small businesses.</em></div>
+  <div class="vc" id="vcA" style="top:900px"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="scr"><img class="vf" id="vA"></div></div>
+  <div class="c" id="tagA" style="top:1520px"><span class="tag"><b></b>REAL CLIENT · HOME REMODELING</span></div>
+ </div>
+ <div id="s5B" style="opacity:0">
+  <div class="c lab" id="s5l" style="top:330px">Delivered more than</div>
+  <div class="c" style="top:370px"><span class="hb" id="s5n" style="font-size:300px">0</span><span class="hb" id="s5p" style="font-size:220px;color:var(--y);-webkit-text-stroke:3px #0B0B0B">+</span></div>
+  <div class="c h" id="s5w" style="top:680px;font-size:78px" data-split>websites</div>
+  <svg id="usmap" style="position:absolute;left:40px;top:790px;width:1000px;height:640px;opacity:0" viewBox="0 0 1000 640"></svg>
+  <div class="c" id="s5us" style="top:1440px;font-size:84px;line-height:1"><em>across the</em> <span class="h" style="font-size:72px"><span class="mk" id="usmk"><i class="hl"></i>United States</span></span></div>
+ </div>
+</div></section>
+
+<!-- S6 HOW IT WORKS -->
+<section class="scene paper" id="s6"><div class="drift">
+ <div class="steps" id="steps"><div><i></i><span>1 · Build</span></div><div><i></i><span>2 · Review</span></div><div><i></i><span>3 · Changes</span></div><div><i></i><span>4 · Pay</span></div></div>
+ <div class="c lab" id="s6l" style="top:440px">Here's how it works</div>
+ <div id="s6txt" style="position:absolute;left:0;right:0;top:480px;height:300px">
+  <div class="c st" id="t1" style="top:0"><div class="h" style="font-size:88px">We build it <span class="mk"><i class="hl"></i>first.</span></div><div class="h" style="font-size:44px;color:var(--mu);margin-top:18px">Before you pay anything.</div></div>
+  <div class="c st" id="t2" style="top:0"><div class="h" style="font-size:88px">You <span class="mk"><i class="hl"></i>review</span> it.</div><div class="h" style="font-size:44px;color:var(--mu);margin-top:18px">Every page, every detail.</div></div>
+  <div class="c st" id="t3" style="top:0"><div class="h" style="font-size:88px">Ask for <span class="mk"><i class="hl"></i>any changes.</span></div><div class="h" style="font-size:44px;color:var(--mu);margin-top:18px">As many as you want.</div></div>
+  <div class="c st" id="t4" style="top:0"><div class="h" style="font-size:88px">Love it? <em style="font-size:104px">Then</em> you pay.</div><div class="h" style="font-size:44px;color:var(--mu);margin-top:18px"><span class="mk"><i class="hl"></i>One time.</span></div></div>
+ </div>
+ <div id="vwrapB" style="position:absolute;left:0;right:0;top:800px;height:700px;perspective:2000px">
+  <div class="vc" id="vcB" style="top:0"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="scr"><img class="vf" id="vB"></div></div>
+  <div class="pin" id="pn1" style="left:120px;top:150px"><span class="dt">1</span>Make the logo bigger</div>
+  <div class="pin" id="pn2" style="left:470px;top:330px"><span class="dt">2</span>Swap this photo</div>
+  <div class="pin" id="pn3" style="left:200px;top:470px"><span class="dt">3</span>New button color</div>
+  <div id="love" style="position:absolute;left:0;right:0;top:250px;text-align:center"><span class="chip" style="background:var(--y);font-size:34px;padding:22px 36px;box-shadow:0 20px 50px rgba(0,0,0,.2)"><svg width="36" height="36" viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.7c0 5.4-7.5 10-7.5 10z" fill="#0B0B0B"/></svg>Approved — I love it</span></div>
+ </div>
+ <div class="c" id="tagB" style="top:1430px"><span class="tag"><b></b>REAL CLIENT · ALPHA VERTICAL</span></div>
+</div></section>
+
+<!-- S7 NO FEES -->
+<section class="scene dark" id="s7"><div class="drift">
+ <div class="c" id="s7a" style="top:600px"><span class="hb nl" style="font-size:120px">No monthly fees.<i class="sk"></i></span></div>
+ <div class="c" id="s7b" style="top:780px"><span class="hb nl" style="font-size:120px">No hidden costs.<i class="sk"></i></span></div>
+ <div class="c" id="s7c" style="top:960px"><span class="hb nl" style="font-size:120px">No disappearing.<i class="sk"></i></span></div>
+ <div class="c h" id="s7d" style="top:1160px;font-size:52px;color:#8f8f8a" data-split>Not even after the job is done.</div>
+</div></section>
+
+<!-- S8 NOT AI / SCRATCH / CUSTOMERS -->
+<section class="scene paper" id="s8"><div class="drift">
+ <div id="s8A">
+  <div class="c h" id="s8a" style="top:330px;font-size:84px" data-split>Your website won't look like</div>
+  <div class="c" id="s8b" style="top:420px;font-size:130px;line-height:1"><span class="h" data-split><span class="mk"><i class="hl"></i>AI</span></span> <em data-split>or a template.</em></div>
+  <div id="tgrid" style="position:absolute;left:0;right:0;top:640px;height:900px"></div>
+ </div>
+ <div id="s8B" style="opacity:0">
+  <div class="c h" id="s8c" style="top:330px;font-size:84px" data-split>Designed from scratch</div>
+  <div class="c" id="s8d" style="top:420px;font-size:130px;line-height:1"><em data-split>by real people.</em></div>
+  <svg id="sketch" style="position:absolute;left:60px;top:700px;width:960px;height:600px" viewBox="0 0 960 600" fill="none" stroke="#0B0B0B" stroke-width="3" stroke-linecap="round">
+   <rect pathLength="1" x="4" y="4" width="952" height="592" rx="28"/><path pathLength="1" d="M40 60 H220 M640 60 H920"/><path pathLength="1" d="M40 160 H560 M40 230 H460"/><rect pathLength="1" x="40" y="300" width="180" height="56" rx="28"/><rect pathLength="1" x="620" y="130" width="300" height="300" rx="20"/><rect pathLength="1" x="40" y="440" width="270" height="120" rx="16"/><rect pathLength="1" x="345" y="440" width="270" height="120" rx="16"/>
+  </svg>
+  <div class="vc" id="vcC" style="top:640px;opacity:0"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="scr"><img class="vf" id="vC"></div></div>
+  <div class="c" id="s8av" style="top:1300px"><span style="display:inline-flex;align-items:center;gap:18px"><span style="display:inline-flex"><img src="pedro.jpg" class="av" style="object-position:50% 30%"><img src="gustavo.jpg" class="av" style="margin-left:-20px;object-position:45% 28%"></span><span style="font:600 30px G;color:var(--mu)">Designed by our team. Not a machine.</span></span></div>
+ </div>
+ <div id="s8C" style="opacity:0">
+  <div class="c h" id="s8e" style="top:330px;font-size:84px" data-split>Made to fit your business</div>
+  <div class="c" id="s8f" style="top:420px;font-size:120px;line-height:1"><em data-split>and bring you</em> <span class="h" data-split><span class="mk"><i class="hl"></i>customers.</span></span></div>
+  <div class="vc" id="vcD" style="top:700px"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="scr"><img class="vf" id="vD"></div></div>
+  <div class="toast" id="ld1" style="top:1130px"><div class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#0B0B0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.2L4 17.2z"/></svg></div><div class="tx"><b>New quote request</b><span>"Can you start next week?"</span></div><div class="tm">now</div></div>
+  <div class="toast" id="ld2" style="top:1270px"><div class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#0B0B0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></div><div class="tx"><b>Incoming call</b><span>From your website</span></div><div class="tm">2m</div></div>
+  <div class="toast" id="ld3" style="top:1410px"><div class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#0B0B0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></div><div class="tx"><b>New lead</b><span>Contact form submitted</span></div><div class="tm">5m</div></div>
+ </div>
+</div></section>
+
+<!-- S9 BURNED / SIGN -->
+<section class="scene dark" id="s9"><div class="drift">
+ <div id="s9A">
+  <div class="c h" id="s9a" style="top:700px;font-size:80px;color:#cfcfca" data-split>Been putting it off,</div>
+  <div class="c" id="s9b" style="top:800px;font-size:140px;line-height:1"><em data-split>afraid of getting burned?</em></div>
+ </div>
+ <div id="sign" style="position:absolute;left:140px;width:800px;top:640px;height:560px;transform-origin:50% -200px">
+  <svg style="position:absolute;left:0;top:-260px;width:800px;height:270px" viewBox="0 0 800 270"><path d="M240 0 L240 270 M560 0 L560 270" stroke="#555" stroke-width="5"/></svg>
+  <div style="position:absolute;inset:0;border-radius:34px;background:var(--y);box-shadow:0 0 120px rgba(255,196,0,.35),0 50px 100px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#0B0B0B">
+   <div style="font:600 30px G;letter-spacing:.34em">THIS IS</div>
+   <div style="font-size:180px;line-height:1;white-space:nowrap"><em>your sign.</em></div>
+  </div>
+ </div>
+</div></section>
+
+<!-- S10 RISK -->
+<section class="scene yel" id="s10"><div class="drift">
+ <div class="c" id="s10a" style="top:520px"><span class="hb" style="font-size:170px;line-height:.92" data-split>We take<br>the risk.</span></div>
+ <div class="c h" id="s10b" style="top:900px;font-size:76px" data-split>You only pay when</div>
+ <div class="c" id="s10c" style="top:990px;font-size:150px;line-height:1"><em data-split>you're happy.</em></div>
+</div></section>
+
+<!-- S11 CTA -->
+<section class="scene paper" id="s11"><div class="drift">
+ <div id="logo11" style="position:absolute;left:240px;width:600px;top:330px">
+  <svg id="sym11" viewBox="392 370 290 138" style="display:block;width:230px;margin:0 auto 26px;overflow:visible"></svg>
+  <svg id="wm11" viewBox="196 544 688 110" style="display:block;width:600px;overflow:visible"></svg>
+  <svg id="tg11" viewBox="258 676 558 34" style="display:block;width:480px;margin:22px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="c h" id="s11a" style="top:760px;font-size:92px" data-split>Send us a message today</div>
+ <div class="c" id="s11b" style="top:860px;font-size:140px;line-height:1"><em data-split>and let's build</em></div>
+ <div class="c" id="s11c" style="top:1000px;font-size:130px;line-height:1"><span class="h" data-split><span class="mk"><i class="hl"></i>yours.</span></span></div>
+ <div class="c" id="s11btn" style="top:1210px"><span class="btn" id="btn">Send us a message<span class="ar"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0B0B0B" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
+ <div class="c" id="s11f" style="top:1400px"><span style="display:inline-flex;align-items:center;gap:18px"><span style="display:inline-flex"><img src="pedro.jpg" class="av" style="object-position:50% 30%"><img src="gustavo.jpg" class="av" style="margin-left:-20px;object-position:45% 28%"></span><span style="font:600 28px G;color:var(--mu)">Pedro &amp; Gustavo · You only pay when you're happy</span></span></div>
+</div></section>
+
+</div>
+<div id="wipe"><i style="top:0;background:#FFC400"></i><i style="top:33%;background:#0B0B0B"></i><i style="top:66%;background:#FFC400"></i></div>
+<div id="flash"></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DUR=66.0, SFX=[], hooks=[];
+const sfx=(t,type,g=1)=>SFX.push({t:+t.toFixed(3),type,g});
+let seed=9; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)); const eo=x=>1-Math.pow(1-x,4);
+function split(el){const walk=node=>{[...node.childNodes].forEach(n=>{
+  if(n.nodeType===3){const frag=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(p=>{if(!p)return;if(/^\s+$/.test(p)){frag.appendChild(document.createTextNode(' '));return}
+   const m=document.createElement('span');m.className='m';const w=document.createElement('span');w.className='w';w.textContent=p;m.appendChild(w);frag.appendChild(m)});n.replaceWith(frag)}
+  else if(n.nodeType===1&&n.tagName!=='BR'&&!n.classList.contains('hl'))walk(n)})};walk(el)}
+$$('[data-split]').forEach(split);
+function fillLogo(sym,wm,tg,col){
+  $(sym).innerHTML=LOGO.symbol.map(d=>`<path fill="${col}" d="${d}"/>`).join('');
+  $(wm).innerHTML=LOGO.wordmark.map(d=>`<path class="L" fill="${col}" fill-rule="evenodd" d="${d}"/>`).join('');
+  $(tg).innerHTML=`<path fill="${col}" fill-rule="evenodd" d="${LOGO.tagline.join('')}"/>`}
+fillLogo('#sym4','#wm4','#tg4','#0B0B0B'); fillLogo('#sym11','#wm11','#tg11','#0B0B0B');
+$$('.sk').forEach(e=>Object.assign(e.style,{position:'absolute',left:'-12px',right:'-12px',top:'50%',height:'12px',marginTop:'-6px',background:'#FFC400',borderRadius:'6px',transform:'scaleX(0)',transformOrigin:'left'}));
+$$('.nl').forEach(e=>{e.style.position='relative';e.style.display='inline-block'});
+
+// US map (light)
+{const P=[[-124.7,48.4],[-124.1,46.3],[-124.5,42.8],[-124.2,40.4],[-122.4,37.8],[-120.6,34.6],[-117.1,32.5],[-114.7,32.7],[-111,31.3],[-108.2,31.3],[-106.5,31.8],[-104.5,29.7],[-103,29],[-101.4,29.8],[-99.5,27.5],[-97.2,25.9],[-97.4,27.8],[-94.7,29.4],[-93.8,29.7],[-90,29.1],[-89.2,30.3],[-87.6,30.3],[-85.1,29.7],[-84,30.1],[-82.8,28.2],[-82,26.5],[-80.4,25.2],[-80.1,26.8],[-80.6,28.4],[-81.4,30.7],[-79.2,33.2],[-75.5,35.3],[-76.3,37],[-75.9,38.3],[-74,40.5],[-71.9,41.3],[-70.1,41.8],[-70.7,43.1],[-69,44.1],[-67,44.8],[-67.8,47.1],[-69.2,47.4],[-71.5,45],[-74.9,45],[-76.5,44.2],[-79.2,43.3],[-82.5,41.7],[-82.4,45.3],[-84.6,46.5],[-88,48.2],[-89.6,48],[-95.2,49],[-123.3,49]];
+ const inside=(x,y)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const [xi,yi]=P[i],[xj,yj]=P[j];if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c}return c};
+ const pr=(lo,la)=>[(lo+125.5)*16.6,(50-la)*21.5+50];
+ let h='';for(let lo=-125;lo<-66;lo+=0.8)for(let la=24.5;la<49.5;la+=0.62){if(inside(lo,la)){const [x,y]=pr(lo,la);h+=`<circle class="ud" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="rgba(11,11,11,.2)"/>`}}
+ const hub=pr(-97.7,30.3);const cities=[[-118.2,34],[-122.4,37.8],[-104.9,39.7],[-95.4,29.8],[-87.6,41.9],[-84.4,33.7],[-80.2,25.8],[-74,40.7],[-71,42.4],[-112,33.4],[-122.3,47.6],[-90.2,38.6],[-77,38.9],[-115.1,36.2],[-93.3,44.9]];
+ cities.forEach(([lo,la])=>{const [x,y]=pr(lo,la);const mx=(x+hub[0])/2,my=Math.min(y,hub[1])-120;h+=`<path class="arc" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M${hub[0].toFixed(1)} ${hub[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="#0B0B0B" stroke-width="2" opacity=".55"/>`});
+ cities.concat([[-97.7,30.3]]).forEach(([lo,la])=>{const [x,y]=pr(lo,la);h+=`<g class="city" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><circle r="12" fill="#FFC400" stroke="#0B0B0B" stroke-width="3"/></g>`});
+ $('#usmap').innerHTML=h}
+// template grid
+{let h='';for(let r=0;r<3;r++)for(let c=0;c<3;c++){h+=`<div class="tp" style="left:${75+c*320}px;top:${r*265}px"><div class="a"></div><div class="b"></div><div class="cc"></div><div class="lb">TEMPLATE</div></div>`}$('#tgrid').innerHTML=h}
+
+// video sequences [t0,t1,dir,srcStart]
+const VS={vA:[[20.6,24.0,'v1',0.2]],vB:[[27.8,31.1,'v2',2.9],[31.1,33.95,'v2',7.1],[33.95,38.2,'v2',12.9]],vC:[[47.5,50.5,'v1',5.8]],vD:[[50.3,53.4,'v1',9.0]]};
+const VMAX={v1:408,v2:502};
+hooks.push(t=>{for(const id in VS){const el=document.getElementById(id);let seg=VS[id].find(s=>t>=s[0]&&t<s[1]);if(!seg)seg=t<VS[id][0][0]?VS[id][0]:VS[id][VS[id].length-1];
+  const fr=Math.min(VMAX[seg[2]],Math.max(1,Math.round((clamp(t,seg[0],seg[1])-seg[0]+seg[3])*30)+1));const src=`${seg[2]}/f${String(fr).padStart(4,'0')}.jpg`;if(el.getAttribute('src')!==src)el.setAttribute('src',src)}});
+
+// ================= TIMELINE
+gsap.defaults({ease:'power3.out'});
+const tl=gsap.timeline({paused:true});
+const show=(s,t)=>tl.set(s,{visibility:'visible'},t), hide=(s,t)=>tl.set(s,{visibility:'hidden'},t);
+const W=s=>$$(s+' .w');
+function keys(t,n,gap=.065){for(let i=0;i<n;i++)sfx(t+i*gap,'key',i?.8:1)}
+function rise(s,t,st=.06,d=.8){W(s).forEach((w,i)=>{const n=Math.max(1,Math.round(w.textContent.length/3));const g=Math.max(st,.07)/n;for(let k=0;k<n;k++)sfx(t+i*st+.02+k*g*.9,'key',k?.8:1)});
+  tl.fromTo(W(s),{yPercent:105},{yPercent:0,duration:d,stagger:st,ease:'expo.out'},t)}
+function mark(s,t,d=.45){tl.to(s+' .hl',{scaleX:1,duration:d,ease:'power3.inOut'},t);sfx(t,'swipe',.35)}
+function fadeUp(s,t,d=.8,y=40){tl.fromTo(s,{autoAlpha:0,y},{autoAlpha:1,y:0,duration:d,ease:'expo.out'},t)}
+function pop(s,t,d=.6){tl.fromTo(s,{autoAlpha:0,scale:.85,y:40},{autoAlpha:1,scale:1,y:0,duration:d,ease:'back.out(1.8)'},t)}
+function drift(s,a,b,f=1,to=1.035){tl.fromTo(s+' .drift',{scale:f},{scale:to,duration:b-a,ease:'none'},a)}
+// transitions
+function trPush(a,b,t,dir=1){ // parallax push
+  show(b,t-.5);tl.fromTo(b,{xPercent:100*dir},{xPercent:0,duration:.75,ease:'power4.inOut'},t-.5);
+  tl.fromTo(a,{xPercent:0,filter:'brightness(1)'},{xPercent:-35*dir,filter:'brightness(.75)',duration:.75,ease:'power4.inOut',immediateRender:false},t-.5);hide(a,t+.25);sfx(t-.5,'air',.9)}
+function trUp(a,b,t){show(b,t-.5);tl.fromTo(b,{yPercent:100},{yPercent:0,duration:.75,ease:'power4.inOut'},t-.5);
+  tl.fromTo(a,{yPercent:0,filter:'brightness(1)'},{yPercent:-30,filter:'brightness(.7)',duration:.75,ease:'power4.inOut',immediateRender:false},t-.5);hide(a,t+.25);sfx(t-.5,'air',.9)}
+function trWipe(a,b,t){const L=$$('#wipe i');tl.fromTo(L,{xPercent:-120},{xPercent:0,duration:.35,stagger:.06,ease:'power3.in',immediateRender:false},t-.47);
+  hide(a,t);show(b,t);tl.to(L,{xPercent:120,duration:.42,stagger:.06,ease:'power3.out'},t+.02);tl.set(L,{xPercent:-120},t+.7);sfx(t-.45,'air',1)}
+function trMask(a,b,t,from='inset(42% 38% 42% 38% round 40px)'){show(b,t-.45);tl.fromTo(b,{clipPath:from},{clipPath:'inset(0% 0% 0% 0% round 0px)',duration:.7,ease:'power4.inOut'},t-.45);
+  tl.fromTo(a,{scale:1,filter:'brightness(1)'},{scale:.92,filter:'brightness(.6)',duration:.7,ease:'power4.inOut',immediateRender:false},t-.45);hide(a,t+.25);sfx(t-.45,'air',.9)}
+function flash(t,a=.8){tl.fromTo('#flash',{opacity:a},{opacity:0,duration:.5,ease:'power2.out',immediateRender:false},t)}
+function shake(t,k=1){tl.to('#cam',{keyframes:[{x:8*k,y:-6*k,duration:.04},{x:-7*k,y:5*k,duration:.04},{x:4*k,y:-3*k,duration:.04},{x:0,y:0,duration:.05}],ease:'none'},t)}
+
+// ---------- S1 0 - 2.6
+show('#s1',0); drift('#s1',0,2.7,1,1.04);
+fadeUp('#s1l',0,.6,15); rise('#s1a',0.05,.07); rise('#s1b',1.0,.08); mark('#s1b',1.25,.4); rise('#s1c',1.45,.08);
+tl.to('#s1r',{scaleX:1,duration:.8,ease:'power3.inOut'},1.5);
+
+// ---------- S2 FEARS 2.6 - 8.25
+trPush('#s1','#s2',2.68); drift('#s2',2.2,8.3,1,1.03);
+fadeUp('#s2l',2.5,.6,15);
+const fT=[2.62,3.82,5.0,6.1];
+hooks.push(t=>{let n=1;fT.forEach((x,i)=>{if(t>=x)n=i+1});$('#fearn').textContent='0'+n});
+['#f1','#f2','#f3','#f4'].forEach((f,i)=>{const t=fT[i];
+  tl.fromTo(f,{x:1100,rotate:8,autoAlpha:1},{x:0,rotate:i%2?1.5:-1.5,duration:.7,ease:'expo.out'},t-.12); sfx(t-.15,'air',.55);
+  W(f).forEach(()=>{}); keys(t+.05,Math.min(8,$(f+' .ft').textContent.length/2|0));
+  for(let j=0;j<i;j++){const prev=['#f1','#f2','#f3','#f4'][j];tl.to(prev,{y:-(i-j)*34,scale:1-(i-j)*.05,filter:`brightness(${1-(i-j)*.06})`,duration:.6,ease:'expo.out'},t-.1)}
+  tl.fromTo(f+' .vis',{autoAlpha:0,y:30},{autoAlpha:1,y:0,duration:.6},t+.35)});
+tl.set(['#f1','#f2','#f3','#f4'],{autoAlpha:0},0);
+
+// ---------- S3 WHAT WE DO 8.25 - 15.1
+trWipe('#s2','#s3',8.3); drift('#s3',8.3,15.1,1,1.035);
+fadeUp('#s3l',8.32,.5,15); rise('#s3a',8.35,.08);
+[['#o1',9.4],['#o2',10.4],['#o3',11.44],['#o4',12.54]].forEach(([s,t])=>{tl.fromTo(s,{autoAlpha:0,x:-120},{autoAlpha:1,x:0,duration:.6,ease:'expo.out'},t-.05);
+  tl.fromTo(s+' i',{scale:0,rotate:-90},{scale:1,rotate:0,duration:.5,ease:'back.out(3)'},t);sfx(t,'tap',.7);keys(t+.04,Math.round($(s).textContent.length/3))});
+tl.to(['#o1','#o2','#o3'],{opacity:.4,duration:.4},13.4);
+tl.fromTo('#o4',{scale:1},{scale:1.06,duration:.5,ease:'back.out(2)',transformOrigin:'left center'},13.4); sfx(13.45,'impact',.5);
+
+// ---------- S4 HI + FOUNDERS 15.1 - 19.5
+trMask('#s3','#s4',15.2); drift('#s4',15.0,19.5,1,1.03);
+tl.set(['#logo4','#s4l','#pedro','#gus'],{autoAlpha:0},0);
+tl.fromTo('#s4hi',{autoAlpha:0,scale:.6,rotate:-6},{autoAlpha:1,scale:1,rotate:0,duration:.6,ease:'back.out(2)'},15.2); keys(15.23,2);
+tl.to('#s4hi',{autoAlpha:0,y:-120,duration:.35,ease:'power2.in'},15.62);
+tl.set('#logo4',{autoAlpha:1},15.7);
+tl.fromTo('#sym4',{autoAlpha:0,y:40,scale:.8},{autoAlpha:1,y:0,scale:1,duration:.8,ease:'expo.out'},15.72); sfx(15.72,'impact',.7);
+tl.fromTo('#wm4 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.7,stagger:.05,ease:'expo.out'},15.9); keys(15.92,6,.05);
+tl.fromTo('#tg4',{autoAlpha:0,y:16},{autoAlpha:1,y:0,duration:.7},16.3);
+tl.to('#logo4',{y:-520,scale:.5,duration:.8,ease:'power3.inOut'},17.2);
+fadeUp('#s4l',17.45,.5,15); keys(17.45,4);
+tl.fromTo('#pedro',{autoAlpha:0,y:500,rotate:-8},{autoAlpha:1,y:0,rotate:-3,duration:.9,ease:'expo.out'},17.95); sfx(17.95,'air',.6);
+tl.fromTo('#gus',{autoAlpha:0,y:500,rotate:8},{autoAlpha:1,y:0,rotate:3,duration:.9,ease:'expo.out'},18.55); sfx(18.55,'air',.6);
+tl.fromTo('#pedro .pn',{autoAlpha:0,y:20},{autoAlpha:1,y:0,duration:.5},18.3); keys(18.3,3);
+tl.fromTo('#gus .pn',{autoAlpha:0,y:20},{autoAlpha:1,y:0,duration:.5},18.85); keys(18.85,3);
+tl.fromTo('#pedro img',{scale:1.15},{scale:1.02,duration:2,ease:'power1.out'},17.95);
+tl.fromTo('#gus img',{scale:1.15},{scale:1.02,duration:2,ease:'power1.out'},18.55);
+
+// ---------- S5 4 YEARS / SMALL BIZ / 100+ 19.5 - 27.0
+trPush('#s4','#s5',19.6); drift('#s5',19.1,27.0,1,1.02);
+tl.fromTo('#s5yn',{autoAlpha:0,scale:.5},{autoAlpha:1,scale:1,duration:.6,ease:'back.out(2.2)'},19.72); sfx(19.72,'impact',.6); rise('#s5y',19.9,.06);
+rise('#s5a',20.85,.06); rise('#s5b',21.9,.08);
+tl.fromTo('#vcA',{y:600,rotateX:20,autoAlpha:0},{y:0,rotateX:0,autoAlpha:1,duration:1,ease:'expo.out'},20.6); sfx(20.6,'air',.6);
+fadeUp('#tagA',21.3,.6,15);
+tl.to('#vcA',{scale:1.03,duration:3,ease:'none'},21.5);
+tl.to('#s5A',{autoAlpha:0,yPercent:-8,filter:'blur(14px)',duration:.4,ease:'power2.in'},23.45);
+tl.set('#s5B',{opacity:1},23.65);
+fadeUp('#s5l',23.7,.5,15); keys(23.72,6);
+hooks.push(t=>{const p=clamp((t-23.85)/1.1);$('#s5n').textContent=Math.round(eo(p)*100)});
+tl.fromTo('#s5p',{autoAlpha:0,scale:.3},{autoAlpha:1,scale:1,duration:.5,ease:'back.out(2.5)'},24.95); sfx(24.95,'impact',.7); shake(25.0,.6);
+rise('#s5w',25.05,.06);
+tl.to('#usmap',{opacity:1,duration:.4},25.2);
+tl.fromTo('#usmap .ud',{opacity:0},{opacity:1,duration:.25,stagger:{each:.0006,from:'center'}},25.2);
+tl.to('#usmap .arc',{strokeDashoffset:0,duration:.8,stagger:.04,ease:'power2.inOut'},25.4);
+tl.fromTo('#usmap .city',{scale:0,transformOrigin:'center'},{scale:1,duration:.45,stagger:.04,ease:'back.out(3)'},25.55); sfx(25.5,'tap',.5);
+fadeUp('#s5us',25.85,.7,30); mark('#s5us',26.15,.5); keys(25.9,6);
+
+// ---------- S6 HOW IT WORKS 27.0 - 37.85
+trUp('#s5','#s6',27.05); drift('#s6',26.6,37.9,1,1.02);
+fadeUp('#s6l',27.05,.6,15); keys(27.05,6);
+fadeUp('#steps',27.1,.7,-30);
+tl.set('.st',{autoAlpha:0},0);
+tl.fromTo('#vcB',{y:700,rotateX:24,autoAlpha:0},{y:0,rotateX:6,autoAlpha:1,duration:1.1,ease:'expo.out'},27.6); sfx(27.6,'air',.6);
+tl.to('#vcB',{rotateX:0,duration:2,ease:'sine.inOut'},28.7);
+fadeUp('#tagB',28.4,.6,15);
+const sT=[28.17,31.54,32.36,33.98];
+sT.forEach((t,i)=>{const s='#t'+(i+1);
+  if(i>0)tl.to('#t'+i,{autoAlpha:0,y:-40,filter:'blur(10px)',duration:.3,ease:'power2.in'},t-.3);
+  tl.fromTo(s,{autoAlpha:0,y:50,filter:'blur(12px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.7,ease:'expo.out'},t); keys(t+.02,7);
+  tl.to(`#steps div:nth-child(${i+1}) i`,{scaleX:1,duration:.5,ease:'power3.inOut'},t);tl.to(`#steps div:nth-child(${i+1})`,{color:'#fff',duration:.2},t+.2);
+  mark(s,t+.45,.4)});
+tl.set(['#pn1','#pn2','#pn3','#love'],{autoAlpha:0},0);
+[['#pn1',32.5],['#pn2',32.95],['#pn3',33.4]].forEach(([s,t])=>{pop(s,t,.45);sfx(t,'msg',.5)});
+tl.to(['#pn1','#pn2','#pn3'],{autoAlpha:0,scale:.8,duration:.3,stagger:.06},34.0);
+tl.fromTo('#love',{autoAlpha:0,scale:.6},{autoAlpha:1,scale:1,duration:.55,ease:'back.out(2.5)'},35.0); sfx(35.0,'chime',.8);
+tl.to('#love',{y:-30,duration:1.5,ease:'sine.inOut'},35.5);
+sfx(36.2,'impact',.6); shake(36.25,.5);
+
+// ---------- S7 NO FEES 37.85 - 42.5
+trWipe('#s6','#s7',37.9); drift('#s7',37.9,42.6,1,1.04);
+[['#s7a',37.94,38.6],['#s7b',39.09,39.75],['#s7c',40.6,41.3]].forEach(([s,t,k])=>{tl.fromTo(s,{autoAlpha:0,y:60,filter:'blur(12px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.6,ease:'expo.out'},t);keys(t+.02,5);
+  tl.to(s+' .sk',{scaleX:1,duration:.35,ease:'power3.inOut'},k);sfx(k,'swipe',.6)});
+tl.to(['#s7a','#s7b','#s7c'],{opacity:.5,duration:.4},41.5);
+rise('#s7d',41.5,.05);
+
+// ---------- S8 NOT AI / SCRATCH / CUSTOMERS 42.5 - 53.3
+trMask('#s7','#s8',42.65); drift('#s8',42.3,53.4,1,1.02);
+rise('#s8a',42.7,.06); rise('#s8b',43.9,.08); mark('#s8b',44.15,.35);
+tl.fromTo('#tgrid .tp',{autoAlpha:0,y:80},{autoAlpha:1,y:0,duration:.5,stagger:.06,ease:'expo.out'},42.9);
+for(let i=0;i<9;i++)sfx(42.9+i*.06,'tap',.2);
+tl.to('#tgrid .tp',{x:(i)=>((i%3)-1)*-40,y:(i)=>(Math.floor(i/3)-1)*-30,duration:1.2,ease:'power2.inOut'},45.0);
+tl.to('#tgrid .tp',{scale:.9,opacity:.35,filter:'grayscale(1)',duration:.6},45.6); sfx(45.7,'swipe',.5);
+tl.to('#s8A',{autoAlpha:0,filter:'blur(14px)',duration:.35,ease:'power2.in'},46.5);
+tl.set('#s8B',{opacity:1},46.8);
+rise('#s8c',46.84,.06); rise('#s8d',48.3,.08);
+tl.fromTo('#sketch [pathLength]',{strokeDasharray:1,strokeDashoffset:1},{strokeDashoffset:0,duration:1.1,stagger:.1,ease:'power1.inOut'},46.9); sfx(46.9,'swipe',.4);
+tl.to('#sketch',{autoAlpha:0,duration:.4},48.3);
+tl.fromTo('#vcC',{opacity:0,scale:.96},{opacity:1,scale:1,duration:.7,ease:'expo.out'},48.1); sfx(48.1,'chime',.5);
+tl.set('#s8av',{autoAlpha:0},0); fadeUp('#s8av',48.9,.6,20); keys(48.95,8);
+tl.to('#s8B',{autoAlpha:0,filter:'blur(14px)',duration:.35,ease:'power2.in'},50.15);
+tl.set('#s8C',{opacity:1},50.4);
+rise('#s8e',50.45,.06); rise('#s8f',51.4,.08); mark('#s8f',51.9,.45);
+tl.fromTo('#vcD',{y:200,opacity:0},{y:0,opacity:1,duration:.8,ease:'expo.out'},50.45); sfx(50.45,'air',.5);
+tl.set(['#ld1','#ld2','#ld3'],{autoAlpha:0},0);
+[['#ld1',51.7],['#ld2',52.2],['#ld3',52.7]].forEach(([s,t])=>{tl.fromTo(s,{autoAlpha:0,y:60,scale:.9},{autoAlpha:1,y:0,scale:1,duration:.5,ease:'back.out(1.8)'},t);sfx(t,'notif',.7)});
+
+// ---------- S9 BURNED / SIGN 53.3 - 58.8
+trPush('#s8','#s9',53.4); drift('#s9',52.9,58.8,1,1.04);
+rise('#s9a',53.4,.07); rise('#s9b',55.0,.08);
+tl.set('#sign',{autoAlpha:0},0);
+tl.to('#s9A',{autoAlpha:0,y:-200,filter:'blur(14px)',duration:.45,ease:'power2.in'},56.85);
+tl.fromTo('#sign',{autoAlpha:1,y:-1400,rotate:0},{y:0,duration:.75,ease:'power3.in'},57.0);
+tl.to('#sign',{keyframes:[{rotate:5,duration:.3},{rotate:-3,duration:.35},{rotate:1.5,duration:.35},{rotate:0,duration:.4}],ease:'sine.inOut'},57.75);
+sfx(57.75,'impact',1.0); shake(57.75,1.4); keys(57.3,6);
+
+// ---------- S10 RISK 58.8 - 61.8
+trWipe('#s9','#s10',58.82); drift('#s10',58.82,61.9,1,1.04);
+rise('#s10a',58.85,.08); sfx(58.85,'impact',.6);
+rise('#s10b',59.9,.06); rise('#s10c',60.8,.08);
+
+// ---------- S11 CTA 61.8 - end
+trMask('#s10','#s11',61.9); drift('#s11',61.5,DUR,1,1.03);
+tl.fromTo('#sym11',{autoAlpha:0,y:40,scale:.8},{autoAlpha:1,y:0,scale:1,duration:.8,ease:'expo.out'},61.9);
+tl.fromTo('#wm11 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.6,stagger:.04,ease:'expo.out'},62.05);
+tl.fromTo('#tg11',{autoAlpha:0},{autoAlpha:1,duration:.7},62.4);
+rise('#s11a',61.95,.06); rise('#s11b',63.2,.08); rise('#s11c',63.65,.08); mark('#s11c',63.95,.45);
+fadeUp('#s11btn',62.6,.8,60); sfx(62.6,'tap',.6);
+tl.fromTo('#btn',{scale:1},{scale:1.04,duration:.5,yoyo:true,repeat:5,ease:'sine.inOut'},63.6);
+tl.fromTo('#btn .ar',{x:0},{x:10,duration:.4,yoyo:true,repeat:7,ease:'sine.inOut'},63.6);
+fadeUp('#s11f',64.2,.7,20);
+tl.set({},{},DUR);
+
+// grain
+const g=$('#grain').getContext('2d'),gi=g.createImageData(540,960);
+function grain(f){let s=(f*9301+49297)%233280||1;const d=gi.data;for(let i=0;i<d.length;i+=4){s=(s*16807)%2147483647;const v=128+((s&255)>>1);d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(gi,0,0)}
+window.SFX=SFX; window.DUR=DUR;
+window.seek=(t,f)=>{tl.seek(t,false);hooks.forEach(h=>h(t));grain(f);return Promise.all($$('img.vf').map(i=>i.complete&&i.naturalWidth?Promise.resolve():i.decode().catch(()=>{})))};
+window.ready=document.fonts.ready.then(()=>true);
+</script>
+</body></html>
