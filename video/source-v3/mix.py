@@ -69,9 +69,9 @@ def S_key():
     f0=150+rng.random()*30
     body=np.sin(2*np.pi*f0*t)*np.exp(-t*95)
     knock=np.sin(2*np.pi*(480+rng.random()*80)*t)*np.exp(-t*160)*0.45
-    tick=bp(rng.standard_normal(len(t)),700,2200)*np.exp(-t*320)*0.35
+    tick=bp(rng.standard_normal(len(t)),900,3200)*np.exp(-t*300)*0.6
     y=(body+knock+tick)*np.minimum(1,t/.0018)
-    return lp(y,2400,4)*(0.8+0.4*rng.random())
+    return lp(y,3600,4)*(0.8+0.4*rng.random())
 
 def S_air():
     d=.6; x=sweep_noise(d,250,2600,500); t=t_(d); e=np.where(t<.32,(t/.32)**2.2,np.exp(-(t-.32)*9)); return lp(x,4000)*e*0.55
@@ -149,7 +149,7 @@ v=v/ (np.sqrt(np.mean(v[v!=0]**2))+1e-9)*0.12   # loud-ish rms
 # sidechain music under voice
 venv=np.sqrt(np.maximum(lp(v**2,8),0))
 venv=venv/venv.max(); vd=1-0.45*np.clip(venv*4,0,1)
-keys=keys/ (np.abs(keys).max()+1e-9)*np.abs(v).max()*0.085
+keys=keys/ (np.abs(keys).max()+1e-9)*np.abs(v).max()*0.24
 mix=v + music*vd*0.24 + fx*0.28 + keys
 db=lambda x:20*np.log10(np.sqrt(np.mean(x**2))+1e-12)
 print('voice',db(v[v!=0]),'music',db(music*vd*0.24),'music_drop',db((music*vd*0.24)[int(10*SR):int(20*SR)]),'fx',db(fx*0.28),'fxpeak',20*np.log10(np.abs(fx*0.28).max()),'voicepeak',20*np.log10(np.abs(v).max()))

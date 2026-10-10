@@ -230,7 +230,7 @@ em,.sf{font-family:S;font-style:italic;font-weight:400;letter-spacing:-.01em}
 
 </div>
 <div id="capshade"></div>
-<div id="cap"><span id="capt"></span></div>
+
 <div id="leak"></div>
 <canvas id="grain" width="540" height="960"></canvas>
 <div id="vig"></div>
@@ -332,7 +332,7 @@ gsap.defaults({ease:'power3.out'});
 const tl=gsap.timeline({paused:true});
 const show=(s,t)=>tl.set(s,{autoAlpha:1},t), hide=(s,t)=>tl.set(s,{autoAlpha:0},t);
 const W=s=>$$(s+' .w');
-function rise(s,t,st=.06,d=.8){tl.fromTo(W(s),{yPercent:105,opacity:0},{yPercent:0,opacity:1,duration:d,stagger:st,ease:'expo.out'},t)}
+function rise(s,t,st=.06,d=.8){W(s).forEach((w,i)=>sfx(t+i*st+.02,'key',1));tl.fromTo(W(s),{yPercent:105,opacity:0},{yPercent:0,opacity:1,duration:d,stagger:st,ease:'expo.out'},t)}
 function blurIn(s,t,d=.9,sc=1.12){tl.fromTo(s,{autoAlpha:0,scale:sc,filter:'blur(24px)'},{autoAlpha:1,scale:1,filter:'blur(0px)',duration:d,ease:'expo.out'},t)}
 function blurOut(s,t,d=.4){tl.to(s,{autoAlpha:0,scale:.94,filter:'blur(20px)',duration:d,ease:'power2.in'},t)}
 function fadeUp(s,t,d=.8,y=40){tl.fromTo(s,{autoAlpha:0,y},{autoAlpha:1,y:0,duration:d,ease:'expo.out'},t)}
@@ -500,6 +500,8 @@ fadeUp('#s14btn',54.0,.8,60); sfx(54.0,'tap',.6);
 rise('#s14a',55.15,.06); rise('#s14b',55.55,.08); sweep('#s14b .w',55.8,1.1); sfx(55.55,'shimmer',.8);
 tl.fromTo('#btn',{boxShadow:'0 0 0 0 rgba(255,196,0,.5), 0 30px 80px rgba(255,196,0,.3), inset 0 2px 0 rgba(255,255,255,.5)'},{boxShadow:'0 0 0 30px rgba(255,196,0,0), 0 30px 80px rgba(255,196,0,.3), inset 0 2px 0 rgba(255,255,255,.5)',duration:1.1,repeat:2,ease:'power1.out'},54.8);
 fadeUp('#s14c',56.0,.7,20);
+const keyRun=(t,n,st=.07)=>{for(let i=0;i<n;i++)sfx(t+i*st,'key',1)};
+keyRun(31.62,4);keyRun(33.02,4);[39.75,41.2,42.05,43.1].forEach(t=>keyRun(t-.03,4));
 tl.set({},{},DUR);
 
 // ---------- captions (typed, refined)
@@ -516,7 +518,7 @@ function capRender(t){
   el.innerHTML=out+`<span class="car" style="opacity:${on?1:0}"></span>`;
   const a=clamp((t-c.t0)/.15);el.style.opacity=a;
 }
-hooks.push(capRender);
+// bottom captions removed
 
 // ---------- particles (deterministic)
 const pc=$('#parts').getContext('2d');const PN=90;const PP=[];for(let i=0;i<PN;i++)PP.push({x:rnd()*1080,y:rnd()*1920,s:.6+rnd()*2.6,v:10+rnd()*40,a:rnd()*6.28,f:.2+rnd()*.6,o:.15+rnd()*.5,z:rnd()});
@@ -528,7 +530,7 @@ hooks.push(parts);
 // grain
 const g=$('#grain').getContext('2d'),gi=g.createImageData(540,960);
 function grain(f){let s=(f*9301+49297)%233280||1;const d=gi.data;for(let i=0;i<d.length;i+=4){s=(s*16807)%2147483647;const v=s&255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(gi,0,0)}
-window.SFX=SFX.concat(TYPE.map(t=>({t,type:'key',g:1}))); window.DUR=DUR;
+window.SFX=SFX; window.DUR=DUR;
 window.seek=(t,f)=>{tl.seek(t,false);hooks.forEach(h=>h(t));grain(f)};
 window.ready=document.fonts.ready.then(()=>true);
 </script>
