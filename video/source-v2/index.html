@@ -1,0 +1,550 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:AV;font-weight:100 900;font-stretch:62% 125%;src:url(node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2) format('woff2')}
+@font-face{font-family:JM;font-weight:400;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2)}
+@font-face{font-family:JM;font-weight:500;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2)}
+@font-face{font-family:JM;font-weight:700;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2)}
+:root{--y:#FFC400;--k:#0A0A0A;--w:#F5F4EF;--g:#8A8A85}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--k);color:var(--w);font-family:AV,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--k)}
+#cam{position:absolute;inset:0}
+.scene{position:absolute;inset:0;visibility:hidden;opacity:0;overflow:hidden}
+.bgK{background:var(--k)}.bgY{background:var(--y);color:var(--k)}.bgW{background:var(--w);color:var(--k)}
+.drift{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center}
+.X{font-weight:900;font-stretch:125%;letter-spacing:-.02em;line-height:.92;text-transform:uppercase}
+.XL{font-weight:800;font-stretch:112%;letter-spacing:-.02em;line-height:1}
+.mono{font-family:JM;font-weight:500;letter-spacing:.04em}
+.lab{font-family:JM;font-weight:500;font-size:30px;letter-spacing:.24em;text-transform:uppercase}
+.m{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .03em .08em;margin:0 -.03em -.08em}
+.w{display:inline-block}
+.y{color:var(--y)}.k{color:var(--k)}
+.pill{display:inline-block;padding:14px 30px;border-radius:999px;font-family:JM;font-weight:700;font-size:30px;letter-spacing:.2em;text-transform:uppercase}
+/* captions */
+#cap{position:absolute;left:60px;right:60px;top:1450px;text-align:center;pointer-events:none}
+#capbox{display:inline-block;background:rgba(10,10,10,.94);color:#fff;font-family:JM;font-weight:500;font-size:50px;line-height:1.25;padding:20px 32px 22px;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.08);max-width:960px;white-space:pre-wrap}
+#capbox .h{color:var(--y)}
+#capbox .car{display:inline-block;width:.55em;height:1em;background:var(--y);vertical-align:-.14em;margin-left:4px}
+/* header ui */
+#ui{position:absolute;left:60px;right:60px;top:150px;height:40px;display:flex;justify-content:space-between;align-items:center;font-family:JM;font-weight:500;font-size:24px;letter-spacing:.18em;color:#fff;mix-blend-mode:difference;opacity:.9}
+#prog{position:absolute;left:60px;right:60px;top:205px;height:3px;background:rgba(255,255,255,.25);mix-blend-mode:difference}
+#prog i{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+.corner{position:absolute;width:44px;height:44px;border-color:#fff;border-style:solid;mix-blend-mode:difference;opacity:.7}
+/* transitions */
+#shut{position:absolute;inset:0;display:flex;pointer-events:none}
+#shut i{flex:1;height:100%;transform:scaleY(0);transform-origin:top}
+#iris{position:absolute;left:540px;top:960px;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;transform:scale(0)}
+#stack{position:absolute;inset:0;pointer-events:none}
+#stack i{position:absolute;left:0;right:0;top:0;height:100%;transform:translateY(100%)}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay}
+/* misc components */
+.card{position:absolute;border-radius:28px;overflow:hidden}
+.sk{background:#d9d8d2;border-radius:10px}
+.key{display:inline-flex;align-items:center;justify-content:center;min-width:150px;height:150px;padding:0 34px;border-radius:26px;background:#fff;border:3px solid #111;box-shadow:0 12px 0 #111;font-family:JM;font-weight:700;font-size:52px;color:#111}
+.tape{position:absolute;left:-400px;width:1880px;height:150px;background:repeating-linear-gradient(-45deg,var(--y) 0 50px,var(--k) 50px 100px);display:flex;align-items:center;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.tape span{white-space:nowrap;background:var(--k);color:var(--y);font-weight:900;font-stretch:125%;font-size:62px;padding:8px 30px;letter-spacing:.02em}
+.stepc{position:absolute;left:110px;width:860px;top:500px;height:760px;border-radius:40px;padding:60px;display:flex;flex-direction:column;justify-content:space-between}
+.stepc .n{font-weight:900;font-stretch:125%;font-size:200px;line-height:.8;-webkit-text-stroke:4px currentColor;color:transparent}
+.stepc .t{font-weight:900;font-stretch:125%;font-size:108px;line-height:.92;text-transform:uppercase;letter-spacing:-.02em}
+.stepc .s{font-family:JM;font-size:32px;letter-spacing:.06em;opacity:.7;margin-top:22px}
+.tile{position:absolute;width:300px;height:250px;border-radius:22px;overflow:hidden;background:#1b1b1b}
+.tile .hd{position:absolute;left:50%;top:58px;width:90px;height:90px;margin-left:-45px;border-radius:50%}
+.tile .bd{position:absolute;left:50%;top:160px;width:190px;height:150px;margin-left:-95px;border-radius:95px 95px 0 0}
+.tile .nm{position:absolute;left:14px;bottom:14px;font-family:JM;font-weight:500;font-size:20px;background:rgba(0,0,0,.6);padding:6px 12px;border-radius:8px;color:#fff;display:flex;align-items:center;gap:8px}
+.tile .nm b{width:10px;height:10px;border-radius:50%;background:var(--y)}
+.svcrow{position:absolute;left:0;right:0;height:132px;text-align:center}
+.svcrow span{position:relative;display:inline-block;font-weight:900;font-stretch:125%;font-size:104px;line-height:132px;padding:0 26px;text-transform:uppercase}
+.svcrow span i{position:absolute;inset:8px 0;background:var(--y);z-index:-1;transform:scaleX(0);transform-origin:left}
+.float{position:absolute;background:#fff;color:#111;border-radius:22px;padding:22px 28px;box-shadow:0 30px 60px rgba(0,0,0,.18);font-weight:800;font-stretch:105%;font-size:34px;border:2px solid #111}
+.float small{display:block;font-family:JM;font-weight:500;font-size:20px;letter-spacing:.1em;color:#777;margin-bottom:6px}
+.bub{position:absolute;max-width:600px;padding:24px 32px;border-radius:34px;font-weight:600;font-stretch:100%;font-size:38px;line-height:1.2}
+</style></head>
+<body>
+<div id="stage">
+<div id="cam">
+
+<!-- S1 -->
+<section class="scene bgK" id="s1"><div class="drift">
+ <div class="c lab" id="s1l" style="top:300px;color:#9a9a95">Website price</div>
+ <div class="c X" id="s1p" style="top:380px;font-size:215px"><span id="s1v">$4,800</span></div>
+ <div id="s1br" style="position:absolute;left:150px;top:760px;width:780px;height:560px">
+  <svg width="780" height="560" viewBox="0 0 780 560" style="position:absolute;inset:0;overflow:visible"><rect id="s1o" pathLength="1" x="2" y="2" width="776" height="556" rx="26" fill="none" stroke="#F5F4EF" stroke-width="4" stroke-dasharray="1" stroke-dashoffset="1"/><line id="s1o2" pathLength="1" x1="2" y1="62" x2="778" y2="62" stroke="#F5F4EF" stroke-width="3" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+  <div class="b1 blk" style="position:absolute;left:40px;top:100px;width:260px;height:26px;border-radius:8px;background:#fff"></div>
+  <div class="b1 blk" style="position:absolute;left:40px;top:160px;width:470px;height:60px;border-radius:10px;background:var(--y)"></div>
+  <div class="b1 blk" style="position:absolute;left:40px;top:236px;width:360px;height:60px;border-radius:10px;background:var(--y)"></div>
+  <div class="b1 blk" style="position:absolute;left:40px;top:326px;width:200px;height:56px;border-radius:28px;background:#fff"></div>
+  <div class="b1 blk" style="position:absolute;left:540px;top:100px;width:200px;height:282px;border-radius:18px;background:#2a2a2a"></div>
+  <div class="b1 blk" style="position:absolute;left:40px;top:420px;width:220px;height:100px;border-radius:14px;background:#2a2a2a"></div>
+  <div class="b1 blk" style="position:absolute;left:280px;top:420px;width:220px;height:100px;border-radius:14px;background:#2a2a2a"></div>
+  <div class="b1 blk" style="position:absolute;left:520px;top:420px;width:220px;height:100px;border-radius:14px;background:#2a2a2a"></div>
+  <div id="s1ok" style="position:absolute;right:-40px;top:-60px;width:190px;height:190px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(255,196,0,.35)"><svg width="100" height="100" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0A0A0A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+ </div>
+</div></section>
+
+<!-- S2 -->
+<section class="scene bgW" id="s2"><div class="drift">
+ <div class="c lab" id="s2l" style="top:290px;color:#777">The old way</div>
+ <div class="c X" id="s2a" style="top:350px;font-size:118px" data-split>Most agencies</div>
+ <div class="c" id="s2btnw" style="top:620px"><span id="s2btn" style="display:inline-flex;align-items:center;gap:20px;background:#0A0A0A;color:#fff;border-radius:999px;padding:40px 64px;font-weight:800;font-stretch:110%;font-size:52px"><span id="s2bt">Pay $4,800 first →</span></span></div>
+ <svg id="s2cur" style="position:absolute;left:800px;top:1300px;width:90px;height:90px" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#fff" stroke="#0A0A0A" stroke-width="1.4" stroke-linejoin="round"/></svg>
+ <div id="s2rip" style="position:absolute;left:600px;top:690px;width:40px;height:40px;margin:-20px;border-radius:50%;border:4px solid #0A0A0A;opacity:0"></div>
+ <div class="card" id="s2card" style="left:160px;top:830px;width:760px;height:520px;background:#e9e8e2;border:3px solid #0A0A0A">
+   <div style="height:60px;border-bottom:3px solid #0A0A0A;display:flex;align-items:center;gap:12px;padding:0 24px"><i style="width:16px;height:16px;border-radius:50%;border:3px solid #0A0A0A"></i><i style="width:16px;height:16px;border-radius:50%;border:3px solid #0A0A0A"></i><span class="mono" style="margin-left:16px;font-size:22px;color:#666">your-website.com</span></div>
+   <div class="sk" style="position:absolute;left:40px;top:110px;width:420px;height:40px"></div>
+   <div class="sk" style="position:absolute;left:40px;top:170px;width:300px;height:40px"></div>
+   <div class="sk" style="position:absolute;left:40px;top:250px;width:680px;height:220px"></div>
+   <svg id="s2spin" style="position:absolute;left:330px;top:300px;width:100px;height:100px" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="#0A0A0A" stroke-width="5" stroke-dasharray="90 40" stroke-linecap="round"/></svg>
+   <div id="s2q" style="position:absolute;right:30px;top:60px;font-weight:900;font-stretch:125%;font-size:200px;color:#0A0A0A;opacity:0">?</div>
+ </div>
+</div></section>
+
+<!-- S3 -->
+<section class="scene bgY" id="s3"><div class="drift">
+ <div class="c lab" id="s3l" style="top:300px">At</div>
+ <div id="logo3" style="position:absolute;left:110px;width:860px;top:380px">
+  <svg id="sym3" viewBox="392 370 290 138" style="display:block;width:360px;margin:0 auto 36px;overflow:visible"></svg>
+  <svg id="wm3" viewBox="196 544 688 110" style="display:block;width:860px;overflow:visible"></svg>
+  <svg id="tg3" viewBox="258 676 558 34" style="display:block;width:690px;margin:30px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="c X" id="s3a" style="top:930px;font-size:110px" data-split>We do it</div>
+ <div class="c" id="s3bw" style="top:1060px"><span id="s3b" style="position:relative;display:inline-block;padding:10px 34px;font-weight:900;font-stretch:125%;font-size:110px;text-transform:uppercase;color:var(--y)"><i id="s3bar" style="position:absolute;inset:0;background:#0A0A0A;z-index:0;transform:scaleX(0);transform-origin:left"></i><span id="s3bt" style="position:relative;opacity:0">differently.</span></span></div>
+</div></section>
+
+<!-- S4 -->
+<section class="scene bgK" id="s4"><div class="drift">
+ <div class="c lab" id="s4l" style="top:320px;color:#bbb">Building websites for</div>
+ <div class="c" style="top:400px;height:620px">
+  <div style="position:relative;display:inline-block;font-weight:900;font-stretch:125%;font-size:560px;line-height:1">
+   <span style="-webkit-text-stroke:5px #F5F4EF;color:transparent">4+</span>
+   <span id="s4fill" style="position:absolute;left:0;top:0;color:var(--y);clip-path:inset(100% 0 0 0)">4+</span>
+  </div>
+ </div>
+ <div id="ruler" style="position:absolute;left:0;top:1080px;height:200px;width:3000px"></div>
+ <div class="c X" id="s4y" style="top:1280px;font-size:72px" data-split>Years</div>
+</div></section>
+
+<!-- S5 -->
+<section class="scene bgK" id="s5"><div class="drift">
+ <div class="c lab" id="s5l" style="top:270px;color:#bbb">Websites delivered</div>
+ <div class="c X" style="top:320px;font-size:230px"><span id="s5n">0</span><span class="y" id="s5plus">+</span></div>
+ <div id="sq" style="position:absolute;left:197px;top:600px;width:686px;height:686px"></div>
+ <svg id="usmap" style="position:absolute;left:40px;top:620px;width:1000px;height:640px;opacity:0" viewBox="0 0 1000 640"></svg>
+ <div class="c" id="s5us" style="top:1290px"><span class="pill" style="background:var(--y);color:#0A0A0A">Across the U.S.</span></div>
+</div></section>
+
+<!-- S6 -->
+<section class="scene bgW" id="s6"><div class="drift">
+ <div id="s6A">
+  <div class="c lab" id="s6l" style="top:290px;color:#666">Every project made us</div>
+  <div class="c X" id="s6a" style="top:350px;font-size:190px" data-split>Better</div>
+  <div id="bars" style="position:absolute;left:130px;right:130px;top:640px;height:640px;display:flex;align-items:flex-end;gap:22px;border-bottom:4px solid #0A0A0A"></div>
+ </div>
+ <div id="s6B" style="opacity:0">
+  <div class="c lab" id="s6l2" style="top:280px;color:#666">And today</div>
+  <div class="c X" id="s6c" style="top:325px;font-size:92px;line-height:.95;white-space:nowrap" data-split>More<br>professional</div>
+  <div class="c X" id="s6d" style="top:505px;font-size:92px;line-height:.95"><span style="background:var(--y);padding:0 18px" data-split>than ever</span></div>
+  <div id="pwrap" style="position:absolute;left:0;right:0;top:640px;height:800px;perspective:2000px">
+   <div id="phone" style="position:absolute;left:345px;top:10px;width:390px;height:770px;border-radius:64px;background:#0A0A0A;padding:16px;box-shadow:0 60px 120px rgba(0,0,0,.35)">
+    <div style="position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#0A0A0A"><div id="psite" style="position:absolute;left:0;top:0;width:398px"></div>
+    <div style="position:absolute;left:50%;top:14px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000"></div></div>
+   </div>
+   <div class="float" id="f1" style="left:70px;top:120px"><small>GOOGLE REVIEWS</small><span style="color:var(--y);-webkit-text-stroke:1.5px #111">★★★★★</span> 5.0</div>
+   <div class="float" id="f2" style="left:690px;top:300px;background:var(--y)"><small style="color:#111">THIS MONTH</small>+47% calls</div>
+   <div class="float" id="f3" style="left:60px;top:560px"><small>PAGE SPEED</small>0.8s load</div>
+   <div class="float" id="f4" style="left:700px;top:640px"><small>DESIGN</small>100% custom</div>
+  </div>
+ </div>
+</div></section>
+
+<!-- S7 -->
+<section class="scene bgY" id="s7"><div class="drift">
+ <div class="c lab" id="s7l" style="top:560px">Here's what really</div>
+ <div class="c X" id="s7a" style="top:640px;font-size:150px;white-space:nowrap">Sets us</div>
+ <div id="s7ap" style="position:absolute;left:0;right:0;top:830px;height:250px">
+  <div class="c X" id="s7t" style="top:0;font-size:205px;line-height:250px;clip-path:inset(0 0 50% 0)">Apart</div>
+  <div class="c X" id="s7b" style="top:0;font-size:205px;line-height:250px;clip-path:inset(50% 0 0 0)">Apart</div>
+  <div id="s7line" style="position:absolute;left:60px;right:60px;top:123px;height:4px;background:#0A0A0A;transform:scaleX(0)"></div>
+ </div>
+</div></section>
+
+<!-- S8 -->
+<section class="scene bgK" id="s8"><div class="drift">
+ <div class="c lab" id="s8l" style="top:280px;color:#bbb">Every website we create is</div>
+ <svg id="fp" style="position:absolute;left:240px;top:380px;width:600px;height:760px" viewBox="-150 -190 300 380"></svg>
+ <div class="mono" id="s8id" style="position:absolute;left:0;right:0;text-align:center;top:1170px;font-size:24px;color:#777;letter-spacing:.2em">ID · YOUR-BRAND-0001 · ONE OF ONE</div>
+ <div id="st1" class="X" style="position:absolute;left:90px;top:440px;font-size:120px;background:#F5F4EF;color:#0A0A0A;padding:10px 34px;border-radius:16px;transform:rotate(-7deg)">Real</div>
+ <div id="st2" class="X" style="position:absolute;right:70px;top:700px;font-size:120px;background:var(--y);color:#0A0A0A;padding:10px 34px;border-radius:16px;transform:rotate(6deg)">Unique</div>
+ <div id="st3" class="X" style="position:absolute;left:80px;top:960px;font-size:92px;background:#F5F4EF;color:#0A0A0A;padding:12px 34px;border-radius:16px;transform:rotate(-3deg)">Made by people</div>
+</div></section>
+
+<!-- S9 -->
+<section class="scene bgW" id="s9"><div class="drift">
+ <div class="c" id="keys" style="top:290px;display:flex;justify-content:center;align-items:center;gap:30px"><span class="key" id="kc">CTRL</span><span style="font:900 70px AV;color:#111">+</span><span class="key" id="kv" style="min-width:150px">C</span></div>
+ <div id="clones" style="position:absolute;left:0;top:0;width:1080px;height:1920px"></div>
+ <div class="tape" id="tp1" style="top:720px;transform:rotate(-12deg)"><span id="tp1s">NO AI TEMPLATES • NO AI TEMPLATES • NO AI TEMPLATES • NO AI TEMPLATES • NO AI TEMPLATES •</span></div>
+ <div class="tape" id="tp2" style="top:980px;transform:rotate(9deg)"><span id="tp2s">NO COPY-PASTE • NO COPY-PASTE • NO COPY-PASTE • NO COPY-PASTE • NO COPY-PASTE •</span></div>
+ <div id="s10" style="position:absolute;inset:0;opacity:0;background:var(--k)">
+  <div class="c lab" style="top:280px;color:#bbb" id="s10l">Built just for</div>
+  <div class="c X y" id="s10a" style="top:330px;font-size:230px">You</div>
+  <div class="card" id="yours" style="left:150px;top:620px;width:780px;height:720px;background:#111;border:3px solid var(--y)"></div>
+ </div>
+</div></section>
+
+<!-- S10 -->
+<section class="scene bgK" id="s11"><div class="drift">
+ <div class="c" id="s11l" style="top:260px"><span class="pill" style="background:var(--y);color:#0A0A0A">The best part</span></div>
+ <div id="segs" style="position:absolute;left:110px;right:110px;top:400px;height:10px;display:flex;gap:14px"><i></i><i></i><i></i><i></i></div>
+ <div class="stepc" id="c1" style="background:#F5F4EF;color:#0A0A0A"><div class="n">01</div><div><div class="t">We build<br>it first.</div><div class="s">// before you pay anything</div></div></div>
+ <div class="stepc" id="c2" style="background:#1c1c1c;color:#F5F4EF;border:3px solid #333"><div class="n">02</div><div><div class="t">You<br>review it.</div><div class="s">// see the finished site</div></div></div>
+ <div class="stepc" id="c3" style="background:#F5F4EF;color:#0A0A0A"><div class="n">03</div><div><div class="t">Ask for<br>changes.</div><div class="s">// we adjust until it's right</div></div></div>
+ <div class="stepc" id="c4" style="background:var(--y);color:#0A0A0A"><div class="n" style="display:flex;justify-content:space-between;align-items:flex-start">04<svg id="heart" width="170" height="170" viewBox="0 0 24 24" style="-webkit-text-stroke:0"><path d="M12 20.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.8a4.3 4.3 0 0 1 7.5 2.7c0 5.4-7.5 10-7.5 10z" fill="#0A0A0A"/></svg></div><div><div class="t" style="font-size:100px">Pay only when you love it.</div><div class="s">// $0 upfront. zero risk.</div></div></div>
+</div></section>
+
+<!-- S11 -->
+<section class="scene bgK" id="s12"><div class="drift">
+ <div class="c lab" id="s12l" style="top:270px;color:#bbb"><span class="y">●</span> 100% remote team</div>
+ <div id="tiles" style="position:absolute;left:80px;top:340px;width:920px;height:520px"></div>
+ <div class="svcrow" id="r1" style="top:900px"><span><i></i>Websites</span></div>
+ <div class="svcrow" id="r2" style="top:1040px"><span><i></i>Paid ads</span></div>
+ <div class="svcrow" id="r3" style="top:1180px"><span><i></i>Social media</span></div>
+ <div class="c lab" id="s12b" style="top:1340px;color:#bbb">for small businesses</div>
+</div></section>
+
+<!-- S12 -->
+<section class="scene bgK" id="s13"><div class="drift">
+ <div id="s13top" style="position:absolute;left:0;right:0;top:0;height:960px;background:var(--y);color:#0A0A0A">
+  <div class="c X" style="top:470px;font-size:200px;line-height:.86" id="s13a">Zero<br>risk.</div></div>
+ <div id="s13bot" style="position:absolute;left:0;right:0;top:960px;height:960px;background:#0A0A0A">
+  <div class="c X y" style="top:70px;font-size:150px;line-height:.9" id="s13b">Real<br>results.</div></div>
+</div></section>
+
+<!-- S13 CTA -->
+<section class="scene bgK" id="s14"><div class="drift">
+ <div id="logo14" style="position:absolute;left:250px;width:580px;top:250px">
+  <svg id="sym14" viewBox="392 370 290 138" style="display:block;width:230px;margin:0 auto 24px;overflow:visible"></svg>
+  <svg id="wm14" viewBox="196 544 688 110" style="display:block;width:580px;overflow:visible"></svg>
+  <svg id="tg14" viewBox="258 676 558 34" style="display:block;width:465px;margin:22px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="card" id="chat" style="left:110px;top:560px;width:860px;height:560px;background:#151515;border:2px solid #2a2a2a">
+  <div style="height:100px;display:flex;align-items:center;gap:20px;padding:0 30px;border-bottom:2px solid #232323">
+   <div style="width:64px;height:64px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center"><svg id="avsym" viewBox="392 370 290 138" style="width:42px"></svg></div>
+   <div><div style="font-weight:800;font-size:30px">NewWay Marketing World</div><div class="mono" style="font-size:20px;color:#8f8;letter-spacing:.05em">● Active now</div></div>
+  </div>
+  <div class="bub" id="b1" style="left:30px;top:130px;background:#262626;color:#fff;border-bottom-left-radius:8px">Ready for a website you only pay for when you love it?</div>
+  <div class="bub" id="btyp" style="right:30px;top:330px;background:var(--y);color:#0A0A0A;border-bottom-right-radius:8px;padding:26px 34px"><span class="td">●</span> <span class="td">●</span> <span class="td">●</span></div>
+  <div class="bub" id="b2" style="right:30px;top:330px;background:var(--y);color:#0A0A0A;border-bottom-right-radius:8px">Yes! Let's build mine.</div>
+  <div class="mono" id="seen" style="position:absolute;right:36px;top:440px;font-size:20px;color:#777">Seen ✓</div>
+ </div>
+ <div class="c" id="ctab" style="top:1180px"><span id="btn" style="display:inline-flex;align-items:center;gap:22px;background:var(--y);color:#0A0A0A;border-radius:999px;padding:36px 60px;font-weight:900;font-stretch:118%;font-size:46px;text-transform:uppercase">Send us a message<svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+ <svg id="badge" style="position:absolute;left:810px;top:440px;width:230px;height:230px" viewBox="-115 -115 230 230"><defs><path id="cp" d="M0,-88 a88,88 0 1,1 -0.1,0"/></defs><circle r="112" fill="#FFC400"/><text font-family="JM" font-weight="700" font-size="21" letter-spacing="3.4" fill="#0A0A0A"><textPath href="#cp">ZERO RISK • PAY WHEN YOU LOVE IT • </textPath></text><path d="M-22 6l14 14 30-32" fill="none" stroke="#0A0A0A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div></section>
+
+</div>
+<div id="shut"></div>
+<div id="iris"></div>
+<div id="stack"><i style="background:#FFC400"></i><i style="background:#F5F4EF"></i><i style="background:#0A0A0A"></i></div>
+<div class="corner" style="left:40px;top:240px;border-width:3px 0 0 3px"></div><div class="corner" style="right:40px;top:240px;border-width:3px 3px 0 0"></div>
+<div class="corner" style="left:40px;bottom:200px;border-width:0 0 3px 3px"></div><div class="corner" style="right:40px;bottom:200px;border-width:0 3px 3px 0"></div>
+<div id="ui"><span>NEWWAY®</span><span id="uisc">01 / 13</span><span>WEBSITES · USA</span></div>
+<div id="prog"><i id="progi"></i></div>
+<div id="cap"><span id="capbox"></span></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script src="captions.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DUR=57.6, SFX=[], hooks=[];
+const sfx=(t,type,g=1)=>SFX.push({t:+t.toFixed(3),type,g});
+let seed=11; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)); const eo=x=>1-Math.pow(1-x,4);
+const Y='#FFC400',K='#0A0A0A',WH='#F5F4EF';
+
+function split(el){const walk=node=>{[...node.childNodes].forEach(n=>{
+  if(n.nodeType===3){const frag=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(p=>{if(!p)return;if(/^\s+$/.test(p)){frag.appendChild(document.createTextNode(' '));return}
+   const m=document.createElement('span');m.className='m';const w=document.createElement('span');w.className='w';w.textContent=p;m.appendChild(w);frag.appendChild(m)});n.replaceWith(frag)}
+  else if(n.nodeType===1)walk(n)})};walk(el)}
+$$('[data-split]').forEach(split);
+
+function fillLogo(sym,wm,tg,col){
+  $(sym).innerHTML=LOGO.symbol.map(d=>`<path fill="${col}" d="${d}"/>`).join('');
+  if(wm)$(wm).innerHTML=LOGO.wordmark.map(d=>`<path class="L" fill="${col}" fill-rule="evenodd" d="${d}"/>`).join('');
+  if(tg)$(tg).innerHTML=`<path fill="${col}" fill-rule="evenodd" d="${LOGO.tagline.join('')}"/>`}
+fillLogo('#sym3','#wm3','#tg3',K); fillLogo('#sym14','#wm14','#tg14','#fff'); fillLogo('#avsym',null,null,K);
+
+// shutters
+$('#shut').innerHTML=Array.from({length:8},()=>'<i></i>').join('');
+// ruler
+{let h='';for(let i=0;i<=60;i++){const big=i%10===0;h+=`<div style="position:absolute;left:${i*45}px;top:0;width:3px;height:${big?90:40}px;background:${big?Y:'#555'}"></div>`;
+  if(big)h+=`<div class="mono" style="position:absolute;left:${i*45-30}px;top:110px;width:66px;text-align:center;font-size:28px;color:${i/10===4?Y:'#888'}">${i/10===4?'04+':'0'+i/10}</div>`}
+ $('#ruler').innerHTML=h}
+// squares
+{let h='';for(let r=0;r<10;r++)for(let c=0;c<10;c++)h+=`<i class="q" style="position:absolute;left:${c*70}px;top:${r*70}px;width:56px;height:56px;border-radius:8px;background:#222"></i>`;$('#sq').innerHTML=h}
+// US dot map
+{const P=[[-124.7,48.4],[-124.1,46.3],[-124.5,42.8],[-124.2,40.4],[-122.4,37.8],[-120.6,34.6],[-117.1,32.5],[-114.7,32.7],[-111,31.3],[-108.2,31.3],[-106.5,31.8],[-104.5,29.7],[-103,29],[-101.4,29.8],[-99.5,27.5],[-97.2,25.9],[-97.4,27.8],[-94.7,29.4],[-93.8,29.7],[-90,29.1],[-89.2,30.3],[-87.6,30.3],[-85.1,29.7],[-84,30.1],[-82.8,28.2],[-82,26.5],[-80.4,25.2],[-80.1,26.8],[-80.6,28.4],[-81.4,30.7],[-79.2,33.2],[-75.5,35.3],[-76.3,37],[-75.9,38.3],[-74,40.5],[-71.9,41.3],[-70.1,41.8],[-70.7,43.1],[-69,44.1],[-67,44.8],[-67.8,47.1],[-69.2,47.4],[-71.5,45],[-74.9,45],[-76.5,44.2],[-79.2,43.3],[-82.5,41.7],[-82.4,45.3],[-84.6,46.5],[-88,48.2],[-89.6,48],[-95.2,49],[-123.3,49]];
+ const inside=(x,y)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const [xi,yi]=P[i],[xj,yj]=P[j];if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c}return c};
+ const pr=(lo,la)=>[(lo+125.5)*16.6,(50-la)*21.5+50];
+ let h='';for(let lo=-125;lo<-66;lo+=0.95)for(let la=24.5;la<49.5;la+=0.75){if(inside(lo,la)){const [x,y]=pr(lo,la);h+=`<circle class="ud" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.2" fill="#3a3a3a"/>`}}
+ const cities=[[-118.2,34],[-122.4,37.8],[-104.9,39.7],[-97.7,30.3],[-95.4,29.8],[-87.6,41.9],[-84.4,33.7],[-80.2,25.8],[-74,40.7],[-71,42.4],[-112,33.4],[-122.3,47.6],[-90.2,38.6],[-86.8,36.2],[-77,38.9],[-81.7,30.3],[-115.1,36.2],[-93.3,44.9]];
+ cities.forEach(([lo,la])=>{const [x,y]=pr(lo,la);h+=`<g class="city" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><circle class="cr" r="10" fill="none" stroke="${Y}" stroke-width="3"/><circle r="10" fill="${Y}"/></g>`});
+ $('#usmap').innerHTML=h}
+// bars
+{let h='';const H=[12,20,26,35,44,55,68,84,100];H.forEach((v,i)=>h+=`<div class="bar" style="flex:1;height:${v}%;background:${i===H.length-1?Y:K};border-radius:12px 12px 0 0;transform-origin:bottom;${i===H.length-1?'border:4px solid #0A0A0A;border-bottom:0':''}"></div>`);$('#bars').innerHTML=h}
+// phone site
+$('#psite').innerHTML=`<div style="font-family:AV;color:#fff;background:#0A0A0A">
+ <div style="height:60px"></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 26px"><b style="font-weight:900;font-stretch:120%;font-size:22px">BRIGHT<span style="color:${Y}">LINE</span></b><span style="width:34px;height:4px;background:#fff;box-shadow:0 10px 0 #fff"></span></div>
+ <div style="padding:30px 26px 34px"><div class="mono" style="font-size:14px;color:${Y};letter-spacing:.2em">PLUMBING · AUSTIN, TX</div>
+  <div style="font-weight:900;font-stretch:118%;font-size:50px;line-height:.92;margin-top:14px;text-transform:uppercase">Fixed today.<br><span style="color:${Y}">Guaranteed.</span></div>
+  <div style="font-size:17px;color:#aaa;margin-top:16px;line-height:1.4">Licensed local plumbers. Upfront pricing, same-day service.</div>
+  <div style="margin-top:22px;display:inline-block;background:${Y};color:#000;font-weight:800;font-size:19px;padding:16px 26px;border-radius:30px">Call now →</div></div>
+ <div style="height:240px;margin:0 26px;border-radius:22px;background:linear-gradient(150deg,${Y},#a07800);position:relative;overflow:hidden"><div style="position:absolute;left:20px;bottom:20px;background:#0A0A0A;border-radius:14px;padding:12px 16px;font-weight:700;font-size:16px"><span style="color:${Y}">★★★★★</span> 5.0 · 312 reviews</div></div>
+ <div style="padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:14px">${['Emergency','Water heaters','Drains','Remodels'].map(x=>`<div style="background:#161616;border:1px solid #2a2a2a;border-radius:16px;padding:18px"><div style="width:30px;height:30px;border-radius:8px;background:${Y}"></div><div style="font-weight:700;font-size:17px;margin-top:12px">${x}</div></div>`).join('')}</div>
+ <div style="background:${Y};color:#000;padding:30px 26px"><div style="font-weight:900;font-stretch:118%;font-size:34px;line-height:.95">GET A FREE QUOTE</div><div style="height:46px;background:#fff;border-radius:12px;margin-top:16px"></div><div style="height:46px;background:#000;border-radius:12px;margin-top:10px"></div></div>
+</div>`;
+// fingerprint
+{let h='';for(let k=0;k<17;k++){const R=12+k*9.2;const a0=-Math.PI*(0.05+0.35*((k*37)%10)/10)-Math.PI/2, span=Math.PI*(1.35+0.55*((k*53)%10)/10);let d='';
+  for(let s=0;s<=60;s++){const a=a0+span*s/60;const r=R*(1+0.04*Math.sin(3*a+k));const x=r*Math.cos(a)*0.82,y=r*Math.sin(a)*1.12;d+=(s?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}
+  h+=`<path class="fpl" pathLength="1" d="${d}" fill="none" stroke="${k%5===2?WH:Y}" stroke-width="4.2" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="1"/>`}
+ $('#fp').innerHTML=h}
+// clones
+{let h='';const pos=[];for(let r=0;r<4;r++)for(let c=0;c<3;c++)pos.push([110+c*300,520+r*250]);
+ pos.forEach((p,i)=>h+=`<div class="cl" style="position:absolute;left:${p[0]}px;top:${p[1]}px;width:260px;height:220px;border-radius:18px;background:#fff;border:3px solid #0A0A0A;padding:18px"><div class="sk" style="height:18px;width:60%"></div><div class="sk" style="height:80px;margin-top:14px"></div><div class="sk" style="height:14px;width:80%;margin-top:14px"></div><div class="mono" style="position:absolute;right:14px;bottom:10px;font-size:15px;color:#999">template_v1</div></div>`);
+ $('#clones').innerHTML=h}
+// yours card
+$('#yours').innerHTML=`<div style="height:64px;display:flex;align-items:center;gap:12px;padding:0 26px;border-bottom:2px solid #2a2a2a"><i style="width:14px;height:14px;border-radius:50%;background:#444"></i><i style="width:14px;height:14px;border-radius:50%;background:#444"></i><i style="width:14px;height:14px;border-radius:50%;background:#444"></i><span class="mono" style="margin-left:14px;font-size:20px;color:#888">yourbusiness.com</span></div>
+ <div style="padding:44px 46px;color:#fff"><div class="mono" style="font-size:18px;letter-spacing:.2em;color:${Y}">DESIGNED FOR ONE BRAND ONLY</div>
+ <div style="font-weight:900;font-stretch:122%;font-size:84px;line-height:.9;margin-top:18px;text-transform:uppercase">Your<br>business.<br><span style="color:${Y}">Your site.</span></div>
+ <div style="display:flex;gap:16px;margin-top:34px"><span style="background:${Y};color:#000;font-weight:800;font-size:24px;padding:18px 30px;border-radius:30px">Get started →</span><span style="border:2px solid #555;font-weight:700;font-size:24px;padding:18px 30px;border-radius:30px">Our story</span></div>
+ <div style="display:flex;gap:16px;margin-top:40px">${[0,1,2].map(i=>`<div style="flex:1;height:150px;border-radius:18px;background:${i==1?Y:'#1e1e1e'};border:1px solid #2e2e2e"></div>`).join('')}</div></div>`;
+// tiles
+{const tones=[['#c99a6b','#3b3b3b'],['#7e5a43','#FFC400'],['#e0b48f','#555'],['#5b3f2f','#2d2d2d'],['#b78360','#777'],['#f1c7a3','#FFC400']];
+ const names=['Design','Development','Paid Ads','Social','Copywriting','Support'];let h='';
+ names.forEach((n,i)=>{const c=i%3,r=Math.floor(i/3);h+=`<div class="tile" style="left:${c*310}px;top:${r*265}px;background:${i===1?'#262012':'#1b1b1b'};${i===1?'border:4px solid '+Y:''}"><div class="hd" style="background:${tones[i][0]}"></div><div class="bd" style="background:${tones[i][1]}"></div><div class="nm"><b></b>${n}</div></div>`});
+ $('#tiles').innerHTML=h}
+
+// ================= TIMELINE
+gsap.defaults({ease:'power3.out'});
+const tl=gsap.timeline({paused:true});
+const show=(s,t)=>tl.set(s,{autoAlpha:1},t), hide=(s,t)=>tl.set(s,{autoAlpha:0},t);
+const W=s=>$$(s+' .w');
+function rise(s,t,st=.06,d=.6){tl.fromTo(W(s),{yPercent:110},{yPercent:0,duration:d,stagger:st,ease:'expo.out'},t)}
+function slam(s,t,from=1.8,k=1){tl.fromTo(s,{scale:from,autoAlpha:0},{scale:1,autoAlpha:1,duration:.32,ease:'expo.out'},t);if(k)shake(t+.1,k);sfx(t+.04,'hit',k)}
+function shake(t,k=1){tl.to('#cam',{keyframes:[{x:12*k,y:-8*k,duration:.04},{x:-10*k,y:6*k,duration:.04},{x:6*k,y:-4*k,duration:.04},{x:0,y:0,duration:.05}],ease:'none'},t)}
+function drift(s,a,b,f=1,to=1.04){tl.fromTo(s+' .drift',{scale:f},{scale:to,duration:b-a,ease:'none'},a)}
+function fadeUp(s,t,d=.6,y=50){tl.fromTo(s,{autoAlpha:0,y},{autoAlpha:1,y:0,duration:d,ease:'expo.out'},t)}
+function popIn(s,t,st=0){tl.fromTo(s,{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.45,stagger:st,ease:'back.out(2.2)'},t)}
+// transitions
+function trShutter(a,b,t,col=Y){
+  tl.set('#shut i',{background:col,transformOrigin:'top'},t-.4);
+  tl.fromTo('#shut i',{scaleY:0},{scaleY:1,duration:.3,stagger:.025,ease:'power3.in',immediateRender:false},t-.38);
+  hide(a,t);show(b,t);tl.set('#shut i',{transformOrigin:'bottom'},t);
+  tl.to('#shut i',{scaleY:0,duration:.38,stagger:.025,ease:'power3.out'},t+.02); sfx(t-.36,'swish')}
+function trIris(a,b,t,col,x=540,y=960){
+  tl.set('#iris',{background:col,left:x,top:y,autoAlpha:1},t-.4);
+  tl.fromTo('#iris',{scale:0},{scale:470,duration:.4,ease:'power3.in',immediateRender:false},t-.4);
+  hide(a,t);show(b,t);tl.set('#iris',{autoAlpha:0,scale:0},t+.01); sfx(t-.4,'swell')}
+function trStack(a,b,t){
+  const L=$$('#stack i');
+  tl.fromTo(L,{yPercent:100},{yPercent:0,duration:.34,stagger:.07,ease:'power3.inOut',immediateRender:false},t-.48);
+  hide(a,t);show(b,t);
+  tl.to(L,{yPercent:-100,duration:.36,stagger:-.05,ease:'power3.inOut'},t+.02);
+  tl.set(L,{yPercent:100},t+.6); sfx(t-.48,'swish')}
+function trPush(a,b,t,dir=1){
+  tl.to(a,{yPercent:-100*dir,duration:.5,ease:'power4.inOut'},t-.25);
+  show(b,t-.25);tl.fromTo(b,{yPercent:100*dir},{yPercent:0,duration:.5,ease:'power4.inOut'},t-.25);hide(a,t+.25); sfx(t-.3,'swish')}
+function trSlideX(a,b,t,dir=1){
+  tl.to(a,{xPercent:-100*dir,duration:.5,ease:'power4.inOut'},t-.25);
+  show(b,t-.25);tl.fromTo(b,{xPercent:100*dir},{xPercent:0,duration:.5,ease:'power4.inOut'},t-.25);hide(a,t+.25); sfx(t-.3,'swish')}
+
+// header ui
+const scT=[0,4.45,8.45,11.55,14.25,19.65,25.1,27.2,31.5,38.75,45.75,51.5,53.75];
+hooks.push(t=>{let i=0;scT.forEach((s,k)=>{if(t>=s)i=k});$('#uisc').textContent=String(i+1).padStart(2,'0')+' / 13';$('#progi').style.width=(clamp(t/DUR)*100)+'%'});
+
+// ---------- S1
+show('#s1',0); drift('#s1',0,4.45,1,1.04);
+fadeUp('#s1l',0.05,.5,20); fadeUp('#s1p',0.1,.6,60);
+hooks.push(t=>{const p=clamp((t-.95)/.6);const v=Math.round((1-eo(p))*4800/50)*50;$('#s1v').textContent='$'+v.toLocaleString('en-US');$('#s1v').style.color=p>=1?Y:WH});
+for(let i=0;i<8;i++)sfx(.95+i*.075,'tick',.5);
+tl.fromTo('#s1p',{scale:1},{scale:1.18,duration:.12,yoyo:true,repeat:1,ease:'power2.out'},1.55); shake(1.58,1.2); sfx(1.55,'hit',1.2);
+tl.to('#s1l',{autoAlpha:0,duration:.3},1.8);
+tl.to('#s1p',{y:-60,scale:.8,duration:.6,ease:'power3.inOut'},1.85);
+tl.to('#s1o',{strokeDashoffset:0,duration:.7,ease:'power2.inOut'},2.0);
+tl.to('#s1o2',{strokeDashoffset:0,duration:.4,ease:'power2.inOut'},2.35);
+tl.fromTo('#s1br .blk',{scaleX:0,transformOrigin:'left'},{scaleX:1,duration:.4,stagger:.11,ease:'expo.out'},2.55);
+popIn('#s1ok',3.7); sfx(3.7,'ding',.8);
+
+// ---------- S2
+trShutter('#s1','#s2',4.45,WH); drift('#s2',4.45,8.45,1,1.04);
+fadeUp('#s2l',4.5,.4,20); rise('#s2a',4.55,.08);
+popIn('#s2btnw',5.15);
+tl.fromTo('#s2cur',{x:0,y:0},{x:-230,y:-600,duration:.8,ease:'power3.inOut'},5.1);
+tl.to('#s2btn',{scale:.93,duration:.08,yoyo:true,repeat:1,ease:'power2.out'},5.95); sfx(5.95,'click',1);
+tl.fromTo('#s2rip',{scale:.5,opacity:1},{scale:6,opacity:0,duration:.6,ease:'power2.out'},5.95);
+hooks.push(t=>{$('#s2bt').textContent=t>=6.05?'Payment received ✓':'Pay $4,800 first →'});
+tl.to('#s2cur',{x:-150,y:-480,autoAlpha:0,duration:.6},6.2);
+tl.fromTo('#s2card',{y:700,rotate:6,autoAlpha:0},{y:0,rotate:-2,autoAlpha:1,duration:.8,ease:'expo.out'},6.35); sfx(6.35,'swish',.6);
+tl.fromTo('#s2spin',{rotate:0},{rotate:900,duration:2.1,ease:'none',transformOrigin:'50% 50%'},6.35);
+tl.fromTo('#s2q',{autoAlpha:0,scale:.4,rotate:-20},{autoAlpha:1,scale:1,rotate:8,duration:.5,ease:'back.out(2)'},7.3); sfx(7.3,'pop',.6);
+
+// ---------- S3
+trIris('#s2','#s3',8.5,Y,600,690); drift('#s3',8.5,11.55,1,1.04);
+fadeUp('#s3l',8.55,.4,20);
+tl.fromTo('#sym3',{scale:.3,autoAlpha:0,rotate:-12},{scale:1,autoAlpha:1,rotate:0,duration:.8,ease:'expo.out'},8.55); sfx(8.55,'boom',.9);
+tl.fromTo('#wm3 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.55,stagger:.05,ease:'expo.out'},8.8);
+tl.fromTo('#tg3',{autoAlpha:0,letterSpacing:0,scaleX:1.3},{autoAlpha:1,scaleX:1,duration:.8,ease:'expo.out'},9.15);
+rise('#s3a',10.15,.07);
+tl.to('#s3bar',{scaleX:1,duration:.35,ease:'power3.inOut'},10.55); tl.set('#s3bt',{opacity:1},10.75); sfx(10.55,'swish',.5);
+tl.fromTo('#s3bt',{x:-30},{x:0,duration:.5,ease:'expo.out'},10.75);
+
+// ---------- S4
+trStack('#s3','#s4',11.55); drift('#s4',11.55,14.25,1.03,1);
+fadeUp('#s4l',11.6,.4,20);
+hooks.push(t=>{const p=clamp((t-11.9)/1.5);const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;$('#s4fill').style.clipPath=`inset(${(100-e*100).toFixed(2)}% 0 0 0)`});
+tl.fromTo('#ruler',{x:540},{x:540-1800-1.5,duration:1.8,ease:'power3.inOut'},11.65);
+sfx(13.4,'hit',.7); shake(13.4,.6);
+rise('#s4y',13.0,.06);
+
+// ---------- S5
+trPush('#s4','#s5',14.25); drift('#s5',14.25,19.65,1,1.03);
+fadeUp('#s5l',14.4,.4,20);
+hooks.push(t=>{const p=clamp((t-15.2)/1.8);const n=Math.round(eo(p)*100);$('#s5n').textContent=n;
+  const q=$$('#sq .q');q.forEach((e,i)=>e.style.background=i<n?Y:'#222')});
+tl.fromTo('#sq .q',{scale:0},{scale:1,duration:.4,stagger:{each:.006,from:'center',grid:[10,10]},ease:'back.out(2)'},14.35);
+tl.fromTo('#s5plus',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(3)'},17.0); sfx(17.0,'hit',.9); shake(17.05,.8);
+for(let i=0;i<10;i++)sfx(15.2+i*.18,'tick',.35);
+tl.to('#sq .q',{scale:0,duration:.3,stagger:{each:.004,from:'random'},ease:'power2.in'},17.6);
+tl.to('#usmap',{opacity:1,duration:.3},17.8);
+tl.fromTo('#usmap .ud',{opacity:0},{opacity:1,duration:.2,stagger:{each:.0015,from:'random'}},17.8);
+tl.fromTo('#usmap .city',{scale:0,transformOrigin:'center'},{scale:1,duration:.35,stagger:.05,ease:'back.out(3)'},18.2);
+tl.fromTo('#usmap .cr',{attr:{r:10},opacity:1},{attr:{r:34},opacity:0,duration:.9,stagger:{each:.05,repeat:1},ease:'power1.out'},18.3);
+popIn('#s5us',18.0); sfx(18.2,'pop',.6);
+
+// ---------- S6
+trShutter('#s5','#s6',19.65,Y); drift('#s6',19.65,25.1,1,1.03);
+fadeUp('#s6l',19.7,.4,20); rise('#s6a',20.4,.07);
+tl.fromTo('#bars .bar',{scaleY:0},{scaleY:1,duration:.6,stagger:.1,ease:'expo.out'},19.85);
+for(let i=0;i<9;i++)sfx(19.85+i*.1,'tick',.3);
+tl.to('#s6A',{autoAlpha:0,yPercent:-15,duration:.35,ease:'power3.in'},21.35);
+tl.set('#s6B',{opacity:1},21.6);
+fadeUp('#s6l2',21.6,.4,20); rise('#s6c',22.2,.07); rise('#s6d',22.9,.07);
+tl.fromTo('#phone',{y:900,rotateY:-30,rotateX:20},{y:0,rotateY:-12,rotateX:6,duration:1.1,ease:'expo.out'},21.7); sfx(21.7,'swish',.7);
+tl.to('#phone',{rotateY:10,rotateX:2,duration:2.4,ease:'sine.inOut'},22.8);
+tl.fromTo('#psite',{y:0},{y:-560,duration:2.6,ease:'power2.inOut'},22.5);
+[['#f1',22.4],['#f2',22.75],['#f3',23.15],['#f4',23.5]].forEach(([s,t])=>{popIn(s,t);sfx(t,'pop',.5);tl.to(s,{y:-26,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},t+.4)});
+
+// ---------- S7
+trIris('#s6','#s7',25.12,Y); drift('#s7',25.12,27.2,1.04,1);
+fadeUp('#s7l',25.15,.4,20);
+slam('#s7a',25.5,1.6,.7);
+tl.fromTo(['#s7t','#s7b'],{scale:1.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.32,ease:'expo.out'},25.95); shake(26.05,1); sfx(25.98,'hit',1);
+tl.to('#s7line',{scaleX:1,duration:.25,ease:'power3.out'},26.2);
+tl.to('#s7t',{y:-70,duration:.7,ease:'expo.out'},26.3); tl.to('#s7b',{y:70,duration:.7,ease:'expo.out'},26.3); sfx(26.3,'swish',.5);
+
+// ---------- S8
+trSlideX('#s7','#s8',27.2); drift('#s8',27.2,31.5,1,1.05);
+fadeUp('#s8l',27.25,.4,20);
+tl.to('#fp .fpl',{strokeDashoffset:0,duration:1.1,stagger:.08,ease:'power2.inOut'},27.3);
+fadeUp('#s8id',28.6,.5,10);
+[['#st1',28.5,-7],['#st2',29.35,6],['#st3',30.1,-3]].forEach(([s,t,r])=>{tl.fromTo(s,{scale:2.2,autoAlpha:0,rotate:r*3},{scale:1,autoAlpha:1,rotate:r,duration:.3,ease:'power4.in'},t);shake(t+.3,.6);sfx(t+.28,'stamp',.8)});
+
+// ---------- S9 / S10
+trShutter('#s8','#s9',31.5,K); drift('#s9',31.5,38.75,1,1.03);
+popIn('#keys',31.55);
+tl.to('#kc',{y:10,boxShadow:'0 2px 0 #111',duration:.08,yoyo:true,repeat:1},32.45);
+tl.to('#kv',{y:10,boxShadow:'0 2px 0 #111',duration:.08,yoyo:true,repeat:1},32.5); sfx(32.5,'click',.8);
+hooks.push(t=>{$('#kv').textContent=t>=33.0?'V':'C'});
+tl.to('#kc',{y:10,boxShadow:'0 2px 0 #111',duration:.08,yoyo:true,repeat:1},33.15);
+tl.to('#kv',{y:10,boxShadow:'0 2px 0 #111',duration:.08,yoyo:true,repeat:1},33.2); sfx(33.2,'click',.8);
+tl.fromTo('#clones .cl',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.3,stagger:.07,ease:'back.out(2)'},32.55);
+for(let i=0;i<12;i++)sfx(32.55+i*.07,'tick',.3);
+tl.to('#clones .cl',{opacity:.35,duration:.3},34.2);
+tl.fromTo('#tp1',{x:-1900},{x:0,duration:.45,ease:'power4.out'},34.15); sfx(34.15,'swish',.8); shake(34.4,.8);
+tl.fromTo('#tp2',{x:1900},{x:0,duration:.45,ease:'power4.out'},34.45); sfx(34.45,'swish',.8); shake(34.7,.8);
+tl.fromTo('#tp1s',{x:0},{x:-500,duration:2,ease:'none'},34.15); tl.fromTo('#tp2s',{x:-600},{x:0,duration:2,ease:'none'},34.45);
+// to "you"
+tl.fromTo('#s10',{clipPath:'circle(0% at 50% 50%)',opacity:1},{clipPath:'circle(75% at 50% 50%)',duration:.6,ease:'power3.inOut'},35.75); sfx(35.75,'swell',.8);
+fadeUp('#s10l',36.0,.4,20);
+slam('#s10a',37.85,1.8,.8);
+tl.fromTo('#yours',{y:700,rotate:-6},{y:0,rotate:0,duration:.9,ease:'expo.out'},36.2); sfx(36.2,'swish',.6);
+tl.fromTo('#yours',{boxShadow:'0 0 0 0 rgba(255,196,0,0)'},{boxShadow:'0 0 0 10px rgba(255,196,0,.25), 0 40px 140px rgba(255,196,0,.3)',duration:.8},37.0);
+
+// ---------- S11 PROCESS
+trStack('#s9','#s11',38.75); drift('#s11',38.75,45.75,1,1.02);
+popIn('#s11l',38.85); sfx(38.85,'pop',.7);
+tl.set('#segs i',{flex:1,background:'#2a2a2a',borderRadius:5});
+fadeUp('#segs',38.9,.4,10);
+const cT=[39.75,41.2,42.05,43.1];
+['#c1','#c2','#c3','#c4'].forEach((c,i)=>{const t=cT[i];
+  tl.fromTo(c,{xPercent:i?130:0,yPercent:i?0:30,autoAlpha:0,rotate:i?6:0},{xPercent:0,yPercent:0,autoAlpha:1,rotate:0,duration:.55,ease:'expo.out'},t-.1);
+  if(i<3)tl.to(c,{xPercent:-130,rotate:-6,duration:.5,ease:'power3.in'},cT[i+1]-.15);
+  tl.to(`#segs i:nth-child(${i+1})`,{background:Y,duration:.2},t);
+  sfx(t-.1,'swish',.5)});
+tl.fromTo('#heart',{scale:1},{scale:1.25,duration:.18,yoyo:true,repeat:3,ease:'power2.out',transformOrigin:'50% 50%'},44.85); sfx(44.85,'pop',.7);
+tl.to('#c4',{scale:1.04,duration:.3,yoyo:true,repeat:1},44.85); shake(44.9,.5);
+
+// ---------- S12 TEAM
+trIris('#s11','#s12',45.8,K); drift('#s12',45.8,51.5,1,1.02);
+fadeUp('#s12l',45.85,.4,20);
+tl.fromTo('#tiles .tile',{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.45,stagger:.08,ease:'back.out(1.8)'},45.95);
+for(let i=0;i<6;i++)sfx(45.95+i*.08,'tick',.35);
+tl.to('#tiles .tile .nm b',{opacity:.3,duration:.25,yoyo:true,repeat:9,stagger:.13},46.5);
+tl.to('#tiles',{scale:.82,y:-60,duration:.7,ease:'power3.inOut'},47.4);
+[['#r1',48.2],['#r2',48.85],['#r3',49.45]].forEach(([s,t])=>{fadeUp(s,t-.08,.45,40);tl.to(s+' span i',{scaleX:1,duration:.3,ease:'power3.inOut'},t+.05);tl.to(s+' span',{color:K,duration:.1},t+.2);sfx(t,'swish',.45)});
+fadeUp('#s12b',50.15,.5,20);
+
+// ---------- S13 ZERO RISK
+show('#s13',51.5);hide('#s12',51.5);
+tl.fromTo('#s13top',{xPercent:-100},{xPercent:0,duration:.35,ease:'power4.out'},51.5);
+tl.fromTo('#s13bot',{xPercent:100},{xPercent:0,duration:.35,ease:'power4.out'},51.5); sfx(51.45,'swish',.8);
+slam('#s13a',51.6,1.7,1.1);
+slam('#s13b',52.6,1.7,1.1);
+
+// ---------- S14 CTA
+trShutter('#s13','#s14',53.78,Y); drift('#s14',53.78,DUR,1,1.03);
+tl.fromTo('#sym14',{scale:.4,autoAlpha:0},{scale:1,autoAlpha:1,duration:.6,ease:'expo.out'},53.85);
+tl.fromTo('#wm14 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.5,stagger:.04,ease:'expo.out'},53.95);
+tl.fromTo('#tg14',{autoAlpha:0},{autoAlpha:1,duration:.6},54.25);
+fadeUp('#chat',53.9,.6,120);
+popIn('#badge',54.4); tl.fromTo('#badge',{rotate:0},{rotate:200,duration:3.2,ease:'none'},54.4);
+tl.fromTo('#b1',{scale:.6,autoAlpha:0,transformOrigin:'0 100%'},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(2)'},54.2); sfx(54.2,'msg',.8);
+tl.set('#b2',{autoAlpha:0},0); tl.set('#btyp',{autoAlpha:0},0); tl.set('#seen',{autoAlpha:0},0);
+tl.fromTo('#btyp',{scale:.6,autoAlpha:0,transformOrigin:'100% 100%'},{scale:1,autoAlpha:1,duration:.3,ease:'back.out(2)'},54.75);
+tl.to('#btyp .td',{opacity:.25,duration:.2,yoyo:true,repeat:5,stagger:.1},54.8);
+tl.set('#btyp',{autoAlpha:0},55.6);
+tl.fromTo('#b2',{scale:.6,autoAlpha:0,transformOrigin:'100% 100%'},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(2.5)'},55.6); sfx(55.6,'send',.9);
+fadeUp('#seen',56.1,.3,10);
+popIn('#ctab',54.0);
+tl.fromTo('#btn',{scale:1},{scale:1.05,duration:.45,yoyo:true,repeat:5,ease:'sine.inOut'},55.0);
+tl.fromTo('#btn',{boxShadow:'0 0 0 0 rgba(255,196,0,.6)'},{boxShadow:'0 0 0 36px rgba(255,196,0,0)',duration:.9,repeat:2,ease:'power1.out'},55.0);
+tl.set({},{},DUR);
+
+// ---------- captions (typed)
+const CPS=30, TYPE=[];
+CAPS.forEach(c=>{let last=-1;let i=0;const txt=c.w.join(' ');
+  for(let k=0;k<txt.length;k++){const tt=c.t0+k/CPS;if(txt[k]!==' '&&tt-last>=0.066&&tt<c.t1){TYPE.push(+tt.toFixed(3));last=tt}}});
+function capRender(t){
+  const c=CAPS.find(c=>t>=c.t0&&t<c.t1);const box=$('#capbox');
+  if(!c){box.style.visibility='hidden';return}
+  box.style.visibility='visible';
+  const n=Math.floor((t-c.t0)*CPS)+1;let out='',k=0;
+  c.w.forEach((w,j)=>{const seg=(j?' ':'')+w;let vis='';for(const ch of seg){if(k<n)vis+=ch;k++}
+    if(vis){const esc=vis.replace(/&/g,'&amp;').replace(/</g,'&lt;');out+=c.hl.includes(j)?`<span class="h">${esc}</span>`:esc}});
+  const done=n>=c.w.join(' ').length;const blink=done?(Math.floor(t*2.5)%2===0):true;
+  box.innerHTML=out+`<span class="car" style="opacity:${blink?1:0}"></span>`;
+  const a=clamp((t-c.t0)/.12);box.style.transform=`translateY(${(1-a)*14}px)`;box.style.opacity=a;
+}
+hooks.push(capRender);
+
+// grain
+const g=$('#grain').getContext('2d'),gi=g.createImageData(540,960);
+function grain(f){let s=(f*9301+49297)%233280||1;const d=gi.data;for(let i=0;i<d.length;i+=4){s=(s*16807)%2147483647;const v=s&255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(gi,0,0)}
+window.SFX=SFX.concat(TYPE.map(t=>({t,type:'key',g:1}))); window.DUR=DUR;
+window.seek=(t,f)=>{tl.seek(t,false);hooks.forEach(h=>h(t));grain(f)};
+window.ready=document.fonts.ready.then(()=>true);
+</script>
+</body></html>
