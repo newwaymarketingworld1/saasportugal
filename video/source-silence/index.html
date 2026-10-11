@@ -1,0 +1,273 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:M;font-weight:400;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:900;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-900-normal.woff2)}
+:root{--k:#000;--w:#fff;--y:#FFC400;--g:#8C8C8C}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;color:#fff;font-family:M,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:#000}
+#cam{position:absolute;inset:0}
+.scene{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.bk{background:#000;color:#fff}.wh{background:#fff;color:#000}.ye{background:#FFC400;color:#000}
+.drift{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center}
+.lab{font-weight:600;font-size:24px;letter-spacing:.42em;text-transform:uppercase;color:var(--g)}
+.y{color:var(--y)}
+.chip{display:inline-flex;align-items:center;gap:14px;padding:16px 30px;border-radius:999px;font:700 26px M;letter-spacing:.08em;text-transform:uppercase}
+/* ===== captions ===== */
+.cap{position:absolute;left:60px;right:60px;text-align:center;font-weight:800;text-transform:uppercase;letter-spacing:-.012em;line-height:1.04}
+.cap .ln{display:block;white-space:nowrap}
+.cw{position:relative;display:inline-block;z-index:0}
+.cw .bk2{position:absolute;left:0;top:0;color:#000;white-space:nowrap;clip-path:inset(0 100% 0 0)}
+.cw .off{opacity:0}
+.cw.yel{color:var(--y)}
+.cw .hl{position:absolute;left:-.1em;right:-.1em;top:.06em;bottom:.0em;background:var(--y);z-index:-1;transform:scaleX(0);transform-origin:left}
+.cw .sk{position:absolute;left:-.08em;right:-.08em;top:47%;height:.13em;background:var(--y);transform:scaleX(0);transform-origin:left}
+.dark .cw .sk{background:#000}
+.cw .crt{display:inline-block;width:0;height:.78em;vertical-align:-.04em;position:relative}
+.cw .crt::after{content:'';position:absolute;left:.06em;top:0;width:.085em;height:100%;background:var(--y)}
+.dark .cw .crt::after{background:#000}
+.dark{color:#000}
+.shd{text-shadow:0 6px 30px rgba(0,0,0,.7)}
+/* ===== components ===== */
+.sc{position:absolute;left:0;top:0;width:900px;border-radius:22px;overflow:hidden;background:#0d0d0d;box-shadow:0 0 0 1.5px rgba(255,255,255,.14),0 40px 90px rgba(0,0,0,.7)}
+.sc .sb{height:44px;background:#161616;display:flex;align-items:center;gap:9px;padding:0 20px}
+.sc .sb i{width:11px;height:11px;border-radius:50%;background:#3a3a3a}
+.sc .sb b{margin-left:16px;font:600 17px M;color:#8a8a8a;letter-spacing:.03em}
+.sc .si{position:relative;width:900px;height:437px;overflow:hidden}
+.sc .si img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sc .dm{position:absolute;inset:0;background:#000;opacity:0}
+.cf{position:absolute;left:50%;top:0;width:900px;margin-left:-450px}
+.cf .sc{position:relative}
+.cf .nm2{margin-top:24px;text-align:center;font:700 20px M;letter-spacing:.3em;color:#9a9a9a;text-transform:uppercase}
+.lt{position:relative;flex:none;width:150px;height:150px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+.lt img{position:absolute;left:4%;top:4%;width:92%;height:92%}
+.lrow{position:absolute;left:0;height:150px;display:flex;gap:28px;padding-left:28px}
+.bw{position:absolute;left:90px;width:900px;border-radius:26px;overflow:hidden;background:#111;box-shadow:0 0 0 2px #2a2a2a,0 40px 90px rgba(0,0,0,.6)}
+.bw .bb{height:54px;background:#1a1a1a;display:flex;align-items:center;gap:11px;padding:0 22px}
+.bw .bb i{width:13px;height:13px;border-radius:50%;background:#3a3a3a}
+.bw .bb b{flex:1;height:28px;margin:0 60px;border-radius:14px;background:#262626;font:500 16px M;color:#777;display:flex;align-items:center;justify-content:center}
+.vc{position:absolute;left:50px;width:980px;border-radius:26px;overflow:hidden;background:#000;box-shadow:0 0 0 2px #222,0 40px 90px rgba(0,0,0,.6)}
+.vc .scr{position:relative;width:980px;height:553px}
+.vc .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fd{position:absolute;top:0;width:540px;height:1920px;overflow:hidden}
+.fd img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fd .sh{position:absolute;left:0;right:0;bottom:0;height:1100px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.94) 70%)}
+.fd .nmt{position:absolute;top:250px;left:50px;font:800 26px M;letter-spacing:.3em;text-transform:uppercase}
+.fd .nmt span{display:block;font:700 16px M;letter-spacing:.38em;color:var(--y);margin-top:10px}
+.person{position:absolute;width:64px;height:76px}
+.dotg i{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff}
+.toast{position:absolute;left:170px;right:170px;height:110px;border-radius:24px;background:#141414;color:#fff;display:flex;align-items:center;gap:22px;padding:0 26px;box-shadow:0 0 0 1.5px #2a2a2a,0 30px 60px rgba(0,0,0,.5)}
+.toast .ic{width:62px;height:62px;border-radius:16px;background:#262626;display:flex;align-items:center;justify-content:center;flex:none}
+.toast b{font:700 28px M}.toast span{display:block;font:500 20px M;color:#888;margin-top:4px}
+.pill{flex:1;height:84px;border-radius:20px;background:#141414;box-shadow:0 0 0 1.5px #2a2a2a;display:flex;align-items:center;justify-content:center;gap:14px;font:800 26px M;letter-spacing:.1em;color:#777}
+.pill em{font-style:normal;font-weight:700;font-size:20px;opacity:.7}
+.bub{position:absolute;padding:16px 24px;border-radius:20px 20px 20px 4px;background:#fff;color:#000;font:700 24px M;box-shadow:0 20px 40px rgba(0,0,0,.4);white-space:nowrap}
+.mo{height:84px;border-radius:18px;background:#141414;box-shadow:0 0 0 1.5px #2a2a2a;display:flex;align-items:center;justify-content:center;font:800 26px M;letter-spacing:.1em;color:#bbb;position:relative}
+.mo .st{position:absolute;left:14px;right:14px;top:50%;height:6px;margin-top:-3px;background:var(--y);transform:scaleX(0);transform-origin:left}
+.btn{display:inline-flex;align-items:center;gap:24px;padding:42px 66px;border-radius:999px;background:var(--y);color:#000;font:800 44px M;letter-spacing:.02em;text-transform:uppercase}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+#wipe{position:absolute;inset:0;pointer-events:none}
+#wipe i{position:absolute;top:-5%;bottom:-5%;width:26%;transform:translateY(-110%)}
+#slices{position:absolute;inset:0;pointer-events:none}
+#slices i{position:absolute;left:0;width:100%;height:16.7%;background:#000}
+#nmask{position:absolute;inset:0;pointer-events:none;visibility:hidden}
+#nmask .nfill{position:absolute;inset:0;background:#FFC400;opacity:0}
+#vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 62% at 50% 45%,rgba(0,0,0,0) 60%,rgba(0,0,0,.42))}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.06;mix-blend-mode:overlay;pointer-events:none}
+</style></head>
+<body>
+<div id="stage"><div id="cam">
+
+<!-- S1 HOOK -->
+<section class="scene bk" id="s1"><div class="drift">
+ <div id="crowd" style="position:absolute;left:0;right:0;top:250px;height:420px"></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S2 $20M + logos + thousands -->
+<section class="scene bk" id="s2"><div class="drift">
+ <div id="s2top" style="position:absolute;inset:0">
+  <div class="c lab" id="s2l" style="top:250px">Ad spend managed</div>
+  <div class="c" id="s2n" style="top:290px;font:900 230px/1 M;letter-spacing:-.04em"><span class="y">$</span><span id="mn">0</span>M<span class="y">+</span></div>
+  <div id="rowA" class="lrow" style="top:580px"></div>
+  <div id="rowB" class="lrow" style="top:760px"></div>
+ </div>
+ <div id="dots" class="dotg" style="position:absolute;left:0;right:0;top:250px;height:700px;visibility:hidden"></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S3 THE AD WORKS / CLICKS -->
+<section class="scene bk" id="s3"><div class="drift">
+ <div id="ad" style="position:absolute;left:160px;top:230px;width:760px;border-radius:26px;overflow:hidden;background:#111;box-shadow:0 0 0 1.5px #2a2a2a,0 40px 90px rgba(0,0,0,.6)">
+  <div style="height:96px;display:flex;align-items:center;gap:18px;padding:0 26px">
+   <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;background:#fff"><img src="c/t_deck.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+   <div><div style="font:700 24px M">Deck &amp; Fence</div><div style="font:500 18px M;color:#888;margin-top:2px">Sponsored</div></div>
+   <div style="margin-left:auto;font:900 30px M;color:#666">···</div></div>
+  <div style="position:relative;width:760px;height:369px;overflow:hidden"><img src="c/deck.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+  <div id="cta" style="height:96px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:#161616">
+   <div style="font:600 22px M;color:#aaa">Riverside, NJ · Free estimate</div>
+   <div id="ctab" style="padding:16px 26px;border-radius:14px;background:#fff;color:#000;font:800 22px M;letter-spacing:.04em">GET A QUOTE</div></div>
+ </div>
+ <div id="adok" style="position:absolute;left:160px;right:160px;top:860px;display:flex;gap:18px;justify-content:center">
+  <span class="chip mt" style="background:#161616;color:#fff;box-shadow:0 0 0 1.5px #2a2a2a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFC400" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-5 4 4 7-8"/><path d="M15 7h5v5"/></svg>Reach</span>
+  <span class="chip mt" style="background:#161616;color:#fff;box-shadow:0 0 0 1.5px #2a2a2a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFC400" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-5 4 4 7-8"/><path d="M15 7h5v5"/></svg>Clicks</span>
+  <span class="chip mt" style="background:var(--y);color:#000"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Working</span>
+ </div>
+ <svg id="cur" style="position:absolute;left:820px;top:1260px;opacity:0;width:84px;height:84px" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>
+ <div id="rip" style="position:absolute;left:806px;top:740px;width:40px;height:40px;margin:-20px;border-radius:50%;border:4px solid #FFC400;opacity:0"></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S4 LEAVE IN 3 SECONDS / TRUST -->
+<section class="scene bk" id="s4"><div class="drift">
+ <div class="bw" id="bw4" style="top:230px;height:640px"><div class="bb"><i></i><i></i><i></i><b>yourbusiness.com</b></div>
+  <div id="ld" style="position:absolute;top:54px;left:0;right:0;bottom:0;background:#0c0c0c;display:flex;align-items:center;justify-content:center"><svg width="90" height="90" viewBox="0 0 50 50" id="spin"><circle cx="25" cy="25" r="20" fill="none" stroke="#333" stroke-width="5"/><path d="M25 5a20 20 0 0 1 20 20" fill="none" stroke="#FFC400" stroke-width="5" stroke-linecap="round"/></svg></div>
+  <div id="cheap" style="position:absolute;top:54px;left:0;right:0;bottom:0;background:#fff;color:#111;font-family:'Liberation Serif',serif;filter:grayscale(1);opacity:0"></div>
+  <div id="cd" style="position:absolute;top:54px;left:0;right:0;bottom:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;opacity:0">
+   <svg width="380" height="380" viewBox="0 0 380 380" style="position:absolute"><circle cx="190" cy="190" r="170" fill="none" stroke="#2a2a2a" stroke-width="14"/><circle id="cdr" cx="190" cy="190" r="170" fill="none" stroke="#FFC400" stroke-width="14" stroke-linecap="round" stroke-dasharray="1068" stroke-dashoffset="0" transform="rotate(-90 190 190)"/></svg>
+   <div id="cdn" style="font:900 230px/1 M;color:#fff">3</div></div>
+ </div>
+ <div class="toast" id="left" style="top:500px;opacity:0"><div class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></div><div><b>Visitor left</b><span>Time on site · 0:03</span></div></div>
+ <div id="gauge" style="position:absolute;left:190px;top:280px;width:700px;height:520px;opacity:0">
+  <svg viewBox="0 0 700 400" width="700" height="400"><path d="M70 370a280 280 0 0 1 560 0" fill="none" stroke="#1e1e1e" stroke-width="56" stroke-linecap="round"/><path id="gfill" d="M70 370a280 280 0 0 1 560 0" fill="none" stroke="#FFC400" stroke-width="56" stroke-linecap="round" stroke-dasharray="880" stroke-dashoffset="88"/>
+   <g id="needle" style="transform-origin:350px 370px"><path d="M346 370L350 130L354 370z" fill="#fff"/><circle cx="350" cy="370" r="22" fill="#fff"/></g></svg>
+  <div class="c lab" style="top:420px;color:#bbb">Trust level</div>
+  <div class="c" style="top:460px;font:900 52px M"><span id="gv">90</span>%</div>
+ </div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S5 NOBODY TELLS YOU -->
+<section class="scene bk" id="s5"><div class="drift">
+ <div class="c" id="nonot" style="top:420px"><span class="chip" style="background:#111;color:#666;box-shadow:0 0 0 1.5px #222;font-size:22px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/><path d="M2 2l20 20"/></svg>No notifications</span></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S6 SLOW MONTH (white) -->
+<section class="scene wh" id="s6"><div class="drift">
+ <div id="chart" style="position:absolute;left:90px;top:280px;width:900px;height:620px;border-radius:28px;background:#f4f4f4;padding:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center"><div class="lab" style="color:#777">Revenue</div><div style="font:700 22px M;color:#999;letter-spacing:.1em">LAST 6 MONTHS</div></div>
+  <svg viewBox="0 0 820 440" width="820" height="440" style="margin-top:30px;overflow:visible">
+   <g stroke="#e2e2e2" stroke-width="2"><path d="M0 110H820M0 220H820M0 330H820"/></g>
+   <path id="carea" d="M0 170 C80 160 120 120 164 130 S260 150 328 120 S430 100 492 125 S590 140 656 150 S760 300 820 360 L820 440 L0 440Z" fill="#FFC400" opacity=".22"/>
+   <path id="cline" d="M0 170 C80 160 120 120 164 130 S260 150 328 120 S430 100 492 125 S590 140 656 150 S760 300 820 360" fill="none" stroke="#000" stroke-width="7" stroke-linecap="round"/>
+   <circle id="cdot" cx="820" cy="360" r="16" fill="#FFC400" stroke="#000" stroke-width="5"/>
+   <g font-family="M" font-weight="700" font-size="20" fill="#999" letter-spacing="2"><text x="0" y="475">MAY</text><text x="152" y="475">JUN</text><text x="316" y="475">JUL</text><text x="476" y="475">AUG</text><text x="640" y="475">SEP</text><text x="780" y="475">OCT</text></g>
+  </svg>
+  <div id="tmchip" style="position:absolute;right:30px;top:330px"><span class="chip" style="background:#000;color:#fff;font-size:20px">This month</span></div>
+ </div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S7 AT NEWWAY (yellow) -->
+<section class="scene ye" id="s7"><div class="drift">
+ <div id="logo7" style="position:absolute;left:110px;width:860px;top:740px">
+  <div id="symw" style="width:340px;margin:0 auto 38px"><svg id="sym7" viewBox="392 370 290 138" style="display:block;width:340px;overflow:visible"></svg></div>
+  <svg id="wm7" viewBox="196 544 688 110" style="display:block;width:860px;overflow:visible"></svg>
+  <svg id="tg7" viewBox="258 676 558 34" style="display:block;width:690px;margin:32px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S8 FIX THE PART YOU CAN'T SEE -->
+<section class="scene bk" id="s8"><div class="drift">
+ <div id="scan" style="position:absolute;left:90px;top:300px;width:900px;height:481px">
+  <div class="sc"><div class="sb"><i></i><i></i><i></i><b id="scurl">yourbusiness.com</b></div><div class="si">
+   <div id="cheap2" style="position:absolute;inset:0;background:#fff;color:#111;font-family:'Liberation Serif',serif;filter:grayscale(1)"></div>
+   <img id="pro" src="c/alpha.jpg" style="clip-path:inset(0 0 100% 0)">
+   <div id="sline" style="position:absolute;left:0;right:0;top:0;height:4px;background:#FFC400;box-shadow:0 0 30px 8px rgba(255,196,0,.55)"></div>
+  </div></div>
+ </div>
+ <div id="tags" style="position:absolute;left:90px;right:90px;top:830px;display:flex;gap:16px;justify-content:center"></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S9 PORTFOLIO CAROUSEL -->
+<section class="scene bk" id="s9">
+ <div id="cfw" style="position:absolute;left:0;right:0;top:300px;height:600px;perspective:2200px">
+  <div id="cft" style="position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d"></div>
+ </div>
+ <div class="caps"></div>
+</section>
+
+<!-- S10 $0 UP FRONT (white) -->
+<section class="scene wh" id="s10"><div class="drift">
+ <div id="rcpt" style="position:absolute;left:190px;top:270px;width:700px;border-radius:30px;background:#000;color:#fff;padding:46px 50px">
+  <div style="display:flex;justify-content:space-between"><div class="lab" style="color:#888">Invoice</div><div style="font:700 20px M;color:#666;letter-spacing:.1em">#NW-0001</div></div>
+  <div class="rr" style="display:flex;justify-content:space-between;margin-top:40px;font:600 28px M;color:#bbb"><span>Website design</span><span>Built first</span></div>
+  <div class="rr" style="display:flex;justify-content:space-between;margin-top:22px;font:600 28px M;color:#bbb"><span>Development</span><span>Built first</span></div>
+  <div class="rr" style="display:flex;justify-content:space-between;margin-top:22px;font:600 28px M;color:#bbb"><span>Your review</span><span>Included</span></div>
+  <div style="height:2px;background:#222;margin:36px 0 28px"></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="lab" style="color:#888;font-size:22px">Due today</div><div id="due" style="font:900 120px/1 M;color:#FFC400;letter-spacing:-.03em">$0</div></div>
+ </div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S11 BUILD / REVIEW / CHANGE / LOVE -->
+<section class="scene bk" id="s11"><div class="drift">
+ <div class="vc" id="vcB" style="top:250px"><div class="scr"><img class="vf" id="vB"></div><div id="wire" style="position:absolute;inset:0;background:#0b0b0b"></div></div>
+ <div class="bub" id="b1" style="left:610px;top:340px">Looks great!</div>
+ <div class="bub" id="b2" style="left:140px;top:560px">Change this photo ✎</div>
+ <div id="appr" style="position:absolute;right:80px;top:740px"><span class="chip" style="background:var(--y);color:#000"><svg width="28" height="28" viewBox="0 0 24 24" fill="#000"><path d="M12 21s-7.5-4.6-9.5-9.4C1.2 8.5 3.3 5 6.7 5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.4 0 5.5 3.5 4.2 6.6C19.5 16.4 12 21 12 21z"/></svg>Approved</span></div>
+ <div id="steps" style="position:absolute;left:50px;right:50px;top:860px;display:flex;gap:18px">
+  <div class="pill" id="p1"><em>01</em>BUILD</div><div class="pill" id="p2"><em>02</em>REVIEW</div><div class="pill" id="p3"><em>03</em>CHANGE</div>
+ </div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S12 ONE TIME / NO MONTHLY FEES / EVER -->
+<section class="scene bk" id="s12"><div class="drift">
+ <div id="tkt" style="position:absolute;left:190px;top:250px;width:700px;height:230px;border-radius:28px;background:var(--y);color:#000;display:flex;align-items:center;padding:0 50px;gap:40px">
+  <div style="font:900 150px/1 M;letter-spacing:-.05em">1×</div>
+  <div><div style="font:800 40px/1.05 M;text-transform:uppercase">One-time<br>payment</div><div style="font:700 19px M;letter-spacing:.12em;margin-top:12px;opacity:.7">PAID ONLY WHEN YOU LOVE IT</div></div>
+ </div>
+ <div id="months" style="position:absolute;left:90px;right:90px;top:540px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px"></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S13 REAL PEOPLE -->
+<section class="scene bk" id="s13">
+ <div class="fd" id="fp" style="left:0"><img src="pedro.jpg" style="object-position:47% 38%"><div class="sh"></div><div class="nmt">Pedro<span>CO-FOUNDER</span></div></div>
+ <div class="fd" id="fg" style="left:540px"><img src="gustavo.jpg" style="object-position:44% 38%"><div class="sh"></div><div class="nmt">Gustavo<span>CO-FOUNDER</span></div></div>
+ <div id="fdiv" style="position:absolute;left:538px;top:0;width:4px;height:1920px;background:var(--y);transform:scaleY(0);transform-origin:top"></div>
+ <div class="caps"></div>
+</section>
+
+<!-- S14 NEVER BY AI (yellow) -->
+<section class="scene ye" id="s14"><div class="drift">
+ <div class="c" id="spk" style="top:370px"><svg width="180" height="180" viewBox="0 0 24 24" fill="#000"><path d="M12 1.5l2.2 6.3 6.3 2.2-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-2.2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z"/></svg></div>
+ <div class="caps"></div>
+</div></section>
+
+<!-- S15 CTA -->
+<section class="scene bk" id="s15"><div class="drift">
+ <div id="logo15" style="position:absolute;left:270px;width:540px;top:280px">
+  <svg id="sym15" viewBox="392 370 290 138" style="display:block;width:200px;margin:0 auto 24px;overflow:visible"></svg>
+  <svg id="wm15" viewBox="196 544 688 110" style="display:block;width:540px;overflow:visible"></svg>
+  <svg id="tg15" viewBox="258 676 558 34" style="display:block;width:430px;margin:20px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="c" id="s15btn" style="top:1250px"><span class="btn" id="btn">Send a message<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+ <div class="c" id="s15f" style="top:1450px;font:600 22px M;letter-spacing:.2em;color:#888;text-transform:uppercase">Built first · One payment · No monthly fees</div>
+ <div class="caps"></div>
+</div></section>
+
+</div>
+<div id="slices"></div>
+<div id="wipe"><i style="left:0;background:#FFC400"></i><i style="left:25%;background:#fff"></i><i style="left:50%;background:#FFC400"></i><i style="left:75%;background:#fff"></i></div>
+<div id="nmask"><svg id="nsym" viewBox="392 370 290 138" style="position:absolute;left:0;top:0;width:500px;overflow:visible"></svg><div class="nfill"></div></div>
+<div id="flash"></div>
+<div id="vign"></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script src="words.js"></script>
+<script src="main.js"></script>
+</body></html>
