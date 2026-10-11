@@ -1,0 +1,492 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:M;font-weight:400;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:900;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-900-normal.woff2)}
+:root{--k:#000;--w:#fff;--y:#FFC400;--g:#8C8C8C}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;color:#fff;font-family:M,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:#000}
+#cam{position:absolute;inset:0}
+.scene{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.bk{background:#000;color:#fff}.wh{background:#fff;color:#000}.ye{background:#FFC400;color:#000}
+.drift{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center}
+.m{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .02em .06em;margin:0 -.02em -.06em}
+.w{display:inline-block}
+.T{font-weight:900;text-transform:uppercase;letter-spacing:-.03em;line-height:.9}
+.H{font-weight:800;text-transform:uppercase;letter-spacing:-.02em;line-height:.95}
+.lab{font-weight:600;font-size:24px;letter-spacing:.42em;text-transform:uppercase;color:var(--g)}
+.y{color:var(--y)}
+.mk{position:relative;display:inline-block;z-index:0;padding:0 .12em}
+.mk>.hl{position:absolute;left:0;right:0;top:.04em;bottom:-.02em;background:var(--y);z-index:-1;transform:scaleX(0);transform-origin:left}
+.wh .mk,.ye .mk{color:#000}
+.bk .mk{color:#000}
+.bar{position:absolute;height:10px;background:var(--y);transform:scaleX(0);transform-origin:left}
+.chip{display:inline-flex;align-items:center;gap:14px;padding:16px 30px;border-radius:999px;font:700 26px M;letter-spacing:.08em;text-transform:uppercase}
+.full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* people */
+.ppl{position:absolute;left:90px;right:90px;top:700px;height:260px;display:flex;justify-content:space-between}
+.pp{position:relative;width:190px;height:260px}
+.pp>svg{position:absolute;left:0;top:40px;width:190px;height:220px}
+.pp .eye{position:absolute;left:61px;top:-30px;width:68px;height:68px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;opacity:0}
+/* browser */
+.bw{position:absolute;left:90px;width:900px;border-radius:26px;overflow:hidden;background:#111;border:2px solid #2a2a2a}
+.bw .bb{height:54px;background:#1a1a1a;display:flex;align-items:center;gap:11px;padding:0 22px}
+.bw .bb i{width:13px;height:13px;border-radius:50%;background:#3a3a3a}
+.bw .bb b{flex:1;height:28px;margin:0 60px;border-radius:14px;background:#262626;font:500 16px M;color:#777;display:flex;align-items:center;justify-content:center}
+.vc{position:absolute;left:50px;width:980px;border-radius:26px;overflow:hidden;background:#000;border:2px solid #222}
+.vc .scr{position:relative;width:980px;height:553px}
+.vc .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* founders */
+.fd{position:absolute;top:0;width:540px;height:1920px;overflow:hidden}
+.fd img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fd .sh{position:absolute;left:0;right:0;bottom:0;height:900px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.92))}
+.fd .nm{position:absolute;left:50px;bottom:300px}
+.fd .nm b{display:block;font:900 92px M;letter-spacing:-.03em;text-transform:uppercase;line-height:.9}
+.fd .nm span{display:block;font:700 22px M;letter-spacing:.38em;color:var(--y);margin-top:16px}
+/* site card (native-resolution, never upscaled) */
+.sc{position:absolute;left:0;top:0;width:900px;border-radius:22px;overflow:hidden;background:#0d0d0d;box-shadow:0 0 0 1.5px rgba(255,255,255,.14),0 40px 90px rgba(0,0,0,.7)}
+.sc .sb{height:44px;background:#161616;display:flex;align-items:center;gap:9px;padding:0 20px}
+.sc .sb i{width:11px;height:11px;border-radius:50%;background:#3a3a3a}
+.sc .sb b{margin-left:16px;font:600 17px M;color:#8a8a8a;letter-spacing:.03em}
+.sc .si{position:relative;width:900px;height:437px;overflow:hidden}
+.sc .si img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sc .dm{position:absolute;inset:0;background:#000;opacity:0}
+/* client logos */
+.lt{position:absolute;width:196px;height:196px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
+.lt img{position:absolute;left:4%;top:4%;width:92%;height:92%}
+/* founders cards */
+.rc{position:absolute;top:0;width:450px;height:560px;border-radius:26px;overflow:hidden;background:#111}
+.rc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rc .sh{position:absolute;left:0;right:0;bottom:0;height:260px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.85))}
+.rc .nm{position:absolute;left:32px;bottom:30px}
+.rc .nm b{display:block;font:900 54px M;letter-spacing:-.02em;text-transform:uppercase;line-height:.9}
+.rc .nm span{display:block;font:700 17px M;letter-spacing:.34em;color:var(--y);margin-top:10px}
+/* toast */
+.toast{position:absolute;left:140px;right:140px;height:120px;border-radius:26px;background:#000;color:#fff;display:flex;align-items:center;gap:22px;padding:0 28px;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.toast .ic{width:70px;height:70px;border-radius:18px;background:var(--y);display:flex;align-items:center;justify-content:center;flex:none}
+.toast b{font:700 30px M;letter-spacing:-.01em}.toast span{display:block;font:500 22px M;color:#999;margin-top:4px}
+.toast .tm{margin-left:auto;font:600 22px M;color:#777}
+/* no list */
+.no{position:absolute;left:120px;right:80px;height:150px;display:flex;align-items:center;gap:36px}
+.no i{flex:none;width:96px;height:96px;border-radius:50%;border:4px solid var(--y);display:flex;align-items:center;justify-content:center}
+.no span{position:relative;font:900 92px M;text-transform:uppercase;letter-spacing:-.03em}
+.no span .st{position:absolute;left:-8px;right:-8px;top:50%;height:12px;margin-top:-6px;background:var(--y);transform:scaleX(0);transform-origin:left}
+/* carousel */
+.cf{position:absolute;left:50%;top:0;width:900px;margin-left:-450px}
+.cf .sc{position:relative}
+.cf .cap{margin-top:30px;text-align:center}
+.cf .cap b{display:block;font:800 30px M;letter-spacing:.02em;text-transform:uppercase}
+.cf .cap span{display:block;margin-top:8px;font:600 20px M;letter-spacing:.26em;color:#8c8c8c;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:24px;padding:42px 66px;border-radius:999px;background:var(--y);color:#000;font:800 44px M;letter-spacing:.02em;text-transform:uppercase}
+.av{width:76px;height:76px;border-radius:50%;object-fit:cover;border:4px solid #000}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+#wipe{position:absolute;inset:0;pointer-events:none}
+#wipe i{position:absolute;top:-5%;bottom:-5%;width:26%;transform:translateY(-110%)}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.05;mix-blend-mode:overlay}
+
+.lrow{position:absolute;left:0;height:170px;display:flex;gap:30px;padding-left:30px}
+.wb{position:absolute;display:block;border-radius:8px;background:#262626;transform-origin:left}
+.wb.y2{background:#FFC400}
+.day{width:118px;height:76px;border-radius:18px;background:#f0f0f0;color:#000;display:flex;align-items:center;justify-content:center;font:800 26px M;letter-spacing:.06em;text-transform:uppercase}
+.tt{position:absolute;width:440px;height:214px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.14),0 24px 50px rgba(0,0,0,.6)}
+.tt img{width:100%;height:100%;display:block}
+</style></head>
+<body>
+<div id="stage"><div id="cam">
+
+<!-- S0 HOOK: $20M in ad spend, client logos marquee -->
+<section class="scene bk" id="s0"><div class="drift">
+ <div id="rowA" class="lrow" style="top:230px"></div>
+ <div id="rowB" class="lrow" style="top:1350px"></div>
+ <div id="h0a" style="position:absolute;inset:0">
+  <div class="c T" id="h0n" style="top:470px;font-size:360px;line-height:1"><span class="y">$</span>20</div>
+  <div class="c T" id="h0m" style="top:820px;font-size:150px" data-split>Million</div>
+  <div class="c H" id="h0s" style="top:1000px;font-size:76px" data-split>in <span class="mk"><i class="hl"></i>ad spend</span></div>
+ </div>
+ <div id="h0b" style="position:absolute;inset:0;visibility:hidden">
+  <div class="c H" id="h0t" style="top:690px;font-size:96px" data-split>Taught us</div>
+  <div class="c T" id="h0o" style="top:800px;font-size:172px"><span class="mk"><i class="hl"></i>One thing.</span></div>
+ </div>
+</div></section>
+
+<!-- S1 75% (white) -->
+<section class="scene wh" id="s1"><div class="drift">
+ <svg id="ring" viewBox="0 0 600 600" style="position:absolute;left:240px;top:290px;width:600px;height:600px;transform:rotate(-90deg)">
+  <circle cx="300" cy="300" r="262" fill="none" stroke="#EDEDED" stroke-width="46"/>
+  <circle id="rfg" cx="300" cy="300" r="262" fill="none" stroke="#FFC400" stroke-width="46" stroke-linecap="round" stroke-dasharray="1646.2" stroke-dashoffset="1646.2"/>
+ </svg>
+ <div class="c T" id="s1n" style="top:500px;font-size:200px;line-height:1"><span id="pc">0</span><span style="font-size:120px">%</span></div>
+ <div class="c H" id="s1a" style="top:990px;font-size:66px" data-split>of customers</div>
+ <div class="c T" id="s1b" style="top:1080px;font-size:100px" data-split>decide by your</div>
+ <div class="c T" id="s1c" style="top:1185px;font-size:100px" data-split><span class="mk"><i class="hl"></i>website.</span></div>
+</div></section>
+
+<!-- S2 SO WE STARTED BUILDING THEM -->
+<section class="scene bk" id="s2"><div class="drift">
+ <div class="c lab" id="s2l" style="top:270px">So,</div>
+ <div class="c T" id="s2a" style="top:320px;font-size:104px" data-split>We started</div>
+ <div class="c T" id="s2b" style="top:420px;font-size:104px" data-split>building <span class="y">them.</span></div>
+ <div id="bcard" style="position:absolute;left:90px;top:650px;width:900px;height:481px">
+  <div class="sc"><div class="sb"><i></i><i></i><i></i><b>JGC General Contractor</b></div><div class="si"><img src="c/jgc.jpg">
+   <div id="wf" style="position:absolute;inset:0;background:#0e0e0e">
+    <i class="wb" style="left:40px;top:24px;width:120px;height:22px"></i><i class="wb" style="left:520px;top:28px;width:340px;height:14px"></i>
+    <i class="wb" style="left:190px;top:130px;width:520px;height:46px"></i><i class="wb" style="left:250px;top:190px;width:400px;height:46px"></i>
+    <i class="wb" style="left:230px;top:262px;width:440px;height:14px"></i><i class="wb" style="left:280px;top:286px;width:340px;height:14px"></i>
+    <i class="wb y2" style="left:300px;top:330px;width:150px;height:44px"></i><i class="wb" style="left:466px;top:330px;width:134px;height:44px"></i>
+   </div></div></div>
+ </div>
+ <div id="prog" style="position:absolute;left:90px;right:90px;top:1190px">
+  <div style="display:flex;justify-content:space-between;font:700 22px M;letter-spacing:.3em;color:#888"><span>BUILDING</span><span><span id="pg">0</span>%</span></div>
+  <div style="margin-top:16px;height:8px;border-radius:4px;background:#1e1e1e;overflow:hidden"><div id="pgb" style="height:100%;background:#FFC400;transform:scaleX(0);transform-origin:left"></div></div>
+ </div>
+</div></section>
+
+<!-- S3 LOSE CUSTOMERS EVERY DAY (white) -->
+<section class="scene wh" id="s3"><div class="drift">
+ <div class="c H" id="s3a" style="top:290px;font-size:70px" data-split>We saw great</div>
+ <div class="c T" id="s3b" style="top:375px;font-size:128px" data-split>businesses</div>
+ <div class="c T" id="s3c" style="top:520px;font-size:96px" data-split><span class="mk"><i class="hl"></i>lose</span> customers</div>
+ <div class="ppl" id="ppl" style="top:720px"></div>
+ <div class="c T" id="s3d" style="top:1060px;font-size:120px" data-split>Every day.</div>
+ <div id="days" style="position:absolute;left:70px;right:70px;top:1230px;display:flex;justify-content:space-between"></div>
+</div></section>
+
+<!-- S4 DIDN'T EXIST / LOOKED CHEAP -->
+<section class="scene bk" id="s4"><div class="drift">
+ <div class="c H" id="s4a" style="top:270px;font-size:56px" data-split>Just because their</div>
+ <div class="c T" id="s4b" style="top:345px;font-size:120px" data-split>website</div>
+ <div class="bw" id="bw2" style="top:540px;height:700px"><div class="bb"><i></i><i></i><i></i><b>yourbusiness.com</b></div>
+  <div id="e404" style="position:absolute;top:54px;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0c0c0c">
+   <div style="font:900 220px M;color:#2c2c2c;letter-spacing:-.04em">404</div><div style="font:600 34px M;color:#777">This site can't be reached</div></div>
+  <div id="cheap" style="position:absolute;top:54px;left:0;right:0;bottom:0;background:#fff;color:#111;font-family:'Liberation Serif',serif;filter:grayscale(1);opacity:0"></div>
+  <div id="stamp" style="position:absolute;left:50%;top:52%;margin:-90px 0 0 -300px;width:600px;height:180px;border:12px solid #FFC400;border-radius:24px;background:rgba(0,0,0,.88);color:#FFC400;display:flex;align-items:center;justify-content:center;font:900 120px M;letter-spacing:.02em;transform:rotate(-9deg);opacity:0">CHEAP</div>
+ </div>
+ <div class="c T" id="s4c" style="top:1300px;font-size:92px" data-split>didn't exist</div>
+ <div class="c T" id="s4d" style="top:1300px;font-size:92px" data-split>or looked cheap.</div>
+</div></section>
+
+<!-- S5 FOUNDERS -->
+<section class="scene bk" id="s5">
+ <div class="fd" id="fp" style="left:0"><img src="pedro.jpg" style="object-position:47% 40%"><div class="sh"></div><div class="nm"><b>Pedro</b><span>CO-FOUNDER</span></div></div>
+ <div class="fd" id="fg" style="left:540px"><img src="gustavo.jpg" style="object-position:44% 40%"><div class="sh"></div><div class="nm"><b>Gustavo</b><span>CO-FOUNDER</span></div></div>
+ <div id="fdiv" style="position:absolute;left:538px;top:0;width:4px;height:1920px;background:var(--y);transform:scaleY(0);transform-origin:top"></div>
+ <div class="c" id="s5l" style="top:250px"><span class="chip" style="background:#000;color:#fff">That's why</span></div>
+</section>
+
+<!-- S6 BRAND (yellow) -->
+<section class="scene ye" id="s6"><div class="drift">
+ <div class="c lab" id="s6l" style="top:640px;color:#000">created</div>
+ <div id="logo3" style="position:absolute;left:110px;width:860px;top:720px">
+  <div id="symw" style="width:340px;margin:0 auto 38px"><svg id="sym3" viewBox="392 370 290 138" style="display:block;width:340px;overflow:visible"></svg></div>
+  <svg id="wm3" viewBox="196 544 688 110" style="display:block;width:860px;overflow:visible"></svg>
+  <svg id="tg3" viewBox="258 676 558 34" style="display:block;width:690px;margin:32px auto 0;overflow:visible"></svg>
+ </div>
+</div></section>
+
+<!-- S7 100+ WEBSITES carousel -->
+<section class="scene bk" id="s7">
+ <div class="c lab" id="s7l" style="top:250px">More than</div>
+ <div class="c T" style="top:290px;font-size:280px;line-height:1"><span id="s7n">0</span><span class="y" id="s7p">+</span></div>
+ <div class="c T" id="s7w" style="top:575px;font-size:84px" data-split>Websites delivered</div>
+ <div id="cfw" style="position:absolute;left:0;right:0;top:760px;height:640px;perspective:2200px">
+  <div id="cft" style="position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d"></div>
+ </div>
+ <div class="c" id="s7us" style="top:1420px"><span class="chip" style="background:var(--y);color:#000"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>Across the U.S.</span></div>
+</section>
+
+<!-- S8 ALL UNIQUE / REAL PEOPLE -->
+<section class="scene bk" id="s8"><div class="drift">
+ <div class="c T" id="s8a" style="top:270px;font-size:110px" data-split>All unique.</div>
+ <div id="tg" style="position:absolute;left:88px;top:450px;width:904px;height:700px"></div>
+ <div id="rcs" style="position:absolute;left:70px;top:440px;width:940px;height:560px">
+  <div class="rc" id="rp" style="left:0"><img src="pedro.jpg" style="object-position:47% 30%"><div class="sh"></div><div class="nm"><b>Pedro</b><span>CO-FOUNDER</span></div></div>
+  <div class="rc" id="rg" style="left:490px"><img src="gustavo.jpg" style="object-position:44% 26%"><div class="sh"></div><div class="nm"><b>Gustavo</b><span>CO-FOUNDER</span></div></div>
+ </div>
+ <div class="c H" id="s8b" style="top:1060px;font-size:60px" data-split>All made by</div>
+ <div class="c T" id="s8c" style="top:1140px;font-size:104px" data-split><span class="mk"><i class="hl"></i>real people.</span></div>
+</div></section>
+
+<!-- S9 NEVER BY AI (yellow) -->
+<section class="scene ye" id="s9"><div class="drift">
+ <div class="c" id="s9i" style="top:380px"><svg width="170" height="170" viewBox="0 0 24 24" fill="#000"><path d="M12 1.5l2.2 6.3 6.3 2.2-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-2.2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z"/></svg></div>
+ <div class="c T" id="s9a" style="top:640px;font-size:210px" data-split>Never</div>
+ <div class="c T" id="s9b" style="top:840px;font-size:210px">by <span style="position:relative;display:inline-block">AI.<i id="s9x" style="position:absolute;left:-14px;right:-14px;top:46%;height:26px;background:#000;transform:scaleX(0);transform-origin:left"></i></span></div>
+</div></section>
+
+<!-- S10 NO RISK (white) -->
+<section class="scene wh" id="s10"><div class="drift">
+ <div class="c" id="s10i" style="top:360px"><svg width="230" height="230" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#000"/><path d="M8 12.2l2.8 2.8L16.4 9.4" fill="none" stroke="#FFC400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+ <div class="c H" id="s10a" style="top:690px;font-size:72px" data-split>And you don't take</div>
+ <div class="c T" id="s10b" style="top:785px;font-size:170px" data-split>any <span class="mk"><i class="hl"></i>risk.</span></div>
+</div></section>
+
+<!-- S11 BUILD FIRST -->
+<section class="scene bk" id="s11"><div class="drift">
+ <div class="c lab" id="s11l" style="top:300px">Step one</div>
+ <div class="c T" id="s11a" style="top:350px;font-size:96px" data-split>We build your</div>
+ <div class="c T" id="s11b" style="top:445px;font-size:96px" data-split>website <span class="y">first.</span></div>
+ <div class="vc" id="vcB" style="top:660px"><div class="scr"><img class="vf" id="vB"></div>
+  <div id="wire" style="position:absolute;inset:0;background:#0b0b0b"></div></div>
+ <div class="c H" id="s11c" style="top:1290px;font-size:49px" data-split>You only pay when it's done</div>
+ <div class="c T" id="s11d" style="top:1370px;font-size:96px" data-split>and you're <span class="mk"><i class="hl"></i>happy.</span></div>
+ <div id="appr" style="position:absolute;right:90px;top:1130px"><span class="chip" style="background:var(--y);color:#000"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Approved</span></div>
+</div></section>
+
+<!-- S12 ONE PAYMENT -->
+<section class="scene bk" id="s12"><div class="drift">
+ <div class="c" id="s12a" style="top:380px"><span class="T y" style="font-size:320px;line-height:1">1</span></div>
+ <div class="c T" id="s12b" style="top:700px;font-size:120px" data-split>Payment.</div>
+ <div class="no" id="x1" style="top:960px;left:130px;white-space:nowrap"><i><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFC400" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></i><span>Monthly fees<b class="st"></b></span></div>
+</div></section>
+
+<!-- S13 CTA -->
+<section class="scene bk" id="s13"><div class="drift">
+ <div id="logo11" style="position:absolute;left:240px;width:600px;top:330px">
+  <svg id="sym11" viewBox="392 370 290 138" style="display:block;width:230px;margin:0 auto 26px;overflow:visible"></svg>
+  <svg id="wm11" viewBox="196 544 688 110" style="display:block;width:600px;overflow:visible"></svg>
+  <svg id="tg11" viewBox="258 676 558 34" style="display:block;width:480px;margin:22px auto 0;overflow:visible"></svg>
+ </div>
+ <div class="c T" id="s13a" style="top:800px;font-size:110px" data-split>Send us</div>
+ <div class="c T" id="s13b" style="top:905px;font-size:110px" data-split>a message</div>
+ <div class="c T y" id="s13c" style="top:1010px;font-size:110px" data-split>today.</div>
+ <div class="c" id="s13btn" style="top:1220px"><span class="btn" id="btn">Send a message<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+ <div class="c" id="s13f" style="top:1420px;font:600 24px M;letter-spacing:.18em;color:#888;text-transform:uppercase">One payment · Only when you're happy</div>
+</div></section>
+
+</div>
+<div id="wipe"><i style="left:0;background:#FFC400"></i><i style="left:25%;background:#fff"></i><i style="left:50%;background:#FFC400"></i><i style="left:75%;background:#fff"></i></div>
+<div id="flash"></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DUR=43.0, SFX=[], hooks=[];
+const sfx=(t,type,g=1)=>SFX.push({t:+t.toFixed(3),type,g});
+let seed=13; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)); const eo=x=>1-Math.pow(1-x,4);
+function split(el){const walk=node=>{[...node.childNodes].forEach(n=>{
+  if(n.nodeType===3){const frag=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(p=>{if(!p)return;if(/^\s+$/.test(p)){frag.appendChild(document.createTextNode(' '));return}
+   const m=document.createElement('span');m.className='m';const w=document.createElement('span');w.className='w';w.textContent=p;m.appendChild(w);frag.appendChild(m)});n.replaceWith(frag)}
+  else if(n.nodeType===1&&n.tagName!=='BR'&&!n.classList.contains('hl')&&!n.classList.contains('st2'))walk(n)})};walk(el)}
+$$('[data-split]').forEach(split);
+function fillLogo(sym,wm,tg,col){
+  $(sym).innerHTML=LOGO.symbol.map(d=>`<path fill="${col}" d="${d}"/>`).join('');
+  $(wm).innerHTML=LOGO.wordmark.map(d=>`<path class="L" fill="${col}" fill-rule="evenodd" d="${d}"/>`).join('');
+  $(tg).innerHTML=`<path fill="${col}" fill-rule="evenodd" d="${LOGO.tagline.join('')}"/>`}
+fillLogo('#sym3','#wm3','#tg3','#000'); fillLogo('#sym11','#wm11','#tg11','#fff');
+$$('.no .st').forEach(e=>Object.assign(e.style,{position:'absolute',left:'-8px',right:'-8px',top:'50%',height:'12px',marginTop:'-6px',background:'#FFC400',transform:'scaleX(0)',transformOrigin:'left'}));
+// cheap site
+$('#cheap').innerHTML=`<div style="background:#ddd;padding:12px;text-align:center;font:bold 18px 'Liberation Serif'">*** WELCOME TO OUR WEBSITE!!! ***</div>
+<div style="padding:30px 24px 10px;text-align:center"><div style="font:bold 58px/1 'Liberation Serif';text-decoration:underline">JOE'S PLUMBING</div><div style="font:italic 26px 'Liberation Serif';margin-top:12px">Best Prices In Town!!!</div></div>
+<div style="margin:18px 24px;height:200px;border:3px ridge #999;background:repeating-linear-gradient(45deg,#ccc 0 10px,#eee 10px 20px);display:flex;align-items:center;justify-content:center;font:bold 22px 'Liberation Serif'">[ IMAGE NOT FOUND ]</div>
+<div style="padding:0 24px;font:22px/1.35 'Liberation Serif'">We are a family owned business since 1998. Call us today for a FREE estimate. <u>Click here</u> for more info. <u>Contact</u> | <u>About</u></div>`;
+// ================= TIMELINE
+gsap.defaults({ease:'power3.out'});
+const tl=gsap.timeline({paused:true});
+const show=(s,t)=>tl.set(s,{visibility:'visible'},t), hide=(s,t)=>tl.set(s,{visibility:'hidden'},t);
+const W=s=>$$(s+' .w');
+function keys(t,n,gap=.06){for(let i=0;i<n;i++)sfx(t+i*gap,'key',i?.8:1)}
+function rise(s,t,st=.05,d=.7){W(s).forEach((w,i)=>{const n=Math.max(1,Math.round(w.textContent.length/3));const g=Math.max(st,.06)/n;for(let k=0;k<n;k++)sfx(t+i*st+.02+k*g*.9,'key',k?.8:1)});
+  tl.fromTo(W(s),{yPercent:110},{yPercent:0,duration:d,stagger:st,ease:'expo.out'},t)}
+function mark(s,t,d=.35){tl.to(s+' .hl',{scaleX:1,duration:d,ease:'power3.inOut'},t);sfx(t,'swipe',.35)}
+function slam(s,t,from=1.6,k=1){tl.fromTo(s,{scale:from,autoAlpha:0},{scale:1,autoAlpha:1,duration:.32,ease:'expo.out'},t);punch(t+.05,k);sfx(t,'impact',.55*k)}
+function punch(t,k=1){tl.fromTo('#cam',{scale:1+.025*k},{scale:1,duration:.45,ease:'expo.out',immediateRender:false},t)}
+function fadeUp(s,t,d=.6,y=40){tl.fromTo(s,{autoAlpha:0,y},{autoAlpha:1,y:0,duration:d,ease:'expo.out'},t)}
+function pop(s,t,d=.5){tl.fromTo(s,{autoAlpha:0,scale:.7},{autoAlpha:1,scale:1,duration:d,ease:'back.out(2)'},t)}
+function drift(s,a,b,f=1,to=1.035){tl.fromTo(s+' .drift',{scale:f},{scale:to,duration:b-a,ease:'none'},a)}
+// transitions
+function trWhip(a,b,t,dir=1){tl.fromTo(a,{xPercent:0,filter:'blur(0px)'},{xPercent:-100*dir,filter:'blur(24px)',duration:.4,ease:'power4.in',immediateRender:false},t-.4);hide(a,t);
+  show(b,t);tl.fromTo(b,{xPercent:100*dir,filter:'blur(24px)'},{xPercent:0,filter:'blur(0px)',duration:.45,ease:'power4.out'},t);sfx(t-.42,'air',1)}
+function trVert(a,b,t,dir=1){tl.fromTo(a,{yPercent:0,filter:'blur(0px)'},{yPercent:-100*dir,filter:'blur(20px)',duration:.4,ease:'power4.in',immediateRender:false},t-.4);hide(a,t);
+  show(b,t);tl.fromTo(b,{yPercent:100*dir,filter:'blur(20px)'},{yPercent:0,filter:'blur(0px)',duration:.45,ease:'power4.out'},t);sfx(t-.42,'air',1)}
+function trWipe(a,b,t,k=1){const L=$$('#wipe i');tl.fromTo(L,{yPercent:-110},{yPercent:0,duration:.3*k,stagger:.05*k,ease:'power3.in',immediateRender:false},t-.45*k);
+  hide(a,t);show(b,t);tl.to(L,{yPercent:110,duration:.36,stagger:.05,ease:'power3.out'},t+.02);tl.set(L,{yPercent:-110},t+.7);sfx(t-.45*k,'air',1)}
+function trCut(a,b,t){hide(a,t);show(b,t);punch(t,1.2)}
+function trZoom(a,b,t){tl.fromTo(a,{scale:1,filter:'blur(0px)',opacity:1},{scale:1.8,filter:'blur(20px)',opacity:0,duration:.35,ease:'power3.in',immediateRender:false},t-.35);hide(a,t);
+  show(b,t);tl.fromTo(b,{scale:.7,filter:'blur(20px)',opacity:0},{scale:1,filter:'blur(0px)',opacity:1,duration:.5,ease:'expo.out'},t);sfx(t-.37,'zoom',.9)}
+function flash(t,a=.7){tl.fromTo('#flash',{opacity:a},{opacity:0,duration:.35,ease:'power2.out',immediateRender:false},t)}
+
+// ---------- builders
+const card=(src,name,extra='')=>`<div class="sc" ${extra}><div class="sb"><i></i><i></i><i></i><b>${name}</b></div><div class="si"><img ${src.startsWith('v')?`class="vf" id="${src}"`:`src="${src}"`}><div class="dm"></div></div></div>`;
+const LBG=['#fff','#fff','#000','#fff','#f7f7f7','#fff','#fff','#12110f','#fff','#fff','#fff','#f1f0ec'];
+const lrow=(id,order)=>{$(id).innerHTML=order.concat(order).map(i=>`<div class="lt" style="position:relative;flex:none;width:170px;height:170px;background:${LBG[i]}"><img src="lg/l${i}.jpg"></div>`).join('')};
+lrow('#rowA',[0,1,2,3,4,5,6,7,8,9,10,11]); lrow('#rowB',[6,10,3,8,1,11,7,2,9,4,0,5]);
+$('#ppl').innerHTML=[0,1,2,3].map(i=>`<div class="pp" id="pp${i}"><svg viewBox="0 0 190 220"><circle cx="95" cy="62" r="52" fill="#000"/><path d="M8 220c4-60 42-96 87-96s83 36 87 96z" fill="#000"/></svg></div>`).join('');
+$('#days').innerHTML=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<div class="day" id="d${i}">${d}</div>`).join('');
+const CF=[['c/alpha.jpg','Alpha Team','Junk removal · Albany, NY'],['c/brother.jpg','Brothers Assis Electrical','Electrician · Pennsylvania'],['vC','Alpha Vertical','Facades & construction'],['c/deck.jpg','Deck & Fence','Outdoor construction · NJ'],
+ ['c/jgc.jpg','JGC General Contractor','Framing & siding · Lakeville, MN'],['vD','Home remodeling','Remodeling contractor'],['c/poenza.jpg','Poenza','Dental clinic'],['c/kundara.jpg','Kundara','Massage studio']];
+$('#cft').innerHTML=CF.map((c,i)=>`<div class="cf" id="cf${i}">${card(c[0],c[1])}<div class="cap"><b>${c[1]}</b><span>${c[2]}</span></div></div>`).join('');
+const TG=['alpha','brother','kundara','jgc','poenza','deck'];
+$('#tg').innerHTML=TG.map((k,i)=>`<div class="tt" id="tt${i}" style="left:${(i%2)*464}px;top:${Math.floor(i/2)*238}px"><img src="c/t_${k}.jpg"></div>`).join('');
+// video sequences
+const VS={vC:[[21.7,25.6,'v2',9.0]],vD:[[23.6,25.6,'v1',0.8]],vB:[[32.2,35.0,'v2',2.9],[35.0,37.1,'v2',12.9]]};
+const VMAX={v1:408,v2:502};
+hooks.push(t=>{for(const id in VS){const el=document.getElementById(id);let seg=VS[id].find(s=>t>=s[0]&&t<s[1]);if(!seg)seg=t<VS[id][0][0]?VS[id][0]:VS[id][VS[id].length-1];
+  const fr=Math.min(VMAX[seg[2]],Math.max(1,Math.round((clamp(t,seg[0],seg[1])-seg[0]+seg[3])*30)+1));const src=`${seg[2]}/f${String(fr).padStart(4,'0')}.jpg`;if(el.getAttribute('src')!==src)el.setAttribute('src',src)}});
+
+// ---------- S0 HOOK 0 - 3.9
+show('#s0',0); drift('#s0',0,3.95,1,1.05);
+tl.fromTo('#rowA',{x:0},{x:-720,duration:3.95,ease:'none'},0);
+tl.fromTo('#rowB',{x:-1440},{x:-720,duration:3.95,ease:'none'},0);
+tl.fromTo('#s0 .lt',{scale:.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.5,stagger:{each:.025,from:'center'},ease:'back.out(2)',immediateRender:false},0.02);
+tl.set('#s0 .lt',{autoAlpha:1,scale:1},0);
+tl.fromTo('#h0n',{scale:1.2,autoAlpha:1},{scale:1,duration:.4,ease:'expo.out'},0); punch(0,1.6); sfx(0,'impact',1.3); sfx(0,'snap',.9); keys(.02,3,.05);
+hooks.push(t=>{if(t<0.9){const p=clamp(t/0.9);/* digits roll */$('#h0n').innerHTML='<span class="y">$</span>'+(t<.02?20:Math.max(1,Math.round(eo(p)*20)))}else $('#h0n').innerHTML='<span class="y">$</span>20'});
+for(let i=0;i<6;i++)sfx(.1+i*.12,'tick',.35);
+rise('#h0m',0.5,.06); sfx(.95,'impact',.6); punch(.95,.8);
+rise('#h0s',1.3,.06); mark('#h0s',1.6,.32);
+// swap -> taught us one thing
+tl.to('#h0a',{yPercent:-40,autoAlpha:0,filter:'blur(14px)',duration:.32,ease:'power3.in'},1.86); sfx(1.84,'air',.8);
+tl.to(['#rowA','#rowB'],{opacity:.22,duration:.4},1.95);
+tl.set('#h0b',{visibility:'visible'},2.0);
+rise('#h0t',2.05,.07);
+tl.set('#h0o',{autoAlpha:0},0); slam('#h0o',2.62,1.7,1.4); tl.fromTo('#h0o .hl',{scaleX:0},{scaleX:1,duration:.3,ease:'power3.out',immediateRender:false},2.75); keys(2.63,3,.05);
+
+// ---------- S1 75% (white) 3.9 - 8.05
+trWipe('#s0','#s1',3.9,.6); drift('#s1',3.9,8.1,1,1.03);
+tl.fromTo('#ring',{scale:.7,autoAlpha:0},{scale:1,autoAlpha:1,duration:.6,ease:'expo.out'},3.95);
+hooks.push(t=>{const p=eo(clamp((t-4.0)/0.85));$('#pc').textContent=Math.round(p*75);$('#rfg').setAttribute('stroke-dashoffset',(1646.2*(1-.75*p)).toFixed(1))});
+for(let i=0;i<7;i++)sfx(4.0+i*.12,'tick',.32);
+sfx(4.86,'impact',.9); punch(4.88,1.2);
+rise('#s1a',4.92,.06); rise('#s1b',6.12,.06); rise('#s1c',6.75,.06); mark('#s1c',7.05,.32);
+
+// ---------- S2 BUILDING THEM 8.05 - 10.3
+trWhip('#s1','#s2',8.05); drift('#s2',8.05,10.3,1,1.03);
+fadeUp('#s2l',8.15,.4,14); keys(8.17,2);
+rise('#s2a',8.72,.06); rise('#s2b',9.2,.06);
+tl.fromTo('#bcard',{y:420,autoAlpha:0},{y:0,autoAlpha:1,duration:.7,ease:'expo.out'},8.1); sfx(8.1,'air',.5);
+tl.fromTo('#wf .wb',{scaleX:0},{scaleX:1,duration:.3,stagger:.08,ease:'power3.out'},8.4);
+for(let i=0;i<8;i++)sfx(8.4+i*.08,'tap',.3);
+tl.fromTo('#wf',{clipPath:'inset(0 0 0 0%)'},{clipPath:'inset(0 0 0 100%)',duration:.6,ease:'power3.inOut'},9.35); sfx(9.35,'swipe',.6);
+tl.fromTo('#prog',{autoAlpha:0},{autoAlpha:1,duration:.4},8.3);
+hooks.push(t=>{const p=clamp((t-8.35)/1.55);$('#pg').textContent=Math.round(p*100);$('#pgb').style.transform=`scaleX(${p})`});
+sfx(9.95,'chime',.6);
+
+// ---------- S3 LOSE CUSTOMERS (white) 10.3 - 13.95
+trWipe('#s2','#s3',10.3); drift('#s3',10.3,13.95,1,1.03);
+rise('#s3a',10.42,.06); rise('#s3b',10.95,.06);
+tl.fromTo('#ppl .pp',{autoAlpha:0,y:80,scale:.6},{autoAlpha:1,y:0,scale:1,duration:.5,stagger:.1,ease:'back.out(2)'},10.6);
+for(let i=0;i<4;i++)sfx(10.6+i*.1,'pop',.4);
+rise('#s3c',11.95,.06); mark('#s3c',12.2,.3);
+[0,1,2,3].forEach(i=>{const t=12.15+i*.18;tl.to('#pp'+i,{x:i%2?260:-260,y:-40,rotation:i%2?14:-14,autoAlpha:0,duration:.45,ease:'power3.in'},t);sfx(t+.1,'swipe',.35)});
+rise('#s3d',12.98,.07); sfx(13.0,'impact',.6);
+tl.fromTo('#days .day',{autoAlpha:0,y:30},{autoAlpha:1,y:0,duration:.35,stagger:.05},12.98);
+[0,1,2,3,4,5,6].forEach(i=>{const t=13.1+i*.11;tl.to('#d'+i,{backgroundColor:'#000',color:'#fff',duration:.06},t);if(i<6)tl.to('#d'+i,{backgroundColor:'#f0f0f0',color:'#000',duration:.15},t+.11);sfx(t,'tick',.4)});
+tl.to('#d6',{backgroundColor:'#FFC400',color:'#000',duration:.1},13.8);
+
+// ---------- S4 DIDN'T EXIST / CHEAP 13.95 - 17.75
+trWhip('#s3','#s4',13.95); drift('#s4',13.95,17.75,1,1.03);
+rise('#s4a',14.0,.05); rise('#s4b',14.55,.06);
+tl.fromTo('#bw2',{y:600,autoAlpha:0},{y:0,autoAlpha:1,duration:.8,ease:'expo.out'},14.1); sfx(14.1,'air',.5);
+tl.fromTo('#e404 div:first-child',{scale:.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.5,ease:'back.out(2)'},14.6); sfx(14.6,'glitch',.6);
+rise('#s4c',15.3,.06);
+tl.to('#s4c',{yPercent:-60,autoAlpha:0,duration:.25,ease:'power3.in'},16.1);
+[[16.2,8],[16.25,-10],[16.29,6],[16.33,0]].forEach(([t,x])=>tl.set('#bw2',{x},t)); sfx(16.2,'glitch',.8);
+tl.set('#cheap',{opacity:1},16.25);
+tl.set('#s4d .w',{yPercent:110},0); rise('#s4d',16.3,.07);
+tl.fromTo('#stamp',{scale:2.4,opacity:0},{scale:1,opacity:1,duration:.22,ease:'power4.in'},16.85); sfx(17.05,'stamp',1); punch(17.07,1.6);
+
+// ---------- S5 FOUNDERS 17.75 - 19.75
+trCut('#s4','#s5',17.8); sfx(17.8,'impact',.7);
+tl.set(['#fp','#fg'],{yPercent:100},0);
+fadeUp('#s5l',17.85,.5,-20); keys(17.87,4);
+tl.to('#fdiv',{scaleY:1,duration:.6,ease:'power3.inOut'},17.9);
+tl.fromTo('#fp',{yPercent:100},{yPercent:0,duration:.7,ease:'expo.out'},18.25); sfx(18.25,'air',.7);
+tl.fromTo('#fg',{yPercent:-100},{yPercent:0,duration:.7,ease:'expo.out'},18.8); sfx(18.8,'air',.7);
+tl.fromTo('#fp img',{scale:1.2},{scale:1.05,duration:1.5,ease:'power2.out'},18.25);
+tl.fromTo('#fg img',{scale:1.2},{scale:1.05,duration:1.0,ease:'power2.out'},18.8);
+tl.fromTo('#fp .nm',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.5},18.5); keys(18.52,3);
+tl.fromTo('#fg .nm',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.5},19.05); keys(19.07,4);
+
+// ---------- S6 BRAND (yellow) 19.75 - 21.75
+trWipe('#s5','#s6',19.75); drift('#s6',19.75,21.8,1,1.04);
+fadeUp('#s6l',19.8,.5,15); keys(19.8,3);
+tl.fromTo('#symw',{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.6,ease:'power3.inOut'},19.85); sfx(19.85,'swipe',.6);
+tl.fromTo('#wm3 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.55,stagger:.05,ease:'expo.out'},20.15); keys(20.15,6,.05);
+tl.fromTo('#tg3',{autoAlpha:0,y:16},{autoAlpha:1,y:0,duration:.6},20.8);
+sfx(19.8,'impact',.9); punch(19.85,1.2); sfx(20.9,'shimmer',.5);
+
+// ---------- S7 100+ WEBSITES 21.75 - 25.5
+trZoom('#s6','#s7',21.78);
+fadeUp('#s7l',21.84,.4,15); keys(21.86,4);
+hooks.push(t=>{const p=clamp((t-21.95)/1.05);$('#s7n').textContent=Math.round(eo(p)*100)});
+for(let i=0;i<8;i++)sfx(21.95+i*.13,'tick',.3);
+tl.fromTo('#s7p',{autoAlpha:0,scale:.3},{autoAlpha:1,scale:1,duration:.4,ease:'back.out(3)'},23.0); sfx(23.0,'impact',.8); punch(23.02,1.1);
+rise('#s7w',23.05,.06);
+tl.fromTo('#cfw',{autoAlpha:0,y:260},{autoAlpha:1,y:0,duration:.7,ease:'expo.out'},21.9); sfx(21.9,'air',.6);
+const CF0=22.25, CFS=.44, ease2=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+hooks.push(t=>{const u=Math.max(0,(t-CF0)/CFS);let k=Math.floor(u),f=clamp((u-k)/.62);let idx=Math.min(CF.length-1,k+ease2(f));
+  CF.forEach((c,i)=>{const d=i-idx,ad=Math.abs(d);const e=document.getElementById('cf'+i);
+  e.style.transform=`translateX(${d*600}px) translateZ(${-ad*420}px) rotateY(${clamp(-d*30,-42,42)}deg)`;e.style.opacity=clamp(1-ad*.3,0,1);e.style.zIndex=20-Math.round(ad*2);
+  e.querySelector('.cap').style.opacity=clamp(1-ad*2.2,0,1);e.querySelector('.dm').style.opacity=clamp(ad*.4,0,.55)})});
+for(let k=0;k<CF.length-1;k++)sfx(CF0+k*CFS,'swipe',.32);
+tl.set('#s7us',{autoAlpha:0},0); pop('#s7us',24.3); keys(24.32,4);
+
+// ---------- S8 ALL UNIQUE / REAL PEOPLE 25.5 - 28.55
+trVert('#s7','#s8',25.55); drift('#s8',25.55,28.6,1,1.03);
+rise('#s8a',25.6,.07); sfx(25.62,'impact',.6);
+TG.forEach((k,i)=>{const t=25.62+i*.07;tl.fromTo('#tt'+i,{autoAlpha:0,scale:.5,rotation:i%2?6:-6},{autoAlpha:1,scale:1,rotation:0,duration:.45,ease:'back.out(1.8)'},t);sfx(t,'snap',.5)});
+TG.forEach((k,i)=>tl.to('#tt'+i,{y:-60-i*8,x:(i%2?1:-1)*700,rotation:(i%2?1:-1)*12,autoAlpha:0,duration:.45,ease:'power3.in'},26.45+Math.floor(i/2)*.05));
+sfx(26.45,'air',.8);
+tl.fromTo('#rp',{x:1100,rotation:8},{x:0,rotation:0,duration:.6,ease:'expo.out'},26.65); sfx(26.65,'air',.6);
+tl.fromTo('#rg',{x:1100,rotation:8},{x:0,rotation:0,duration:.6,ease:'expo.out'},26.8);
+tl.fromTo(['#rp img','#rg img'],{scale:1.15},{scale:1.03,duration:1.8,ease:'power2.out'},26.65);
+tl.fromTo(['#rp .nm','#rg .nm'],{autoAlpha:0,y:30},{autoAlpha:1,y:0,duration:.45,stagger:.15},27.05); keys(27.07,4);
+rise('#s8b',26.62,.06); rise('#s8c',27.2,.06); mark('#s8c',27.6,.32);
+
+// ---------- S9 NEVER BY AI (yellow) 28.55 - 30.3
+trCut('#s8','#s9',28.6); flash(28.6,.45); drift('#s9',28.6,30.35,1.06,1);
+pop('#s9i',28.62); sfx(28.62,'shimmer',.5);
+rise('#s9a',28.68,.08); sfx(28.7,'impact',1);
+tl.fromTo('#s9b',{autoAlpha:0,yPercent:40},{autoAlpha:1,yPercent:0,duration:.4,ease:'expo.out'},29.15); keys(29.15,3);
+tl.to('#s9x',{scaleX:1,duration:.25,ease:'power3.inOut'},29.6); sfx(29.6,'swipe',.7); punch(29.7,1.2);
+tl.to('#s9i',{autoAlpha:.15,duration:.3},29.65);
+
+// ---------- S10 NO RISK (white) 30.3 - 32.2
+trWipe('#s9','#s10',30.35); drift('#s10',30.35,32.25,1,1.03);
+tl.fromTo('#s10i',{scale:.4,autoAlpha:0},{scale:1,autoAlpha:1,duration:.55,ease:'back.out(2)'},30.45); sfx(30.45,'pop',.6);
+rise('#s10a',30.48,.05); rise('#s10b',31.2,.07); mark('#s10b',31.5,.32); sfx(31.2,'impact',.6);
+
+// ---------- S11 BUILD FIRST 32.2 - 37.05
+trWhip('#s10','#s11',32.25); drift('#s11',32.25,37.1,1,1.03);
+fadeUp('#s11l',32.28,.4,15); rise('#s11a',32.32,.06); rise('#s11b',32.9,.06);
+tl.fromTo('#vcB',{y:500,autoAlpha:0},{y:0,autoAlpha:1,duration:.8,ease:'expo.out'},32.35);
+tl.fromTo('#wire',{clipPath:'inset(0 0 0 0%)'},{clipPath:'inset(0 0 0 100%)',duration:.8,ease:'power3.inOut'},33.1); sfx(33.1,'swipe',.6);
+tl.to('#vcB',{scale:1.03,duration:3.5,ease:'none'},33.3);
+rise('#s11c',34.08,.05); rise('#s11d',36.0,.07); mark('#s11d',36.4,.35);
+tl.set('#appr',{autoAlpha:0},0); pop('#appr',35.5); sfx(35.5,'chime',.8);
+
+// ---------- S12 ONE PAYMENT 37.05 - 39.55
+trZoom('#s11','#s12',37.1); drift('#s12',37.1,39.6,1,1.03);
+tl.set('#s12a',{autoAlpha:0},0); slam('#s12a',37.16,2,1.2);
+rise('#s12b',37.4,.06);
+tl.fromTo('#x1',{autoAlpha:0,x:-100},{autoAlpha:1,x:0,duration:.5,ease:'expo.out'},38.17); keys(38.19,4); sfx(38.17,'tap',.5);
+tl.to('#x1 .st',{scaleX:1,duration:.28,ease:'power3.inOut'},38.85); sfx(38.85,'swipe',.5);
+
+// ---------- S13 CTA 39.55 - end
+trWipe('#s12','#s13',39.6); drift('#s13',39.6,DUR,1,1.03);
+tl.fromTo('#sym11',{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.6,ease:'power3.inOut'},39.7);
+tl.fromTo('#wm11 .L',{yPercent:110,autoAlpha:0},{yPercent:0,autoAlpha:1,duration:.5,stagger:.04,ease:'expo.out'},39.9);
+tl.fromTo('#tg11',{autoAlpha:0},{autoAlpha:1,duration:.6},40.2);
+rise('#s13a',39.68,.06); rise('#s13b',40.05,.06); rise('#s13c',40.45,.06); sfx(40.45,'impact',.7); punch(40.5,1);
+fadeUp('#s13btn',40.9,.7,60); sfx(40.9,'tap',.6);
+tl.fromTo('#btn',{scale:1},{scale:1.05,duration:.45,yoyo:true,repeat:3,ease:'sine.inOut'},41.4);
+fadeUp('#s13f',41.4,.6,15);
+tl.set({},{},DUR);
+
+const g=$('#grain').getContext('2d'),gi=g.createImageData(540,960);
+function grain(f){let s=(f*9301+49297)%233280||1;const d=gi.data;for(let i=0;i<d.length;i+=4){s=(s*16807)%2147483647;const v=s&255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(gi,0,0)}
+window.SFX=SFX; window.DUR=DUR;
+window.seek=(t,f)=>{tl.seek(Math.max(t,.0005),false);hooks.forEach(h=>h(t));grain(f);return Promise.all($$('img').map(i=>i.complete&&i.naturalWidth?Promise.resolve():i.decode().catch(()=>{})))};
+window.ready=document.fonts.ready.then(()=>true);
+</script>
+</body></html>
