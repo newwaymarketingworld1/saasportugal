@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:M;font-weight:400;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:900;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-900-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;color:#fff;font-family:M,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:#000}
+#world{position:absolute;left:0;top:0;width:1080px;height:12000px;transform-origin:0 0;
+  background-image:radial-gradient(circle,#1d1d1d 1.6px,transparent 1.8px);background-size:44px 44px}
+#bg{position:absolute;left:0;top:0;width:1080px;height:12000px}
+.ol{position:absolute;white-space:nowrap;font:900 300px/1 M;letter-spacing:-.03em;color:transparent;-webkit-text-stroke:2px #262626;text-transform:uppercase}
+#lines{position:absolute;left:0;top:0;overflow:visible;z-index:1}
+.badge,.chip,.node,.dot,.nm,.lg{z-index:3}
+.ln{fill:none;stroke:#FFC400;stroke-width:34;stroke-linecap:round;stroke-linejoin:round}
+.abs{position:absolute}
+.ctr{position:absolute;left:0;width:1080px;text-align:center}
+.big{font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.92}
+.sub{font-weight:600;color:#9a9a9a;letter-spacing:.01em}
+.lab{font-weight:700;font-size:24px;letter-spacing:.42em;text-transform:uppercase;color:#8c8c8c}
+.y{color:#FFC400}
+.mk{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .01em .04em}
+.mk>span{display:inline-block}
+.card{position:absolute;width:900px;height:481px;border-radius:22px;overflow:hidden;background:#0e0e0e}
+.card .bar{height:44px;background:#161616;display:flex;align-items:center;gap:9px;padding:0 20px}
+.card .bar i{width:11px;height:11px;border-radius:50%;background:#3a3a3a}
+.card .scr{position:absolute;left:0;top:44px;width:900px;height:437px;overflow:hidden;perspective:1600px}
+.wb{position:absolute;border-radius:10px;background:#242424}
+.flip{position:absolute;inset:0;backface-visibility:hidden}
+.flip img{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;background:#fff;color:#000;font:800 24px M;letter-spacing:.04em;box-shadow:0 20px 40px rgba(0,0,0,.45);white-space:nowrap}
+.badge i{width:12px;height:12px;border-radius:50%;background:#FFC400;display:inline-block}
+.dot{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#000;border:8px solid #FFC400}
+.chip{position:absolute;padding:12px 20px;border-radius:14px;background:#fff;color:#000;font:800 22px M;white-space:nowrap;box-shadow:0 16px 30px rgba(0,0,0,.4)}
+.lg{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #000,0 0 0 5px rgba(255,255,255,.18)}
+.lg img{position:absolute;left:4%;top:4%;width:92%;height:92%}
+.th{position:absolute;width:400px;height:194px;border-radius:14px;overflow:hidden;background:#111}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.ph{position:absolute;border-radius:50%;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.nm{position:absolute;font:900 44px/1 M;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.nm span{display:block;font:700 18px M;letter-spacing:.38em;color:#FFC400;margin-top:10px}
+.node{position:absolute;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px #000}
+.step{position:absolute;width:560px}
+.step b{display:block;font:900 54px/1.02 M;letter-spacing:-.02em;text-transform:uppercase}
+.step span{display:block;font:600 28px M;color:#9a9a9a;margin-top:14px}
+.step em{display:inline-block;font-style:normal;font:900 22px M;letter-spacing:.2em;color:#000;background:#FFC400;padding:6px 14px;border-radius:999px;margin-bottom:16px}
+#lock{position:absolute;inset:0;background:#000;opacity:0;visibility:hidden}
+#vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 62% at 50% 45%,rgba(0,0,0,0) 62%,rgba(0,0,0,.45))}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.05;mix-blend-mode:overlay;pointer-events:none}
+</style></head>
+<body>
+<div id="stage">
+<div id="world">
+ <div id="bg"></div>
+ <div id="content"></div>
+ <svg id="lines" width="1080" height="12000" viewBox="0 0 1080 12000"></svg>
+</div>
+<div id="lock">
+ <svg id="lockN" width="1080" height="1920" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+ <svg id="lsym" viewBox="392 370 290 138" style="position:absolute;left:220px;top:600px;width:640px;overflow:visible;opacity:0"></svg>
+ <svg id="lwm" viewBox="196 544 688 110" style="position:absolute;left:150px;top:1010px;width:780px;overflow:visible"></svg>
+ <svg id="ltg" viewBox="258 676 558 34" style="position:absolute;left:230px;top:1160px;width:620px;overflow:visible"></svg>
+ <div class="ctr big" id="lfw" style="top:1330px;font-size:64px"></div>
+ <div class="ctr lab" id="lsv" style="top:1450px">Websites · Ads · Growth</div>
+</div>
+<div id="vign"></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script src="main.js"></script>
+</body></html>
