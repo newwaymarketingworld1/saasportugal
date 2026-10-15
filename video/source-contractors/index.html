@@ -1,0 +1,197 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:M;font-weight:400;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:600;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:900;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-900-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;color:#fff;font-family:M,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse 90% 60% at 50% 52%,#151515 0%,#070707 55%,#000 100%)}
+#cam{position:absolute;inset:0;perspective:2400px}
+#glow{position:absolute;left:-100px;right:-100px;top:420px;height:1200px;background:radial-gradient(ellipse 45% 40% at 50% 50%,rgba(255,196,0,.20),rgba(255,196,0,0) 70%)}
+#floor{position:absolute;left:0;right:0;top:1500px;height:420px;background:linear-gradient(180deg,rgba(255,196,0,0),rgba(255,196,0,.05));opacity:.6}
+.bigw{position:absolute;left:0;right:0;top:760px;text-align:center;font:900 260px/1 M;letter-spacing:-.05em;text-transform:uppercase;color:#151515;white-space:nowrap}
+/* captions */
+#caps{position:absolute;left:0;right:0;top:0;height:420px}
+.cap{position:absolute;left:50px;right:50px;text-align:center;font-weight:800;text-transform:uppercase;letter-spacing:-.015em;line-height:1.04;text-shadow:0 8px 40px rgba(0,0,0,.6)}
+.cap .ln{display:block;white-space:nowrap}
+.cw{position:relative;display:inline-block;z-index:0}
+.cw .off{opacity:0}
+.cw.yel{color:#FFC400}
+.cw .hl{position:absolute;left:-.1em;right:-.1em;top:.06em;bottom:0;background:#FFC400;z-index:-1;transform:scaleX(0);transform-origin:left}
+.cw .bk2{position:absolute;left:0;top:0;color:#000;white-space:nowrap;clip-path:inset(0 100% 0 0);text-shadow:none}
+.cw .crt{display:inline-block;width:0;height:.78em;vertical-align:-.04em;position:relative}
+.cw .crt::after{content:'';position:absolute;left:.06em;top:0;width:.08em;height:100%;background:#FFC400}
+/* browser window */
+.win{position:absolute;width:900px;height:485px;border-radius:20px;overflow:hidden;background:#0d0d0d;box-shadow:0 0 0 1.5px rgba(255,255,255,.16),0 60px 120px rgba(0,0,0,.75),0 20px 40px rgba(0,0,0,.5)}
+.win .bar{position:relative;height:48px;background:linear-gradient(#1d1d1d,#171717);display:flex;align-items:center;gap:9px;padding:0 20px}
+.win .bar i{width:12px;height:12px;border-radius:50%}
+.win .bar i:nth-child(1){background:#ff5f57}.win .bar i:nth-child(2){background:#febc2e}.win .bar i:nth-child(3){background:#28c840}
+.win .url{position:absolute;left:200px;right:200px;top:11px;height:26px;border-radius:8px;background:#262626;font:600 15px/26px M;color:#8a8a8a;text-align:center}
+.win .scr{position:absolute;left:0;top:48px;width:900px;height:437px;overflow:hidden;background:#0b0b0b}
+.win .scr .pg{position:absolute;inset:0}
+.win .scr img{width:100%;height:100%;object-fit:cover;display:block}
+.wb{position:absolute;border-radius:10px;background:#252525}
+.shine{position:absolute;inset:0;background:linear-gradient(110deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.18) 50%,rgba(255,255,255,0) 65%);transform:translateX(-130%)}
+.tg{padding:16px 28px;border-radius:999px;background:#141414;box-shadow:0 0 0 1.5px #2c2c2c;font:800 26px M;letter-spacing:.06em;text-transform:uppercase;color:#777}
+/* glass cards */
+.gl{position:absolute;border-radius:28px;background:rgba(22,22,22,.86);box-shadow:0 0 0 1.5px rgba(255,255,255,.14),0 40px 80px rgba(0,0,0,.6);backdrop-filter:blur(10px);padding:26px 32px}
+.pill{position:absolute;display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;font:800 24px M;letter-spacing:.03em;white-space:nowrap;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.lab{font:700 18px M;letter-spacing:.3em;text-transform:uppercase;color:#9a9a9a}
+/* phone */
+#ph{position:absolute;left:305px;top:470px;width:470px;height:960px;border-radius:72px;background:#0a0a0a;box-shadow:0 0 0 3px #2c2c2c,0 0 0 9px #0d0d0d,0 0 0 10.5px #3a3a3a,0 70px 140px rgba(0,0,0,.8)}
+#ph .scr{position:absolute;left:13px;top:13px;right:13px;bottom:13px;border-radius:60px;overflow:hidden;background:#fff}
+#ph .isl{position:absolute;left:50%;top:26px;width:132px;height:38px;margin-left:-66px;border-radius:20px;background:#000;z-index:50}
+.app{position:absolute;inset:0;overflow:hidden}
+.sb{position:absolute;left:0;right:0;top:0;height:76px;display:flex;justify-content:space-between;align-items:center;padding:14px 46px 0;font:700 20px M;z-index:40}
+/* search app */
+#aSearch{background:#fff;color:#111}
+.sq{position:absolute;left:24px;right:24px;top:100px;height:68px;border-radius:34px;background:#f1f3f4;display:flex;align-items:center;gap:14px;padding:0 24px;font:600 24px M;color:#222}
+.sq i.cr{display:inline-block;width:2px;height:28px;background:#1a73e8;margin-left:2px;vertical-align:-6px}
+.rs{position:absolute;left:24px;right:24px;height:150px;border-radius:22px;background:#fff;box-shadow:0 1px 0 #e8e8e8,0 6px 20px rgba(0,0,0,.06);padding:20px 22px}
+.rs b{display:block;font:800 26px M;color:#1a0dab}
+.rs .m{font:600 19px M;color:#5f6368;margin-top:6px}
+.rs .st{font:700 19px M;color:#e8a100;margin-top:6px}
+.rs .bt{position:absolute;right:20px;bottom:18px;display:flex;gap:10px}
+.rs .bt span{padding:9px 16px;border-radius:999px;border:1.5px solid #dadce0;font:700 17px M;color:#1a73e8}
+.nows{color:#d93025 !important;border-color:#f3c3be !important}
+/* mobile site */
+#aSite{background:#0e0e0e;color:#fff}
+#aSite .hero{position:absolute;left:0;right:0;top:0;height:560px}
+#aSite .hero img{width:100%;height:100%;object-fit:cover}
+#aSite .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.15) 40%,rgba(0,0,0,.85))}
+#aSite .tt{position:absolute;left:30px;right:30px;top:380px;z-index:2;font:800 40px/1.05 M}
+#aSite .tt span{display:block;font:600 18px M;letter-spacing:.2em;color:#FFC400;margin-bottom:12px}
+#aSite .cta{position:absolute;left:30px;right:30px;top:600px;height:84px;border-radius:20px;background:#FFC400;color:#000;display:flex;align-items:center;justify-content:center;gap:14px;font:800 26px M}
+#aSite .cta2{position:absolute;left:30px;right:30px;top:700px;height:84px;border-radius:20px;border:2px solid #333;display:flex;align-items:center;justify-content:center;font:700 24px M;color:#ddd}
+#aSite .rv{position:absolute;left:30px;right:30px;top:820px;font:700 19px M;color:#bbb}
+/* call app */
+.call{background:linear-gradient(180deg,#2b2b2b,#0b0b0b);color:#fff;text-align:center}
+.call .av{position:absolute;left:50%;top:210px;width:170px;height:170px;margin-left:-85px;border-radius:50%;background:#3a3a3a;display:flex;align-items:center;justify-content:center;font:800 64px M;color:#fff}
+.call .nm{position:absolute;left:0;right:0;top:410px;font:700 40px M}
+.call .st{position:absolute;left:0;right:0;top:470px;font:600 24px M;color:#aaa}
+.call .end{position:absolute;left:50%;bottom:110px;width:120px;height:120px;margin-left:-60px;border-radius:50%;background:#ff3b30;display:flex;align-items:center;justify-content:center}
+.call .keys{position:absolute;left:60px;right:60px;top:600px;display:grid;grid-template-columns:repeat(3,1fr);gap:26px 0;justify-items:center}
+.call .keys i{width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.12)}
+/* error app */
+#aErr{background:#fff;color:#202124}
+#aErr .ic{position:absolute;left:44px;top:250px;width:80px;height:80px}
+#aErr h3{position:absolute;left:44px;right:40px;top:360px;font:700 36px/1.2 M}
+#aErr p{position:absolute;left:44px;right:40px;top:460px;font:500 22px/1.5 M;color:#5f6368}
+#aErr .rl{position:absolute;right:40px;top:620px;padding:16px 30px;border-radius:999px;background:#1a73e8;color:#fff;font:700 22px M}
+/* chat app */
+#aChat{background:#0e0e0e;color:#fff}
+#aChat .hd{position:absolute;left:0;right:0;top:0;height:170px;background:#161616;display:flex;align-items:flex-end;gap:16px;padding:0 28px 22px}
+#aChat .hd .lg{width:64px;height:64px;border-radius:50%;background:#FFC400;display:flex;align-items:center;justify-content:center}
+#aChat .hd b{display:block;font:800 24px M}#aChat .hd span{display:block;font:600 17px M;color:#28c840;margin-top:4px}
+.bb{position:absolute;max-width:340px;padding:18px 22px;border-radius:26px;font:600 23px/1.3 M}
+.bb.me{right:24px;background:#FFC400;color:#000;border-bottom-right-radius:8px}
+.bb.them{left:24px;background:#222;color:#fff;border-bottom-left-radius:8px}
+.tap{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;background:rgba(255,255,255,.35);border:3px solid rgba(255,255,255,.9);opacity:0;z-index:60}
+#lock{position:absolute;inset:0;opacity:0;visibility:hidden}
+#vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 85% 65% at 50% 50%,rgba(0,0,0,0) 62%,rgba(0,0,0,.5))}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.045;mix-blend-mode:overlay;pointer-events:none}
+</style></head>
+<body>
+<div id="stage">
+<div id="glow"></div><div id="floor"></div>
+<div class="bigw" id="bw"></div>
+<div id="cam">
+ <!-- hook fan -->
+ <div id="fan" style="position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d">
+  <div class="win" id="fL" style="left:90px;top:740px"><div class="bar"><i></i><i></i><i></i><div class="url">deckandfence.com</div></div><div class="scr"><img src="c/deck.jpg"></div></div>
+  <div class="win" id="fR" style="left:90px;top:740px"><div class="bar"><i></i><i></i><i></i><div class="url">brothersassis.com</div></div><div class="scr"><img src="c/brother.jpg"></div></div>
+  <div class="win" id="fC" style="left:90px;top:740px"><div class="bar"><i></i><i></i><i></i><div class="url">jgcgeneralcontractor.com</div></div><div class="scr"><img src="c/jgc.jpg"><div class="shine" id="fsh"></div></div></div>
+ </div>
+ <!-- main browser window -->
+ <div class="win" id="win" style="left:90px;top:740px"><div class="bar"><i></i><i></i><i></i><div class="url" id="url">yourbusiness.com</div></div>
+  <div class="scr" id="wscr">
+   <div class="pg" id="pgWire" style="background:#0e0e0e">
+    <div class="wb" style="left:36px;top:24px;width:130px;height:22px"></div><div class="wb" style="left:560px;top:28px;width:300px;height:14px"></div>
+    <div class="wb" style="left:200px;top:120px;width:500px;height:52px"></div><div class="wb" style="left:260px;top:186px;width:380px;height:52px"></div>
+    <div class="wb" style="left:250px;top:262px;width:400px;height:16px;background:#1c1c1c"></div>
+    <div class="wb" style="left:330px;top:310px;width:240px;height:60px;background:#FFC400;border-radius:14px"></div>
+   </div>
+   <div class="pg" id="pgA" style="opacity:0"><img src="c/alpha.jpg"></div>
+   <div class="pg" id="pgJ" style="opacity:0"><img src="c/jgc.jpg"></div>
+   <div class="pg" id="pgRoof" style="opacity:0"><img class="vf" id="vRoof"></div>
+   <div class="pg" id="pgRem" style="opacity:0"><img class="vf" id="vRem"></div>
+   <div class="pg" id="pgPaint" style="opacity:0"><img class="vf" id="vPaint"></div>
+   <div class="pg" id="pgJ2" style="opacity:0"><img src="c/jgc.jpg"></div>
+   <div class="pg" id="pgB" style="opacity:0"><img src="c/brother.jpg"></div>
+   <div class="shine" id="wsh"></div>
+  </div>
+ </div>
+ <!-- floating cards around the window -->
+ <div class="pill" id="pBuilt" style="left:640px;top:680px;background:#fff;color:#000"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Built first</div>
+ <div class="gl" id="gDue" style="left:560px;top:1110px;width:420px"><div class="lab">Due today</div><div style="font:900 104px/1 M;letter-spacing:-.04em;color:#FFC400;margin-top:10px">$0.00</div></div>
+ <div class="pill" id="pLove" style="left:100px;top:1190px;background:#FFC400;color:#000"><svg width="26" height="26" viewBox="0 0 24 24" fill="#000"><path d="M12 21s-7.5-4.6-9.5-9.4C1.2 8.5 3.3 5 6.7 5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.4 0 5.5 3.5 4.2 6.6C19.5 16.4 12 21 12 21z"/></svg>Pay when you love it</div>
+ <div id="fan2" style="position:absolute;inset:0;transform-style:preserve-3d">
+  <div class="win" id="g1" style="left:90px;top:740px;opacity:0"><div class="bar"><i></i><i></i><i></i><div class="url">deckandfence.com</div></div><div class="scr"><img src="c/deck.jpg"></div></div>
+  <div class="win" id="g2" style="left:90px;top:740px;opacity:0"><div class="bar"><i></i><i></i><i></i><div class="url">brothersassis.com</div></div><div class="scr"><img src="c/brother.jpg"></div></div>
+  <div class="win" id="g3" style="left:90px;top:740px;opacity:0"><div class="bar"><i></i><i></i><i></i><div class="url">alphateam.com</div></div><div class="scr"><img src="c/alpha.jpg"></div></div>
+ </div>
+ <div id="tags" style="position:absolute;left:60px;right:60px;top:1290px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px">
+  <span class="tg" id="tg0">Roofers</span><span class="tg" id="tg1">Remodelers</span><span class="tg" id="tg2">Painters</span><span class="tg" id="tg3">General contractors</span></div>
+ <!-- review / love / pay overlays (s6) -->
+ <div class="pill" id="cm1" style="left:560px;top:800px;background:#fff;color:#000">Love the photos!</div>
+ <div class="pill" id="cm2" style="left:120px;top:1000px;background:#fff;color:#000">Make the button bigger ✎</div>
+ <div id="heart" style="position:absolute;left:390px;top:820px;width:300px;height:300px"><svg width="300" height="300" viewBox="0 0 24 24" fill="#FFC400"><path d="M12 21s-7.5-4.6-9.5-9.4C1.2 8.5 3.3 5 6.7 5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.4 0 5.5 3.5 4.2 6.6C19.5 16.4 12 21 12 21z"/></svg></div>
+ <div id="burst" style="position:absolute;left:540px;top:970px"></div>
+ <div class="gl" id="gPay" style="left:150px;top:1170px;width:780px;display:flex;align-items:center;gap:26px">
+  <div style="width:84px;height:84px;border-radius:50%;background:#FFC400;display:flex;align-items:center;justify-content:center;flex:none"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <div><div class="lab">Payment</div><div style="font:800 40px M;margin-top:6px">One-time · Paid</div></div></div>
+ <div class="gl" id="gMo" style="left:150px;top:1350px;width:780px;display:flex;align-items:center;justify-content:space-between">
+  <div><div class="lab">Monthly fees</div><div style="position:relative;display:inline-block;font:800 40px M;margin-top:6px;color:#bbb">Subscription<i id="moS" style="position:absolute;left:-6px;right:-6px;top:52%;height:6px;background:#FFC400;transform:scaleX(0);transform-origin:left"></i></div></div>
+  <div style="font:900 72px/1 M;color:#FFC400">$0<span style="font-size:30px;color:#bbb">/mo</span></div></div>
+
+ <!-- phone -->
+ <div id="ph"><div class="isl"></div><div class="scr">
+  <div class="app" id="aSearch">
+   <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+   <div class="sq"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span id="qt"></span><i class="cr" id="qc"></i></div>
+   <div class="rs" id="r1" style="top:200px"><b>Your Business</b><div class="m">Roofing · Remodeling · Local</div><div class="st">★★★★★ 4.9 (120)</div><div class="bt"><span id="r1w">Website</span><span>Call</span></div></div>
+   <div class="rs" id="r2" style="top:370px"><b>Next Guy Roofing</b><div class="m">Roofing contractor · Local</div><div class="st">★★★★☆ 4.3 (41)</div><div class="bt"><span>Website</span><span id="r2c">Call</span></div></div>
+   <div class="rs" id="r3" style="top:540px"><b>Ridgeline Pros</b><div class="m">General contractor</div><div class="st">★★★★☆ 4.4 (63)</div><div class="bt"><span>Website</span><span>Call</span></div></div>
+  </div>
+  <div class="app" id="aSite" style="opacity:0">
+   <div class="sb" style="color:#fff"><span>9:41</span><span>●●● ▮</span></div>
+   <div class="hero"><img src="c/m_jgc.jpg"></div>
+   <div class="tt"><span>LICENSED · INSURED</span>Built to last.<br>Done right.</div>
+   <div class="cta" id="callBtn"><svg width="28" height="28" viewBox="0 0 24 24" fill="#000"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>Call now</div>
+   <div class="cta2">Get a free quote</div>
+   <div class="rv">★★★★★ &nbsp;“Showed up on time, did beautiful work.”</div>
+  </div>
+  <div class="app call" id="aCall1" style="opacity:0"><div class="av">YB</div><div class="nm">Your Business</div><div class="st">calling…</div><div class="keys"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="end"><svg width="54" height="54" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg)"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div></div>
+  <div class="app" id="aErr" style="opacity:0"><div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+   <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M9 9l6 6M15 9l-6 6"/></svg>
+   <h3>This site can’t be reached</h3><p>yourbusiness.com took too long to respond.<br>ERR_NAME_NOT_RESOLVED</p><div class="rl">Reload</div></div>
+  <div class="app call" id="aCall2" style="opacity:0"><div class="av" style="background:#5a5a5a">NG</div><div class="nm">Next Guy Roofing</div><div class="st">calling…</div><div class="keys"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="end"><svg width="54" height="54" viewBox="0 0 24 24" fill="#fff" style="transform:rotate(135deg)"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div></div>
+  <div class="app" id="aChat" style="opacity:0">
+   <div class="hd"><div class="lg"><svg id="chN" viewBox="392 370 290 138" width="44"></svg></div><div><b>NewWay Marketing World</b><span>● online</span></div></div>
+   <div class="bb them" id="m1" style="top:210px">Hey! 👋 Want a website that brings you calls?</div>
+   <div class="bb me" id="m2" style="top:360px">Yes! Build mine first?</div>
+   <div class="bb them" id="m3" style="top:470px">Absolutely. You only pay when you love it.</div>
+  </div>
+  <div class="tap" id="tap"></div>
+ </div></div>
+ <div id="cbtn" style="position:absolute;left:0;right:0;top:1470px;text-align:center"><span id="btn" style="display:inline-flex;align-items:center;gap:22px;padding:38px 62px;border-radius:999px;background:#FFC400;color:#000;font:800 40px M;letter-spacing:.02em;text-transform:uppercase;box-shadow:0 30px 60px rgba(255,196,0,.25)">Send us a message<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+ <div class="tap" id="tap2" style="left:540px;top:1540px"></div>
+</div>
+<div id="caps"></div>
+<div id="lock">
+ <svg id="lsym" viewBox="392 370 290 138" style="position:absolute;left:330px;top:640px;width:420px;overflow:visible"></svg>
+ <svg id="lwm" viewBox="196 544 688 110" style="position:absolute;left:190px;top:900px;width:700px;overflow:visible"></svg>
+ <svg id="ltg" viewBox="258 676 558 34" style="position:absolute;left:260px;top:1035px;width:560px;overflow:visible"></svg>
+</div>
+<div id="vign"></div>
+<canvas id="grain" width="540" height="960"></canvas>
+</div>
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script src="words.js"></script>
+<script src="main.js"></script>
+</body></html>
