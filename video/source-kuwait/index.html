@@ -1,0 +1,334 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><style>
+@font-face{font-family:R;font-weight:400;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-arabic-400-normal.woff2)}
+@font-face{font-family:R;font-weight:500;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-arabic-500-normal.woff2)}
+@font-face{font-family:R;font-weight:600;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-arabic-600-normal.woff2)}
+@font-face{font-family:R;font-weight:700;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-arabic-700-normal.woff2)}
+@font-face{font-family:R;font-weight:400;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-latin-400-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:R;font-weight:500;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-latin-500-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:R;font-weight:600;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-latin-600-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:R;font-weight:700;src:url(node_modules/@fontsource/readex-pro/files/readex-pro-latin-700-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:K;font-weight:700;src:url(node_modules/@fontsource/cairo/files/cairo-arabic-700-normal.woff2)}
+@font-face{font-family:K;font-weight:800;src:url(node_modules/@fontsource/cairo/files/cairo-arabic-800-normal.woff2)}
+@font-face{font-family:K;font-weight:900;src:url(node_modules/@fontsource/cairo/files/cairo-arabic-900-normal.woff2)}
+@font-face{font-family:K;font-weight:900;src:url(node_modules/@fontsource/cairo/files/cairo-latin-900-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:K;font-weight:800;src:url(node_modules/@fontsource/cairo/files/cairo-latin-800-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:P;font-weight:400;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2)}
+@font-face{font-family:P;font-weight:500;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-500-normal.woff2)}
+@font-face{font-family:P;font-weight:600;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-600-normal.woff2)}
+@font-face{font-family:P;font-weight:700;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-700-normal.woff2)}
+@font-face{font-family:P;font-weight:500;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-latin-500-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:P;font-weight:600;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-latin-600-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:P;font-weight:700;src:url(node_modules/@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-latin-700-normal.woff2);unicode-range:U+0000-00FF}
+@font-face{font-family:M;font-weight:700;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:M;font-weight:800;src:url(node_modules/@fontsource/montserrat/files/montserrat-latin-800-normal.woff2)}
+:root{--y:#FFC400;--ink:#0B0B0C;--paper:#F0F1F2}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;color:#fff;font-family:R,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--ink)}
+.bg{position:absolute;inset:0}
+#bgD{background:radial-gradient(ellipse 80% 55% at 50% 42%,#1a1a1c 0%,#0b0b0c 60%,#050505 100%)}
+#bgL{background:radial-gradient(ellipse 80% 60% at 50% 40%,#ffffff 0%,#F0F1F2 55%,#e3e4e6 100%);clip-path:circle(0px at 540px 960px)}
+#bgY{background:radial-gradient(ellipse 80% 60% at 50% 40%,#ffd23a 0%,#FFC400 60%,#f0b400 100%);clip-path:circle(0px at 540px 960px)}
+#bgK{background:#050505;clip-path:circle(0px at 540px 960px)}
+#grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.035) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.035) 1.5px,transparent 1.5px);background-size:90px 90px}
+#cam{position:absolute;inset:0;perspective:2200px;transform-origin:540px 900px}
+.scene{position:absolute;inset:0;visibility:hidden;transform-style:preserve-3d}
+.abs{position:absolute}
+.ar{direction:rtl}
+.y{color:var(--y)}
+/* browser */
+.win{position:absolute;border-radius:26px;overflow:hidden;background:#fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.08),0 50px 120px rgba(0,0,0,.35)}
+.win .bar{position:relative;height:58px;background:#f4f4f5;display:flex;align-items:center;gap:10px;padding:0 24px;border-bottom:1.5px solid #e6e6e8}
+.win .bar i{width:14px;height:14px;border-radius:50%;background:#d9d9dc}
+.win .url{position:absolute;left:150px;right:150px;top:13px;height:32px;border-radius:10px;background:#e9e9ec;font:600 17px/32px M;color:#7b7b80;text-align:center;letter-spacing:.02em;direction:ltr}
+.dark.win{background:#121214;box-shadow:0 0 0 1.5px rgba(255,255,255,.1),0 60px 120px rgba(0,0,0,.7)}
+.dark.win .bar{background:#1b1b1e;border-color:#232327}.dark.win .bar i{background:#2e2e33}.dark.win .url{background:#242428;color:#77777d}
+/* skeleton */
+.sk{position:absolute;border-radius:14px;background:#26262a;overflow:hidden}
+.sk::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(var(--sh,-100%))}
+/* the site */
+.site{position:absolute;left:0;top:58px;width:900px;height:1110px;background:#fbfaf7;direction:rtl;color:#141414;overflow:hidden}
+.site .nav{position:absolute;left:0;right:0;top:0;height:86px;display:flex;align-items:center;justify-content:space-between;padding:0 44px}
+.site .brand{display:flex;align-items:center;gap:14px;font:700 30px R}
+.site .brand i{width:44px;height:44px;border-radius:14px;background:#141414;display:flex;align-items:center;justify-content:center}
+.site .brand i::after{content:'';width:16px;height:16px;border-radius:50%;background:var(--y)}
+.site .menu{display:flex;gap:34px;font:500 21px P;color:#555}
+.site .hero{position:absolute;left:30px;right:30px;top:86px;height:500px;border-radius:26px;overflow:hidden}
+.site .hero svg{position:absolute;inset:0}
+.site .htx{position:absolute;right:50px;top:96px;width:440px;color:#fff}
+.site .htx small{display:block;font:600 19px P;color:var(--y);margin-bottom:14px}
+.site .htx h1{font:800 58px/1.18 K}
+.site .hbtn{display:inline-flex;align-items:center;gap:12px;margin-top:30px;padding:18px 32px;border-radius:999px;background:var(--y);color:#141414;font:700 23px P}
+.site .sec{position:absolute;right:44px;font:700 26px R}
+.site .gal{position:absolute;left:30px;right:30px;top:668px;height:190px;display:flex;gap:18px}
+.site .gal .ph{flex:1;border-radius:20px;background:#ecebe6;overflow:hidden;position:relative}
+.site .gal .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.site .srv{position:absolute;left:30px;right:30px;top:942px;height:150px;display:flex;gap:18px}
+.site .srv .c{flex:1;border-radius:20px;background:#fff;box-shadow:0 0 0 1.5px #ecebe6,0 12px 30px rgba(0,0,0,.05);padding:22px 22px;position:relative}
+.site .srv .c b{display:block;font:700 22px R;margin-top:14px}
+.site .srv .c em{display:block;height:9px;border-radius:5px;background:#ecebe6;margin-top:12px;width:80%}
+.site .srv .c .ic{width:52px;height:52px;border-radius:16px;background:#141414;display:flex;align-items:center;justify-content:center}
+.wf{position:absolute;border:2.5px dashed #c9c9cf;border-radius:22px}
+/* chips (S2) */
+.chip{position:absolute;width:400px;height:230px;border-radius:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;direction:rtl}
+.chip b{font:800 66px/1 K}
+.chip span{position:absolute;top:22px;right:28px;font:700 22px R;opacity:.5}
+.chip svg{width:64px;height:64px}
+/* phone */
+.phone{position:absolute;width:540px;height:1100px;border-radius:84px;background:#0b0b0c;box-shadow:0 0 0 3px #2b2b2e,0 0 0 10px #0d0d0e,0 0 0 11.5px #3b3b40,0 80px 160px rgba(0,0,0,.45)}
+.phone .scr{position:absolute;left:14px;top:14px;right:14px;bottom:14px;border-radius:70px;overflow:hidden;background:#efeae2}
+.phone .isl{position:absolute;left:50%;top:28px;width:150px;height:44px;margin-left:-75px;border-radius:22px;background:#000;z-index:50}
+.chat{position:absolute;inset:0;direction:rtl;font-family:P}
+.chat .hd{position:absolute;left:0;right:0;top:0;height:200px;background:#fff;display:flex;align-items:flex-end;gap:18px;padding:0 30px 26px;box-shadow:0 1px 0 #e3ded5}
+.chat .av{width:76px;height:76px;border-radius:50%;background:#0b0b0c;display:flex;align-items:center;justify-content:center}
+.chat .hd b{display:block;font:700 28px R;color:#111}.chat .hd span{display:block;font:500 19px P;color:#1fa855;margin-top:4px}
+.chat .wall{position:absolute;inset:0;background:#efeae2}
+.bub{position:absolute;max-width:400px;padding:18px 22px 14px;border-radius:30px;font:500 25px/1.45 P;color:#111;box-shadow:0 2px 0 rgba(0,0,0,.05)}
+.bub.in{right:26px;background:#fff;border-top-right-radius:8px}
+.bub.out{left:26px;background:var(--y);border-top-left-radius:8px}
+.bub .tm{display:flex;justify-content:flex-start;gap:6px;align-items:center;font:500 16px M;color:#8a8a8a;margin-top:6px;direction:ltr}
+.inp{position:absolute;left:20px;right:20px;bottom:40px;height:96px;display:flex;align-items:center;gap:14px}
+.inp .fld{flex:1;height:96px;border-radius:48px;background:#fff;display:flex;align-items:center;padding:0 30px;font:500 27px P;color:#111;direction:rtl}
+.inp .snd{width:96px;height:96px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;flex:none}
+.caret{display:inline-block;width:3px;height:34px;background:#111;margin-right:3px;vertical-align:middle}
+/* swipe cards */
+.card{position:absolute;left:250px;top:250px;width:580px;height:960px;border-radius:48px;overflow:hidden;background:#fbfaf7;box-shadow:0 0 0 1.5px rgba(255,255,255,.1),0 60px 140px rgba(0,0,0,.6);direction:rtl;color:#141414}
+.card .hero{position:absolute;left:0;right:0;top:0;height:620px}
+.card .hero svg{position:absolute;inset:0;width:100%;height:100%}
+.card h2{position:absolute;right:40px;left:40px;top:300px;color:#fff;font:800 60px/1.15 K}
+.card .cb{position:absolute;right:40px;top:470px;padding:16px 30px;border-radius:999px;background:var(--y);font:700 24px P}
+.card .row{position:absolute;left:30px;right:30px;top:660px;height:140px;display:flex;gap:16px}
+.card .row i{flex:1;border-radius:20px;overflow:hidden;position:relative}
+.card .row i img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card .ln{position:absolute;right:40px;height:14px;border-radius:7px;background:#e6e5e0}
+.stamp{position:absolute;padding:14px 34px;border-radius:22px;border:7px solid;font:900 64px/1 K;direction:rtl;white-space:nowrap}
+.rbtn{position:absolute;width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+/* price */
+#tag{position:absolute;left:190px;top:470px;width:700px;height:520px;transform-origin:350px -260px}
+#tagBody{position:absolute;inset:0;border-radius:60px;background:#0b0b0c;box-shadow:0 60px 120px rgba(80,50,0,.35);overflow:hidden}
+#tagHole{position:absolute;left:330px;top:38px;width:40px;height:40px;border-radius:50%;background:#FFC400;box-shadow:inset 0 3px 6px rgba(0,0,0,.35)}
+#string{position:absolute;left:349px;top:-640px;width:2.5px;height:700px;background:#0b0b0c}
+.reels{position:absolute;left:0;right:0;top:118px;height:270px;display:flex;justify-content:center;gap:6px;direction:ltr}
+.reel{width:170px;height:270px;overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.reel .strip{position:absolute;left:0;right:0;top:0}.reel b{position:absolute;left:0;right:0;font:900 260px/270px K;color:#fff;text-align:center}
+#cur{position:absolute;left:0;right:0;top:390px;text-align:center;font:800 54px K;color:var(--y);direction:rtl}
+#qm{position:absolute;left:0;right:0;top:110px;text-align:center;font:900 300px/1 K;color:#fff}
+.sticker{position:absolute;display:flex;align-items:center;justify-content:center;border-radius:50%;font:900 70px K}
+.fcard{position:absolute;width:420px;height:300px;border-radius:44px;background:#0b0b0c;color:#fff;direction:rtl;padding:34px;overflow:hidden}
+.fcard b{display:block;font:800 46px K;margin-top:16px}
+.fcard small{display:block;font:600 22px P;color:#9a9a9f;margin-top:2px}
+.free{position:absolute;left:24px;top:24px;padding:8px 18px;border-radius:999px;background:var(--y);color:#0b0b0c;font:800 22px K}
+.led{display:inline-block;width:12px;height:12px;border-radius:50%;background:#2c2c30;margin-left:10px}
+#ribbon{position:absolute;left:-100px;right:-100px;top:1222px;height:120px;background:#0b0b0c;transform-origin:100% 50%}
+#ribbon div{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:40px;font:900 64px K;color:var(--y);direction:rtl;white-space:nowrap}
+/* logo */
+#lgBox{position:absolute;left:0;right:0;top:640px;height:600px}
+/* wall */
+#wallWrap{position:absolute;left:-400px;top:-500px;width:1880px;height:2900px;transform:rotateX(32deg) rotateZ(-16deg);transform-style:preserve-3d}
+.col{position:absolute;top:0;width:430px}
+.col .t{width:430px;height:256px;border-radius:22px;overflow:hidden;margin-bottom:26px;box-shadow:0 0 0 1.5px rgba(255,255,255,.12),0 30px 60px rgba(0,0,0,.6);background:#111}
+.col .t img{width:100%;height:100%;object-fit:cover;display:block}
+#globe{position:absolute;left:140px;top:360px;width:800px;height:800px}
+#five{position:absolute;left:0;right:0;top:250px;text-align:center;direction:rtl}
+#five b{font:900 170px/1 K;color:var(--y)}
+#five span{font:800 74px K;color:#fff;margin-right:18px}
+/* progress */
+#prog{position:absolute;left:240px;top:420px;width:600px;height:600px}
+#dayN{position:absolute;left:0;right:0;top:220px;text-align:center;font:900 120px/1 K;color:#0b0b0c;direction:rtl}
+#dayL{position:absolute;left:0;right:0;top:360px;text-align:center;font:700 30px R;color:#6b6b70}
+/* end */
+#endT{position:absolute;left:40px;right:40px;top:560px;text-align:center;direction:rtl;font:900 116px/1.12 K;color:#fff}
+#endT .y{color:var(--y)}
+#ctaB{position:absolute;left:190px;top:1080px;width:700px;height:150px;border-radius:999px;background:var(--y);color:#0b0b0c;display:flex;align-items:center;justify-content:center;gap:22px;font:800 50px K;direction:rtl}
+#endS{position:absolute;left:0;right:0;top:1270px;text-align:center;direction:rtl;font:600 30px P;color:#a0a0a5}
+/* dot / wipes */
+#dot{position:absolute;left:0;top:0;width:140px;height:140px;margin:-70px 0 0 -70px;border-radius:50%;background:var(--y);opacity:0;box-shadow:0 0 0 0 rgba(255,196,0,.0)}
+.tapR{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:5px solid rgba(255,255,255,.95);background:rgba(255,255,255,.25);opacity:0;z-index:80}
+/* captions */
+#cap{position:absolute;left:70px;right:70px;top:1505px;text-align:center;direction:rtl;font:500 54px/1.5 R;color:#fff;pointer-events:none}
+#cap .w{display:inline-block;margin:0 .14em;white-space:nowrap}
+#cap .k{font-weight:700;color:var(--y)}
+#cap.lt{color:#111}#cap.lt .k{color:#111;position:relative}
+#cap.lt .k::before{content:'';position:absolute;left:-6px;right:-6px;bottom:.16em;height:.42em;background:var(--y);border-radius:6px;z-index:-1;transform:scaleX(var(--m,0));transform-origin:100% 50%}
+#cap.yl{color:#111}#cap.yl .k{color:#fff;position:relative}
+#cap.yl .k::before{content:'';position:absolute;left:-10px;right:-10px;top:.12em;bottom:.08em;background:#0b0b0c;border-radius:12px;z-index:-1;transform:scaleX(var(--m,0));transform-origin:100% 50%}
+#cap .in{position:relative;z-index:1;display:inline-block}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 45%,rgba(0,0,0,0) 60%,rgba(0,0,0,.35))}
+#grain{position:absolute;inset:0;width:1080px;height:1920px;opacity:.05;mix-blend-mode:overlay;pointer-events:none}
+#lb{position:absolute;left:0;right:0;height:0;background:#000;z-index:90}
+</style></head><body>
+<div id="stage">
+ <div class="bg" id="bgD"><div id="grid"></div></div>
+ <div class="bg" id="bgL"></div>
+ <div class="bg" id="bgY"></div>
+ <div class="bg" id="bgK"></div>
+ <div id="cam">
+
+ <!-- S1 HOOK: paying for a site you can't see -->
+ <section class="scene" id="s1">
+  <div class="win dark" id="bw1" style="left:110px;top:250px;width:860px;height:700px">
+   <div class="bar"><i></i><i></i><i></i><div class="url">www.yoursite.com</div></div>
+   <div id="bw1s" style="position:absolute;left:0;right:0;top:58px;bottom:0;background:#121214">
+    <div class="sk" style="right:40px;top:40px;width:200px;height:34px"></div><div class="sk" style="left:40px;top:44px;width:300px;height:26px"></div>
+    <div class="sk" style="left:40px;right:40px;top:110px;height:280px;border-radius:24px"></div>
+    <div class="sk" style="right:40px;top:420px;width:520px;height:34px"></div><div class="sk" style="right:40px;top:470px;width:380px;height:34px"></div>
+    <div class="sk" style="right:40px;top:540px;width:200px;height:60px;border-radius:30px"></div>
+   </div>
+   <div id="blind" style="position:absolute;left:0;right:0;top:58px;bottom:0;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);background:rgba(10,10,12,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;opacity:0">
+    <svg id="eyeX" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path id="eyeSl" d="M3 3l18 18" stroke="#FFC400" stroke-width="2.2"/></svg>
+    <div style="font:600 30px P;color:#c8c8cc;direction:rtl">ما شفت شي للحين</div>
+   </div>
+  </div>
+  <div id="pay" style="position:absolute;left:540px;top:1170px;width:140px;height:140px;margin-left:-70px;border-radius:70px;background:#FFC400;color:#0b0b0c;display:flex;align-items:center;justify-content:center;gap:16px;font:800 46px K;direction:rtl;overflow:hidden;white-space:nowrap;box-shadow:0 30px 70px rgba(255,196,0,.18)">
+   <span id="payTx" style="display:flex;align-items:center;gap:16px;opacity:0"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" stroke-width="2.2" stroke-linecap="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg><span id="payW">ادفع الحين</span></span>
+  </div>
+  <div id="qmark" style="position:absolute;left:640px;top:690px;font:900 420px/1 K;color:#FFC400;direction:rtl;text-shadow:0 30px 80px rgba(0,0,0,.6)">؟</div>
+ </section>
+
+ <!-- S2 THE OPPOSITE -->
+ <section class="scene" id="s2">
+  <div id="s2lab" style="position:absolute;left:0;right:0;top:470px;text-align:center;font:600 34px R;color:#8a8a90;direction:rtl">الطريقة المعتادة</div>
+  <div class="chip" id="cPay" style="left:600px;top:700px;background:#1a1a1d;color:#fff;box-shadow:0 0 0 2px #2a2a2e"><span>١</span>
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg><b>ادفع</b></div>
+  <div class="chip" id="cSee" style="left:80px;top:700px;background:#1a1a1d;color:#fff;box-shadow:0 0 0 2px #2a2a2e"><span>٢</span>
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><b>شوف</b></div>
+  <svg id="arr" style="position:absolute;left:490px;top:785px" width="100" height="60" viewBox="0 0 100 60"><path d="M92 30H14M34 10L12 30l22 20" fill="none" stroke="#8a8a90" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div id="nums" style="position:absolute;left:0;right:0;top:990px;display:flex;justify-content:space-between;padding:0 190px;direction:rtl;font:700 30px R;color:#8a8a90"><span>أولاً</span><span>بعدين</span></div>
+ </section>
+
+ <!-- S3 WE BUILD IT FIRST -->
+ <section class="scene" id="s3">
+  <div class="win" id="bw2" style="left:90px;top:200px;width:900px;height:1168px;transform-origin:50% 0%">
+   <div class="bar"><i></i><i></i><i></i><div class="url">www.yourbrand.com.kw</div></div>
+   <div class="site" id="site"></div>
+  </div>
+  <div id="first" class="sticker" style="left:770px;top:150px;width:250px;height:250px;background:#0b0b0c;color:#FFC400;font:900 52px/1.05 K;text-align:center;direction:rtl;flex-direction:column"><span style="font-size:30px;color:#fff;font-weight:800">نسويه</span>أول</div>
+  <div id="polas"></div>
+ </section>
+
+ <!-- S4 SENT TO YOU -->
+ <section class="scene" id="s4">
+  <div class="phone" id="ph1" style="left:270px;top:330px"><div class="isl"></div><div class="scr">
+   <div class="chat"><div class="wall"></div>
+    <div class="hd"><div class="av"><svg id="avN1" width="44" height="44" viewBox="440 380 280 200"></svg></div><div><b>NewWay</b><span>متصل الحين</span></div></div>
+    <div class="bub in" id="b1" style="top:250px;width:420px;padding:12px 12px 12px">
+     <div id="b1prev" style="position:relative;width:396px;height:300px;border-radius:20px;overflow:hidden;background:#fbfaf7"></div>
+     <div style="padding:12px 10px 0;font:700 27px R">موقعك جاهز 👀</div>
+     <div style="padding:2px 10px;font:500 21px M;color:#1a73e8;direction:ltr;text-align:right">yourbrand.com.kw</div>
+     <div class="tm" style="padding:0 10px">9:41</div>
+    </div>
+   </div></div></div>
+  <div id="plane" style="position:absolute;left:0;top:0"></div>
+ </section>
+
+ <!-- S5 LIKE IT? PAY. DON'T? ZERO. -->
+ <section class="scene" id="s5">
+  <div class="card" id="cd2" style="transform:scale(.9) translateY(40px)"></div>
+  <div class="card" id="cd1"></div>
+  <div class="stamp" id="stY" style="left:300px;top:330px;border-color:#FFC400;color:#FFC400;transform:rotate(-14deg)">عجبني ✓</div>
+  <div class="stamp" id="stN" style="left:470px;top:330px;border-color:#fff;color:#fff;transform:rotate(14deg)">ما عجبني</div>
+  <div class="rbtn" id="btnN" style="left:300px;top:1255px;background:#1b1b1e;box-shadow:0 0 0 2px #2c2c30"><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+  <div class="rbtn" id="btnY" style="left:630px;top:1255px;background:#FFC400"><svg width="64" height="64" viewBox="0 0 24 24" fill="#0b0b0c"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.6 1.2 5.4 3.2C13.8 6.2 15.3 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></svg></div>
+  <div id="paid" style="position:absolute;left:290px;top:1240px;width:500px;height:180px;border-radius:90px;background:#FFC400;color:#0b0b0c;display:flex;align-items:center;justify-content:center;gap:20px;font:800 64px K;direction:rtl">
+   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>تدفع</div>
+  <div id="zero" style="position:absolute;left:0;right:0;top:560px;text-align:center;direction:ltr">
+   <div style="font:900 300px/1 K;color:#fff;letter-spacing:-.02em"><span id="zN">0.000</span></div>
+   <div style="font:800 80px K;color:#FFC400;margin-top:10px;direction:rtl">د.ك</div>
+  </div>
+ </section>
+
+ <!-- S6/S7 PRICE + FREE -->
+ <section class="scene" id="s6">
+  <div id="tag"><div id="string"></div><div id="tagBody">
+   <div id="tagHole"></div>
+   <div id="qm">؟</div>
+   <div class="reels" id="reels"></div>
+   <div id="cur">دينار كويتي</div>
+  </div></div>
+  <div class="sticker" id="bas" style="left:700px;top:880px;width:230px;height:230px;background:#fff;color:#0b0b0c;box-shadow:0 30px 60px rgba(0,0,0,.18)">بس!</div>
+  <div id="plus" style="position:absolute;left:0;right:0;top:780px;text-align:center;font:900 120px/1 K;color:#0b0b0c">+</div>
+  <div id="yr1" style="position:absolute;left:290px;top:690px;width:500px;height:90px;border-radius:45px;border:4px solid #0b0b0c;display:flex;align-items:center;justify-content:center;gap:16px;font:800 40px K;color:#0b0b0c;direction:rtl">
+   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>السنة الأولى</div>
+  <div class="fcard" id="fHost" style="left:570px;top:870px">
+   <div class="free" id="fr1">مجاناً</div>
+   <div style="margin-top:56px;display:flex;flex-direction:column;gap:12px">
+    <div style="height:42px;border-radius:12px;background:#1f1f23;display:flex;align-items:center;padding:0 16px"><i class="led" id="l1"></i><i class="led" id="l2"></i></div>
+    <div style="height:42px;border-radius:12px;background:#1f1f23;display:flex;align-items:center;padding:0 16px"><i class="led" id="l3"></i><i class="led" id="l4"></i></div>
+   </div>
+   <b>استضافة</b></div>
+  <div class="fcard" id="fDom" style="left:90px;top:870px">
+   <div class="free" id="fr2">مجاناً</div>
+   <div style="margin-top:56px;height:96px;border-radius:16px;background:#1f1f23;display:flex;align-items:center;padding:0 18px;gap:12px;direction:ltr;font:700 25px M;color:#fff;white-space:nowrap;overflow:hidden">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFC400" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span id="domT"></span><i class="caret" id="domC" style="background:#FFC400;height:28px"></i></div>
+   <b>دومين</b></div>
+  <div id="ribbon"><div><span>علينا</span><span style="color:#fff">✦</span><span>علينا</span><span style="color:#fff">✦</span><span>علينا</span><span style="color:#fff">✦</span><span>علينا</span><span style="color:#fff">✦</span><span>علينا</span></div></div>
+ </section>
+
+ <!-- S8 LOGO -->
+ <section class="scene" id="s8">
+  <div id="lgBox">
+   <svg id="lgSym" style="position:absolute;left:390px;top:0" width="300" height="214" viewBox="440 380 280 200"></svg>
+   <svg id="lgWm" style="position:absolute;left:140px;top:250px" width="800" height="120"></svg>
+   <svg id="lgTg" style="position:absolute;left:290px;top:400px" width="500" height="40"></svg>
+  </div>
+  <div id="lgSh" style="position:absolute;left:-300px;top:600px;width:300px;height:700px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-18deg)"></div>
+ </section>
+
+ <!-- S9 PORTFOLIO + 5 COUNTRIES -->
+ <section class="scene" id="s9">
+  <div id="wallOuter" style="position:absolute;inset:0;perspective:1800px"><div id="wallWrap"></div></div>
+  <div id="wallFade" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,5,.9),rgba(5,5,5,0) 30%,rgba(5,5,5,0) 62%,rgba(5,5,5,.95) 85%)"></div>
+  <div id="hund" style="position:absolute;left:0;right:0;top:560px;text-align:center;direction:rtl">
+   <div style="font:900 190px/1 K;color:#fff;text-shadow:0 20px 60px rgba(0,0,0,.8)">مئات</div>
+   <div style="font:800 64px K;color:#FFC400;margin-top:10px;text-shadow:0 10px 40px rgba(0,0,0,.8)">المواقع</div></div>
+  <canvas id="globe" width="800" height="800"></canvas>
+  <div id="five"><b id="fiveN">5</b><span>دول</span></div>
+ </section>
+
+ <!-- S10 CTA -->
+ <section class="scene" id="s10">
+  <div class="phone" id="ph2" style="left:270px;top:250px"><div class="isl"></div><div class="scr">
+   <div class="chat"><div class="wall"></div>
+    <div class="hd"><div class="av"><svg id="avN2" width="44" height="44" viewBox="440 380 280 200"></svg></div><div><b>NewWay</b><span>متصل الحين</span></div></div>
+    <div class="bub out" id="m1" style="top:250px">ابي موقع لمشروعي 👋<div class="tm">9:41 <span id="ck" style="color:#1a73e8">✓✓</span></div></div>
+    <div class="bub in" id="m2" style="top:400px">أكيد! نبدأ اليوم ونرسلك موقعك جاهز 🚀<div class="tm">9:41</div></div>
+    <div class="inp"><div class="fld"><span id="typ"></span><i class="caret" id="car"></i></div><div class="snd" id="snd"><svg width="44" height="44" viewBox="0 0 24 24" fill="#0b0b0c"><path d="M3 20.5l18-8.5L3 3.5l2.2 7.2L14 12l-8.8 1.3z" transform="translate(24,0) scale(-1,1)"/></svg></div></div>
+   </div></div></div>
+  <div id="progW" style="position:absolute;inset:0">
+   <svg id="prog" viewBox="0 0 600 600"><circle cx="300" cy="300" r="250" fill="none" stroke="#dcdde0" stroke-width="34"/>
+    <circle id="pc" cx="300" cy="300" r="250" fill="none" stroke="#0b0b0c" stroke-width="34" stroke-linecap="round" stroke-dasharray="1571" stroke-dashoffset="1571" transform="rotate(-90 300 300)"/>
+    <circle id="pdot" cx="300" cy="50" r="30" fill="#FFC400"/></svg>
+   <div style="position:absolute;left:240px;top:420px;width:600px;height:600px">
+    <div id="dayN">يوم 1</div><div id="dayL">موقعك قيد التصميم</div>
+    <svg id="ok" style="position:absolute;left:170px;top:170px" width="260" height="260" viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path id="okP" d="M4 12.5l5 5L20 6.5" stroke-dasharray="24" stroke-dashoffset="24"/></svg>
+   </div>
+   <div id="ready" style="position:absolute;left:0;right:0;top:1090px;text-align:center;font:900 130px/1 K;color:#0b0b0c;direction:rtl">جاهز</div>
+   <div id="rays" style="position:absolute;left:540px;top:720px"></div>
+  </div>
+ </section>
+
+ <!-- END CARD -->
+ <section class="scene" id="s11">
+  <svg id="enSym" style="position:absolute;left:470px;top:410px" width="140" height="100" viewBox="440 380 280 200"></svg>
+  <div id="endT"><div id="e1">شوف موقعك <span class="y">أول</span></div><div id="e2">وادفع بعدين</div></div>
+  <div id="ctaB"><svg width="56" height="56" viewBox="0 0 24 24" fill="#0b0b0c"><path d="M3 20.5l18-8.5L3 3.5l2.2 7.2L14 12l-8.8 1.3z" transform="translate(24,0) scale(-1,1)"/></svg>ارسل لنا رسالة</div>
+  <div id="endS">149 د.ك فقط · الاستضافة والدومين علينا أول سنة</div>
+  <svg id="endArr" style="position:absolute;left:510px;top:1340px" width="60" height="90" viewBox="0 0 60 90"><path d="M30 6v70M8 54l22 24 22-24" fill="none" stroke="#FFC400" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="tapR" id="tapE" style="left:620px;top:1155px"></div>
+ </section>
+
+ <div id="dot"></div>
+ <div class="tapR" id="tap"></div>
+ </div>
+ <div id="cap"></div>
+ <div id="vign"></div>
+ <canvas id="grain" width="540" height="960"></canvas>
+ <div id="flash"></div>
+</div>
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="logo.js"></script>
+<script>window.WD=null</script>
+<script src="words.js"></script>
+<script src="main.js"></script>
+</body></html>
