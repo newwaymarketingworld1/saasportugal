@@ -1,5 +1,6 @@
 // Toda a copy do site fica aqui. Texto literal da especificação
 // (prompt-site-dra-caroline.md, seção 6). Não alterar sem a cliente.
+// \u00a0 = espaço não separável: "Dra." nunca fica sozinha no fim da linha.
 
 export const CTA_LABEL = "Agendar consulta pelo WhatsApp";
 
@@ -34,7 +35,7 @@ export const nav = {
 export const hero = {
   context: "Reumatologista em Balneário Camboriú",
   title: "Dor que não passa tem causa. E merece ser investigada com calma.",
-  lead: "Sou a Dra. Caroline Vargas da Cruz. Cuido de pessoas que convivem com dores nas articulações, doenças autoimunes e cansaço sem explicação, com tempo para ouvir a sua história e um plano de cuidado feito para você.",
+  lead: "Sou a Dra.\u00a0Caroline Vargas da Cruz. Cuido de pessoas que convivem com dores nas articulações, doenças autoimunes e cansaço sem explicação, com tempo para ouvir a sua história e um plano de cuidado feito para você.",
   cta: CTA_LABEL,
   credentials: {
     education: "Especialista em Reumatologia pela Santa Casa de São Paulo",
@@ -83,7 +84,7 @@ export const approach = {
 };
 
 export const about = {
-  title: "Prazer, sou a Dra. Caroline Vargas da Cruz.",
+  title: "Prazer, sou a Dra.\u00a0Caroline Vargas da Cruz.",
   paragraphs: [
     "Me encantei pela Reumatologia ainda no terceiro ano da faculdade, pela profundidade da escuta, pela complexidade dos diagnósticos e, principalmente, pela necessidade de enxergar o paciente de forma integral: corpo, mente e alma em movimento.",
     "Hoje atendo em consultório particular, unindo Medicina e Espiritualidade em um modelo de cuidado que valoriza o autoconhecimento, o equilíbrio emocional e a participação de cada paciente no próprio tratamento.",
@@ -278,7 +279,7 @@ export const contact = {
     "https://www.google.com/maps/search/?api=1&query=Rua+Dinamarca+141+Nações+Balneário+Camboriú+SC",
   // CRM e RQE são obrigatórios (CFM). Pendência da cliente.
   responsible: [
-    "Responsável técnica: Dra. Caroline Vargas da Cruz,",
+    "Responsável técnica: Dra.\u00a0Caroline Vargas da Cruz,",
     "CRM/SC [NÚMERO], RQE [NÚMERO]",
   ],
   copyright: (year: number) => `© ${year} Dra. Caroline Vargas da Cruz`,

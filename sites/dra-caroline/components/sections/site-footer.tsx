@@ -20,7 +20,7 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-whatsapp=""
-                  className="link-text inline-flex min-h-12 items-center"
+                  className="link-text inline-flex min-h-12 items-start"
                 >
                   {contact.phoneDisplay}
                 </a>
@@ -33,7 +33,7 @@ export function SiteFooter() {
                   href={contact.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-text inline-flex min-h-12 items-center"
+                  className="link-text inline-flex min-h-12 items-start"
                 >
                   {contact.instagramHandle}
                 </a>
