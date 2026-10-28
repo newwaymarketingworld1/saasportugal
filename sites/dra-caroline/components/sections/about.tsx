@@ -34,8 +34,9 @@ export function About() {
 
         {/* Formação: linha do tempo vertical no mobile, horizontal no desktop */}
         <div className="mt-16 lg:mt-24">
-          <h3 className="t-h3 text-ink">{about.timelineLabel}</h3>
-          <ol className="mt-8 grid grid-cols-1 gap-y-8 lg:mt-10 lg:grid-cols-4 lg:gap-x-8">
+          {/* Rótulo só para leitores de tela: os marcos se explicam sozinhos. */}
+          <h3 className="sr-only">{about.timelineLabel}</h3>
+          <ol className="grid grid-cols-1 gap-y-8 lg:grid-cols-4 lg:gap-x-8">
             {about.timeline.map((step, i) => (
               <li key={step.title} className="relative pl-8 lg:pt-9 lg:pl-0">
                 {/* Conector até o próximo marco */}
