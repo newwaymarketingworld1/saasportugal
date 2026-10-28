@@ -223,7 +223,7 @@ export const howToBook = {
   steps: [
     {
       title: "Toque no botão",
-      text: "A mensagem para o WhatsApp já vai pronta. É só enviar.",
+      text: "A mensagem para o WhatsApp já vai pronta. É\u00a0só enviar.",
     },
     {
       title: "Combine o horário",

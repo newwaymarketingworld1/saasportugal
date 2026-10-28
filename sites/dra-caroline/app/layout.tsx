@@ -1,16 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Hanken_Grotesk, Newsreader } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import { site, contact } from "@/lib/content";
+import { WhatsAppSprite } from "@/components/whatsapp-icon";
 import "./globals.css";
 
-const newsreader = Newsreader({
-  subsets: ["latin"],
+// Newsreader 400 com eixo de tamanho óptico (ver app/fonts/README.md).
+const newsreader = localFont({
+  src: "./fonts/newsreader-opsz-400.woff2",
+  weight: "400",
   style: "normal",
-  // Fonte variável com eixo de tamanho óptico: títulos grandes ganham o
-  // desenho de "display" automaticamente (font-optical-sizing: auto).
-  axes: ["opsz"],
   display: "swap",
   variable: "--font-newsreader",
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
 const hanken = Hanken_Grotesk({
@@ -72,6 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${newsreader.variable} ${hanken.variable}`}>
       <body>
+        <WhatsAppSprite />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
