@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:U;font-weight:400;src:url(fonts/unbounded-latin-400-normal.woff2)}
+@font-face{font-family:U;font-weight:600;src:url(fonts/unbounded-latin-600-normal.woff2)}
+@font-face{font-family:U;font-weight:700;src:url(fonts/unbounded-latin-700-normal.woff2)}
+@font-face{font-family:U;font-weight:800;src:url(fonts/unbounded-latin-800-normal.woff2)}
+@font-face{font-family:U;font-weight:900;src:url(fonts/unbounded-latin-900-normal.woff2)}
+@font-face{font-family:IS;font-weight:400;src:url(fonts/instrument-sans-latin-400-normal.woff2)}
+@font-face{font-family:IS;font-weight:500;src:url(fonts/instrument-sans-latin-500-normal.woff2)}
+@font-face{font-family:IS;font-weight:600;src:url(fonts/instrument-sans-latin-600-normal.woff2)}
+@font-face{font-family:IS;font-weight:700;src:url(fonts/instrument-sans-latin-700-normal.woff2)}
+@font-face{font-family:ISI;font-style:italic;font-weight:400;src:url(fonts/instrument-serif-latin-400-italic.woff2)}
+@font-face{font-family:JB;font-weight:500;src:url(fonts/jetbrains-mono-latin-500-normal.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#0a0a0a}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+.a{position:absolute}
+.mono{font-family:JB;letter-spacing:.22em;text-transform:uppercase}
+.u{font-family:U}
+.is{font-family:IS}
+.br{position:absolute;border-radius:22px;overflow:hidden;background:#fff}
+.br .bar{position:absolute;left:0;top:0;right:0;height:46px;background:#f1f1ef;display:flex;align-items:center;padding-left:22px;gap:10px}
+.br .bar i{width:13px;height:13px;border-radius:50%;background:#d6d6d3;display:block}
+.br .bar b{position:absolute;left:50%;top:11px;transform:translateX(-50%);width:46%;height:24px;border-radius:12px;background:#e4e4e1}
+.br .body{position:absolute;left:0;right:0;top:46px;bottom:0;overflow:hidden}
+.ln{position:absolute;border-radius:8px}
+#cap{position:absolute;left:60px;right:60px;top:1385px;height:220px;display:flex;flex-wrap:wrap;justify-content:center;align-content:center;column-gap:16px;row-gap:2px;pointer-events:none}
+#cap span{display:inline-block;font-family:IS;font-weight:600;font-size:68px;letter-spacing:-.02em;line-height:1.08;position:relative;white-space:nowrap}
+#cap span.em{font-family:ISI;font-style:italic;font-weight:400;font-size:86px;letter-spacing:-.01em;line-height:.98}
+#cap span .hl{position:absolute;left:-8px;right:-8px;bottom:6px;height:30px;background:#FFC400;z-index:-1;transform-origin:left center;border-radius:3px}
+#grain{position:absolute;left:-200px;top:-200px;width:1480px;height:2320px;pointer-events:none;mix-blend-mode:overlay;opacity:.11}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 60% at 50% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.32) 100%)}
+.star{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px}
+.chip{position:absolute;border-radius:999px;display:flex;align-items:center;justify-content:center;font-family:IS;font-weight:600}
+.bub{position:absolute;max-width:300px;padding:16px 22px;border-radius:26px;font-family:IS;font-weight:500;font-size:25px;line-height:1.25}
+</style></head>
+<body>
+<div id="stage"><div id="cam" class="sc"></div><div id="cap"></div><div id="vig"></div><canvas id="grain" width="740" height="1160"></canvas></div>
+<script src="logo.js"></script>
+<script src="lib.js"></script>
+<script src="main.js"></script>
+</body></html>
