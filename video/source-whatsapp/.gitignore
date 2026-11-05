@@ -1,0 +1,8 @@
+node_modules/
+sub/
+sub16/
+frames/
+stills/
+*.wav
+*.log
+package-lock.json
