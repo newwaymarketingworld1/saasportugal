@@ -18,37 +18,6 @@ const line = (min: number, max: number, requiredMsg: string) =>
         .max(max, `Use no máximo ${max} caracteres.`),
     );
 
-/** Normaliza o campo "Site ou Instagram" (opcional). */
-function normalizeWebsite(raw: string): string | null {
-  const value = sanitizeLine(raw);
-  if (!value) return "";
-
-  // @usuario do Instagram
-  if (/^@[A-Za-z0-9._]{1,30}$/.test(value)) return value;
-
-  // URL com protocolo (apenas http/https — nunca javascript:, data:, etc.)
-  if (/^[a-z][a-z0-9+.-]*:/i.test(value)) {
-    if (!/^https?:\/\//i.test(value)) return null;
-    try {
-      const url = new URL(value);
-      if (!url.hostname.includes(".")) return null;
-      return url.toString().slice(0, 200);
-    } catch {
-      return null;
-    }
-  }
-
-  // domínio sem protocolo (ex.: minhaempresa.com.br ou instagram.com/empresa)
-  if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(value)) {
-    try {
-      return new URL(`https://${value}`).toString().slice(0, 200);
-    } catch {
-      return null;
-    }
-  }
-  return null;
-}
-
 export const clientSlugSchema = z
   .string()
   .transform((v) => v.trim().toLowerCase())
@@ -62,39 +31,7 @@ export function parseClientSlug(value: unknown): string | null {
 }
 
 export const briefingSchema = z.object({
-  responsible_name: line(2, 120, "Informe o nome do responsável."),
   company_name: line(2, 160, "Informe o nome da empresa."),
-  whatsapp: z
-    .string({ error: "Informe o WhatsApp." })
-    .transform((v) => v.replace(/[^\d+()\-\s]/g, "").trim())
-    .refine(
-      (v) => {
-        const digits = v.replace(/\D/g, "");
-        return digits.length >= 10 && digits.length <= 13;
-      },
-      "Informe um WhatsApp válido, com DDD.",
-    ),
-  email: z
-    .string({ error: "Informe o e-mail." })
-    .trim()
-    .toLowerCase()
-    .max(254, "E-mail muito longo.")
-    .pipe(z.email("Informe um e-mail válido.")),
-  website: z
-    .string()
-    .optional()
-    .default("")
-    .transform((v, ctx) => {
-      const normalized = normalizeWebsite(v);
-      if (normalized === null) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Use um endereço de site (https://...) ou @usuario do Instagram.",
-        });
-        return z.NEVER;
-      }
-      return normalized;
-    }),
   main_answer: z
     .string({ error: "Descreva a sua empresa." })
     .transform((v) => sanitizeText(v).trim())

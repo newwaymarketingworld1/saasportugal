@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   description:
     "Conte para a NewWay sobre a sua empresa e crie uma inteligência artificial de atendimento sob medida.",
-  icons: { icon: "/logo.svg" },
+  icons: { icon: "/brand/favicon.png", apple: "/brand/favicon.png" },
   robots: { index: false, follow: false },
 };
 

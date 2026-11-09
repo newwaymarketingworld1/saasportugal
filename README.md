@@ -20,7 +20,7 @@ src/app/admin/login/             Login (Server Action → cookies httpOnly)
 src/app/admin/(painel)/          Lista e detalhe dos briefings
 src/app/api/admin/briefings/     PATCH (status/notas) e exportação .txt/.md
 src/lib/                         Schemas Zod, clientes Supabase, rate limit, formatação
-public/logo.svg                  Placeholder do logo (substitua pelo oficial)
+public/brand/                    Logomarca oficial (logo-white/black.png, mark-*.png, favicon.png)
 public/fonts/                    Coloque aqui a fonte Azonix
 ```
 
@@ -103,14 +103,14 @@ Comandos úteis: `npm run build`, `npm run lint`, `npm run typecheck`.
 ## 5. Identidade visual
 
 - **Cores:** preto `#0A0A0A`, branco, amarelo `#FFD600` (destaque). Definidas em `tailwind.config.ts`.
-- **Logo:** substitua `public/logo.svg` pelo arquivo oficial.
+- **Logo:** a logomarca oficial está em `public/brand/` (versão branca para fundo preto e preta para fundo claro). Para trocar, substitua os arquivos mantendo os nomes (proporção usada: 724×384).
 - **Azonix:** coloque `Azonix.otf` (ou `.woff2`) em `public/fonts/` — usada no wordmark "NEWWAY". Sem o arquivo, o site usa Montserrat. Confira a licença da fonte.
 - **Montserrat:** carregada automaticamente via `next/font` (hospedada junto com o site).
 
 ## 6. Recursos implementados
 
 **Página pública**
-- Campos obrigatórios (responsável, empresa, WhatsApp com máscara, e‑mail) e Site/Instagram opcional.
+- Único campo de identificação: **Nome da empresa** (obrigatório). As colunas de responsável, WhatsApp, e‑mail e site continuam na tabela, mas ficam vazias.
 - Aviso com borda amarela, pergunta principal, contador de caracteres e sugestões‑guia.
 - Indicador de qualidade (Insuficiente / Básica / Boa / Excelente) — mínimo de **300 caracteres** (validado no navegador, na API e no banco).
 - Rascunho automático no `localStorage` (por cliente).

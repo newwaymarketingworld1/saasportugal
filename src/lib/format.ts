@@ -49,10 +49,10 @@ export function buildGeminiPrompt(b: Briefing): string {
     "",
     "## Dados da empresa",
     `- Empresa: ${b.company_name}`,
-    `- Responsável: ${b.responsible_name}`,
-    `- WhatsApp: ${b.whatsapp}`,
-    `- E-mail: ${b.email}`,
   ];
+  if (b.responsible_name) lines.push(`- Responsável: ${b.responsible_name}`);
+  if (b.whatsapp) lines.push(`- WhatsApp: ${b.whatsapp}`);
+  if (b.email) lines.push(`- E-mail: ${b.email}`);
   if (b.website) lines.push(`- Site/Instagram: ${b.website}`);
   lines.push(
     "",
@@ -69,10 +69,10 @@ export function buildMarkdown(b: Briefing): string {
   const lines = [
     `# Briefing — ${b.company_name}`,
     "",
-    `- **Responsável:** ${b.responsible_name}`,
-    `- **WhatsApp:** ${b.whatsapp}`,
-    `- **E-mail:** ${b.email}`,
   ];
+  if (b.responsible_name) lines.push(`- **Responsável:** ${b.responsible_name}`);
+  if (b.whatsapp) lines.push(`- **WhatsApp:** ${b.whatsapp}`);
+  if (b.email) lines.push(`- **E-mail:** ${b.email}`);
   if (b.website) lines.push(`- **Site/Instagram:** ${b.website}`);
   if (b.client_slug) lines.push(`- **Identificador do cliente:** ${b.client_slug}`);
   lines.push(
@@ -96,10 +96,10 @@ export function buildPlainText(b: Briefing): string {
   const lines = [
     `BRIEFING — ${b.company_name}`,
     "=".repeat(60),
-    `Responsável: ${b.responsible_name}`,
-    `WhatsApp: ${b.whatsapp}`,
-    `E-mail: ${b.email}`,
   ];
+  if (b.responsible_name) lines.push(`Responsável: ${b.responsible_name}`);
+  if (b.whatsapp) lines.push(`WhatsApp: ${b.whatsapp}`);
+  if (b.email) lines.push(`E-mail: ${b.email}`);
   if (b.website) lines.push(`Site/Instagram: ${b.website}`);
   if (b.client_slug) lines.push(`Identificador do cliente: ${b.client_slug}`);
   lines.push(

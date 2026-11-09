@@ -86,7 +86,7 @@ export default async function AdminHome({ searchParams }: Props) {
       <form method="get" action="/admin" className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label htmlFor="q" className="label">
-            Buscar por empresa ou responsável
+            Buscar por empresa
           </label>
           <input
             id="q"
@@ -176,7 +176,7 @@ export default async function AdminHome({ searchParams }: Props) {
                         <span className="ml-2 text-xs text-mute">#{r.client_slug}</span>
                       )}
                     </td>
-                    <td className="px-5 py-4">{r.responsible_name}</td>
+                    <td className="px-5 py-4">{r.responsible_name || <span className="text-mute">—</span>}</td>
                     <td className="whitespace-nowrap px-5 py-4 text-mute">{formatDate(r.created_at)}</td>
                     <td className="whitespace-nowrap px-5 py-4">
                       <span className="tabular-nums">{r.answer_length.toLocaleString("pt-BR")}</span>{" "}
@@ -203,7 +203,7 @@ export default async function AdminHome({ searchParams }: Props) {
                     <p className="text-lg font-extrabold leading-tight">{r.company_name}</p>
                     <StatusBadge status={r.status} />
                   </div>
-                  <p className="mt-1 text-sm">{r.responsible_name}</p>
+                  {r.responsible_name && <p className="mt-1 text-sm">{r.responsible_name}</p>}
                   <p className="mt-3 text-xs text-mute">
                     {formatDate(r.created_at)} ·{" "}
                     {r.answer_length.toLocaleString("pt-BR")} caracteres ({getQuality(r.answer_length).label})

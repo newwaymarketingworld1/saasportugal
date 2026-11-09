@@ -56,15 +56,10 @@ export default async function BriefingDetail({ params }: Props) {
               Contato
             </h2>
             <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              <Info label="Responsável" value={b.responsible_name} />
               <Info label="Empresa" value={b.company_name} />
-              <Info
-                label="WhatsApp"
-                value={b.whatsapp}
-                href={wa}
-                external
-              />
-              <Info label="E-mail" value={b.email} href={`mailto:${b.email}`} />
+              {b.responsible_name && <Info label="Responsável" value={b.responsible_name} />}
+              {b.whatsapp && <Info label="WhatsApp" value={b.whatsapp} href={wa} external />}
+              {b.email && <Info label="E-mail" value={b.email} href={`mailto:${b.email}`} />}
               {b.website && <Info label="Site / Instagram" value={b.website} href={site} external />}
               {b.client_slug && <Info label="Identificador do cliente" value={b.client_slug} />}
             </dl>

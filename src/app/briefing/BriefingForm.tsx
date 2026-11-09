@@ -12,33 +12,16 @@ import { getQuality } from "@/lib/quality";
 import { briefingSchema, fieldErrors } from "@/lib/schemas";
 
 type Fields = {
-  responsible_name: string;
   company_name: string;
-  whatsapp: string;
-  email: string;
-  website: string;
   main_answer: string;
 };
 
 const EMPTY: Fields = {
-  responsible_name: "",
   company_name: "",
-  whatsapp: "",
-  email: "",
-  website: "",
   main_answer: "",
 };
 
 type Errors = Partial<Record<keyof Fields | "_form", string>>;
-
-/** Máscara de telefone brasileiro: (11) 91234-5678 */
-function maskPhone(value: string): string {
-  const d = value.replace(/\D/g, "").slice(0, 11);
-  if (d.length <= 2) return d.length ? `(${d}` : "";
-  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
-  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
-}
 
 const QUALITY_BAR: Record<number, string> = {
   0: "bg-ink/20",
@@ -151,7 +134,7 @@ export function BriefingForm({ clientSlug }: { clientSlug: string | null }) {
     }
   }
 
-  if (done) return <ThankYou name={fields.responsible_name} />;
+  if (done) return <ThankYou />;
 
   const hasErrors = Object.values(errors).some(Boolean);
 
@@ -206,85 +189,20 @@ export function BriefingForm({ clientSlug }: { clientSlug: string | null }) {
       {/* ----------------------------- Identificação ----------------------------- */}
       <section aria-labelledby={idFor("s1")}>
         <SectionTitle id={idFor("s1")} n="01" title="Sobre você" />
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-          <div>
-            <label htmlFor={idFor("responsible_name")} className="label">
-              Nome do responsável
-            </label>
-            <input
-              {...fieldProps("responsible_name")}
-              type="text"
-              autoComplete="name"
-              maxLength={120}
-              required
-              placeholder="Como devemos te chamar?"
-              onChange={(e) => setField("responsible_name", e.target.value)}
-            />
-            {err("responsible_name")}
-          </div>
-          <div>
-            <label htmlFor={idFor("company_name")} className="label">
-              Nome da empresa
-            </label>
-            <input
-              {...fieldProps("company_name")}
-              type="text"
-              autoComplete="organization"
-              maxLength={160}
-              required
-              placeholder="Razão social ou nome fantasia"
-              onChange={(e) => setField("company_name", e.target.value)}
-            />
-            {err("company_name")}
-          </div>
-          <div>
-            <label htmlFor={idFor("whatsapp")} className="label">
-              WhatsApp
-            </label>
-            <input
-              {...fieldProps("whatsapp")}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              maxLength={16}
-              required
-              placeholder="(11) 91234-5678"
-              onChange={(e) => setField("whatsapp", maskPhone(e.target.value))}
-            />
-            {err("whatsapp")}
-          </div>
-          <div>
-            <label htmlFor={idFor("email")} className="label">
-              E-mail
-            </label>
-            <input
-              {...fieldProps("email")}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              maxLength={254}
-              required
-              placeholder="voce@suaempresa.com.br"
-              onChange={(e) => setField("email", e.target.value)}
-            />
-            {err("email")}
-          </div>
-          <div className="sm:col-span-2">
-            <label htmlFor={idFor("website")} className="label">
-              Site ou Instagram{" "}
-              <span className="font-medium normal-case tracking-normal text-mute">(opcional)</span>
-            </label>
-            <input
-              {...fieldProps("website")}
-              type="text"
-              inputMode="url"
-              autoComplete="url"
-              maxLength={200}
-              placeholder="www.suaempresa.com.br ou @suaempresa"
-              onChange={(e) => setField("website", e.target.value)}
-            />
-            {err("website")}
-          </div>
+        <div>
+          <label htmlFor={idFor("company_name")} className="label">
+            Nome da empresa
+          </label>
+          <input
+            {...fieldProps("company_name")}
+            type="text"
+            autoComplete="organization"
+            maxLength={160}
+            required
+            placeholder="Razão social ou nome fantasia"
+            onChange={(e) => setField("company_name", e.target.value)}
+          />
+          {err("company_name")}
         </div>
       </section>
 
@@ -404,8 +322,7 @@ function SectionTitle({ id, n, title }: { id: string; n: string; title: string }
   );
 }
 
-function ThankYou({ name }: { name: string }) {
-  const first = name.trim().split(" ")[0];
+function ThankYou() {
   return (
     <div className="py-10 text-center sm:py-20" role="status">
       <div className="mx-auto mb-10 flex h-20 w-20 items-center justify-center bg-brand">
@@ -413,9 +330,7 @@ function ThankYou({ name }: { name: string }) {
           <path d="M4 12.5l5 5L20 6.5" />
         </svg>
       </div>
-      <h2 className="text-3xl font-extrabold sm:text-4xl">
-        Obrigado{first ? `, ${first}` : ""}!
-      </h2>
+      <h2 className="text-3xl font-extrabold sm:text-4xl">Obrigado!</h2>
       <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ink/75 sm:text-lg">
         Recebemos o seu briefing. Nossa equipe vai analisar cada detalhe e entrará em contato em
         breve para dar vida à inteligência artificial da sua empresa.

@@ -1,32 +1,34 @@
+import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
-  /** "light" = texto branco (fundo preto). "dark" = texto preto (fundo claro). */
+  /** "light" = logo branca (para fundo preto). "dark" = logo preta (para fundo claro). */
   tone?: "light" | "dark";
   href?: string;
   size?: "md" | "lg";
 };
 
-/** Wordmark: NEWWAY (Azonix) + MARKETING WORLD (Montserrat). */
+// Dimensões reais dos arquivos em /public/brand (proporção 724 x 384).
+const RATIO = { width: 724, height: 384 };
+
+/** Logomarca NewWay Marketing World (arquivos em public/brand/). */
 export function Brand({ tone = "light", href = "/", size = "md" }: Props) {
-  const color = tone === "light" ? "text-white" : "text-ink";
-  const big = size === "lg";
+  const src = tone === "light" ? "/brand/logo-white.png" : "/brand/logo-black.png";
+  const sizeClass = size === "lg" ? "h-28 sm:h-36" : "h-20 sm:h-24";
   return (
     <Link
       href={href}
-      className={`inline-flex flex-col leading-none ${color} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand`}
+      className="inline-block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
       aria-label="NewWay Marketing World"
     >
-      <span
-        className={`font-display tracking-wordmark ${big ? "text-4xl sm:text-5xl" : "text-xl sm:text-2xl"}`}
-      >
-        NEW<span className="text-brand">WAY</span>
-      </span>
-      <span
-        className={`mt-1.5 font-sans font-semibold tracking-widest2 ${big ? "text-[0.7rem] sm:text-xs" : "text-[0.5rem] sm:text-[0.6rem]"}`}
-      >
-        MARKETING WORLD
-      </span>
+      <Image
+        src={src}
+        alt="NewWay Marketing World"
+        width={RATIO.width}
+        height={RATIO.height}
+        priority
+        className={`${sizeClass} w-auto`}
+      />
     </Link>
   );
 }

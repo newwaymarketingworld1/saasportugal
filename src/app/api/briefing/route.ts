@@ -75,11 +75,13 @@ export async function POST(request: Request) {
     const supabase = createAdminClient();
     const { error } = await supabase.from("briefings").insert({
       client_slug: data.client_slug,
-      responsible_name: data.responsible_name,
       company_name: data.company_name,
-      whatsapp: data.whatsapp,
-      email: data.email,
-      website: data.website || null,
+      // O formulário só pede o nome da empresa; as colunas abaixo continuam
+      // existindo na tabela (NOT NULL), então gravamos vazio.
+      responsible_name: "",
+      whatsapp: "",
+      email: "",
+      website: null,
       main_answer: data.main_answer,
     });
     if (error) throw error;

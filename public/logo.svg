@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  PLACEHOLDER do logo NewWay Marketing World.
-  Substitua este arquivo pelo logo oficial (mantenha o nome public/logo.svg).
--->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NewWay Marketing World">
-  <rect width="64" height="64" fill="#0A0A0A"/>
-  <path d="M14 48V16h6l24 22V16h6v32h-6L20 26v22z" fill="#FFD600"/>
-</svg>

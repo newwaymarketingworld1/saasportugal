@@ -24,10 +24,10 @@ create table if not exists public.briefings (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
   client_slug      text,
-  responsible_name text not null,
+  responsible_name text not null default '',
   company_name     text not null,
-  whatsapp         text not null,
-  email            text not null,
+  whatsapp         text not null default '',
+  email            text not null default '',
   website          text,
   main_answer      text not null,
   status           text not null default 'novo',
@@ -44,6 +44,12 @@ create table if not exists public.briefings (
   constraint briefings_internal_notes_len
     check (char_length(internal_notes) <= 10000)
 );
+
+-- O formulário atual só pede o nome da empresa; estas colunas ficam vazias.
+-- (Seguro rodar em bancos já existentes.)
+alter table public.briefings alter column responsible_name set default '';
+alter table public.briefings alter column whatsapp         set default '';
+alter table public.briefings alter column email            set default '';
 
 create index if not exists briefings_created_at_idx on public.briefings (created_at desc);
 create index if not exists briefings_status_idx     on public.briefings (status);
