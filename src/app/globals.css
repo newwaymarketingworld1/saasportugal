@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Azonix (wordmark "NEWWAY"): coloque o arquivo da fonte em
+  public/fonts/Azonix.otf (ou .woff2 — ajuste abaixo). Sem o arquivo, o site
+  usa Montserrat como alternativa.
+*/
+@font-face {
+  font-family: "Azonix";
+  src: local("Azonix"), url("/fonts/Azonix.woff2") format("woff2"),
+    url("/fonts/Azonix.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+::selection {
+  background: #ffd600;
+  color: #0a0a0a;
+}
+
+@layer components {
+  .field {
+    @apply w-full border-0 border-b-2 border-ink/25 bg-transparent px-0 py-3 text-base text-ink
+      placeholder:text-ink/35 transition-colors focus:border-brand focus:outline-none
+      focus:ring-0;
+  }
+  .field:focus {
+    box-shadow: 0 2px 0 0 #ffd600;
+  }
+  .field-error {
+    @apply border-red-600;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-brand px-8 py-4 text-sm font-bold
+      uppercase tracking-[0.14em] text-ink transition
+      hover:bg-brand-dark focus-visible:outline focus-visible:outline-2
+      focus-visible:outline-offset-4 focus-visible:outline-brand
+      disabled:cursor-not-allowed disabled:bg-ink/10 disabled:text-ink/40;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 border-2 border-ink px-5 py-3 text-xs
+      font-bold uppercase tracking-[0.12em] text-ink transition hover:bg-ink hover:text-brand
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4
+      focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .label {
+    @apply block text-[0.7rem] font-bold uppercase tracking-[0.18em] text-ink;
+  }
+}
+
+/* Campo isca (honeypot): fora da tela, invisível para pessoas. */
+.hp-field {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}

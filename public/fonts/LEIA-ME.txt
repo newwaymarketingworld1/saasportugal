@@ -1,0 +1,6 @@
+Coloque aqui o arquivo da fonte Azonix (wordmark "NEWWAY"):
+
+  Azonix.otf   ou   Azonix.woff2
+
+Sem o arquivo, o site usa Montserrat como alternativa automaticamente.
+Confira a licença da fonte antes de publicar.
